@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: -2253911629886400664, guid: 7cfbc714a6e81a7408eb5bac9fd3c134, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7878350319992209165, guid: 7cfbc714a6e81a7408eb5bac9fd3c134, type: 3}
       propertyPath: m_LocalScale.x
       value: 4.965845
@@ -22,11 +26,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7878350319992209165, guid: 7cfbc714a6e81a7408eb5bac9fd3c134, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.1333
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7878350319992209165, guid: 7cfbc714a6e81a7408eb5bac9fd3c134, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.92565
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7878350319992209165, guid: 7cfbc714a6e81a7408eb5bac9fd3c134, type: 3}
       propertyPath: m_LocalPosition.z
@@ -94,7 +98,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -164,3 +168,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
+  moveDir: {x: 0, y: 0}
