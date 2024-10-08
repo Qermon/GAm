@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class KnifeController : WeaponController
-{
+{   
     protected override void Start()
     {
         base.Start();

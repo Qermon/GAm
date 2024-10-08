@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2416816579914079455}
   - component: {fileID: 276661179348068755}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: KnifeController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -64,7 +64,7 @@ GameObject:
   - component: {fileID: 485500797602626921}
   - component: {fileID: 6995725064343345891}
   - component: {fileID: 7990745471684887211}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}

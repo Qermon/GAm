@@ -31,14 +31,20 @@ public class EnemyMovement : MonoBehaviour
 
     void FlipSprite(Vector2 direction)
     {
+        // Получаем текущий масштаб
+        Vector3 currentScale = transform.localScale;
+
         // Если игрок находится справа, развернуть моба вправо (по оси X), если слева — влево
         if (direction.x > 0)
         {
-            transform.localScale = new Vector3(1, 1, 1); // Повернуть вправо
+            // Устанавливаем масштаб по X в 1 (или сохраняем значение по Y и Z)
+            transform.localScale = new Vector3(Mathf.Abs(currentScale.x), currentScale.y, currentScale.z);
         }
         else if (direction.x < 0)
         {
-            transform.localScale = new Vector3(-1, 1, 1); // Повернуть влево
+            // Устанавливаем масштаб по X в -1 (или сохраняем значение по Y и Z)
+            transform.localScale = new Vector3(-Mathf.Abs(currentScale.x), currentScale.y, currentScale.z);
         }
     }
 }
+
