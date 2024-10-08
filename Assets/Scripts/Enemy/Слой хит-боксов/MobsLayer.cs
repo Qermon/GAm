@@ -11,10 +11,9 @@ public class MobsLayer : MonoBehaviour
         gameObject.layer = LayerMask.NameToLayer("Mobs");
     }
 
-
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

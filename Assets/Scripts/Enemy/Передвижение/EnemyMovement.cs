@@ -19,15 +19,16 @@ public class EnemyMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Движение моба в сторону игрока
-        transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
-
         // Рассчитать направление на игрока
         moveDir = (player.position - transform.position).normalized;
 
         // Поворот моба в сторону игрока
         FlipSprite(moveDir);
+
+        // Движение моба в сторону игрока
+        transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
     }
+
 
     void FlipSprite(Vector2 direction)
     {
