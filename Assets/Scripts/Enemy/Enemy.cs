@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public int maxHealth = 50;
+    private int health = 100;
     public int currentHealth;
     public Transform player; // Ссылка на объект игрока
     public float moveSpeed; // Скорость передвижения моба
@@ -13,9 +13,11 @@ public class Enemy : MonoBehaviour
     public float attackSpeed = 1f; // Скорость атаки в ударах в секунду
     private float attackCooldown; // Время, когда враг может снова атаковать
 
+    public GameObject enemyPrefab; // Префаб ворога
+    public Transform spawnPoint; // Точка спавну
     void Start()
     {
-        currentHealth = maxHealth;
+        currentHealth = health;
         attackCooldown = 0f; // Изначально враг может атаковать
         player = FindObjectOfType<PlayerMovement>().transform; // Найти объект игрока
     }
@@ -43,7 +45,12 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void AttackPlayer()
+     public static Enemy Spawn()
+    {
+        return new Enemy(); // Повертаємо новий об'єкт Enemy
+    }
+
+    public void AttackPlayer()
     {
         // Наносим урон игроку
         PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
@@ -87,4 +94,26 @@ public class Enemy : MonoBehaviour
             transform.localScale = new Vector3(-Mathf.Abs(currentScale.x), currentScale.y, currentScale.z);
         }
     }
+    public static Enemy Spawn(GameObject enemyPrefab, Transform spawnPoint)
+    {
+        if (enemyPrefab != null && spawnPoint != null)
+        {
+            GameObject enemyObject = Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
+            Debug.Log("Ворог спавнено!");
+
+            // Повертаємо компонент Enemy з нового об'єкта
+            return enemyObject.GetComponent<Enemy>();
+        }
+        else
+        {
+            Debug.LogError("Префаб ворога або точка спавну не вказані!");
+            return null; // Якщо не вдалося спавнити ворога
+        }
+    }
+
+    public bool IsAlive()
+    {
+        return currentHealth > 0; // Ворог живий, якщо здоров'я більше 0
+    }
 }
+
