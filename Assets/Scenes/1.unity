@@ -1521,6 +1521,11 @@ MonoBehaviour:
   rotationSpeed: 125
   shurikenDistance: 6
   maxShurikens: 6
+--- !u!95 &275898342934089583 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 6904702793276584129, guid: 77782893372bc8e4aa0c4fb4d3019ef8, type: 3}
+  m_PrefabInstance: {fileID: 1146205199564242963}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1146205199564242963
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1549,6 +1554,10 @@ PrefabInstance:
       propertyPath: m_GravityScale
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4591181977361992363, guid: 77782893372bc8e4aa0c4fb4d3019ef8, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 275898342934089583}
     - target: {fileID: 4591181977361992363, guid: 77782893372bc8e4aa0c4fb4d3019ef8, type: 3}
       propertyPath: healthBar
       value: 
