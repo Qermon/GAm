@@ -17,4 +17,5 @@ public class KnifeBehaviour : ProjectileWeaponBehaviour
     {
         transform.position += direction * kc.speed * Time.deltaTime;    //Set the movement of the knife
     }
+
 }

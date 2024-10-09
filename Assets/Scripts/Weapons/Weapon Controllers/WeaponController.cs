@@ -9,7 +9,7 @@ public class WeaponController : MonoBehaviour
 {
     [Header("Weapon Stats")]
     public GameObject prefab;
-    public int damage;
+    public float damage;
     public float speed;
     public float cooldownDuration;
     float currentCooldown;

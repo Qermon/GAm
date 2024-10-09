@@ -17,22 +17,19 @@ public class KnifeController : WeaponController
         spawnedKnife.GetComponent<KnifeBehaviour>().DirectionChecker(pm.lastMovedVector); // Устанавливаем направление
     }
 
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log($"Collided with: {other.gameObject.name}"); // Отладочное сообщение
-        if (other.CompareTag("Enemy"))
+        Debug.Log("Collision with: " + collision.name);
+
+        if (collision.CompareTag("Enemy"))
         {
-            Enemy enemy = other.GetComponent<Enemy>();
-            if (enemy != null)
-            {
-                Debug.Log("Damaging enemy!"); // Отладочное сообщение перед нанесением урона
-                enemy.TakeDamage(damage); // Наносим урон врагу
-                Destroy(gameObject); // Удаляем сюрикен
-            }
+            collision.GetComponent<Enemy>().TakeDamage((int)damage);
+            Destroy(gameObject);
         }
-        else if (other.CompareTag("Wall") || other.CompareTag("Floor"))
+        else if (collision.CompareTag("Destructible"))
         {
-            Destroy(gameObject); // Удаляем сюрикен при столкновении с текстурой
+            Destroy(collision.gameObject);
+            Destroy(gameObject);
         }
     }
 
