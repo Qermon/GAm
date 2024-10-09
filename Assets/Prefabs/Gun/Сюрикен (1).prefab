@@ -184,4 +184,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hitCount: 0
-  maxHits: 5
+  maxHits: 100000
+  damage: 10
+  attackInterval: 1
