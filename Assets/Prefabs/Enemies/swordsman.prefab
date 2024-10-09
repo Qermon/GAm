@@ -15,9 +15,10 @@ GameObject:
   - component: {fileID: 1901673869744594364}
   - component: {fileID: 3773135817134931284}
   - component: {fileID: 6894366498354014905}
+  - component: {fileID: -2420316127406429201}
   m_Layer: 3
-  m_Name: Swordsman
-  m_TagString: Untagged
+  m_Name: swordsman
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -190,9 +191,28 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: -0.05548777, y: -0.03170678}
   serializedVersion: 2
   m_Radius: 0.5975645
+--- !u!114 &-2420316127406429201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880911615788449700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 135462e2d88be174081a1192f8444321, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 50
+  currentHealth: 50
+  player: {fileID: 0}
+  moveSpeed: 1.2
+  attackRange: 0.3
+  damage: 10
+  attackSpeed: 1

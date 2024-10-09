@@ -63,4 +63,5 @@ public class ProjectileWeaponBehaviour : MonoBehaviour
         transform.localScale = scale;
         transform.rotation = Quaternion.Euler(rotation);    //Can't simply set the vector because cannot convert
     }
+
 }

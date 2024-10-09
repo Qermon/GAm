@@ -68,8 +68,9 @@ public class Enemy : MonoBehaviour
     void Die()
     {
         Debug.Log("Enemy died!");
-        gameObject.SetActive(false);
+        gameObject.SetActive(false); // Или уничтожьте объект
     }
+
 
     void FlipSprite(Vector2 direction)
     {

@@ -11,13 +11,13 @@ GameObject:
   - component: {fileID: 3806669143937232760}
   - component: {fileID: 8663260802858904097}
   - component: {fileID: 5346898407193650068}
-  - component: {fileID: 1935936996759903337}
   - component: {fileID: 5976565425733333727}
   - component: {fileID: 2106925706280210526}
   - component: {fileID: 641737803533931368}
+  - component: {fileID: -6563670791507005698}
   m_Layer: 3
   m_Name: Wizard
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -110,19 +110,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1935936996759903337
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 608164949860279550}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b6dd9d44fd03dc4d9d417c7a753ab64, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 1
 --- !u!114 &5976565425733333727
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -197,3 +184,22 @@ CircleCollider2D:
   m_Offset: {x: 0.03900695, y: -0.14937116}
   serializedVersion: 2
   m_Radius: 0.18837927
+--- !u!114 &-6563670791507005698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 608164949860279550}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 135462e2d88be174081a1192f8444321, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 50
+  currentHealth: 50
+  player: {fileID: 0}
+  moveSpeed: 1
+  attackRange: 0.4
+  damage: 10
+  attackSpeed: 1
