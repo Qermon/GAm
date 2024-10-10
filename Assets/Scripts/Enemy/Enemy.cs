@@ -20,6 +20,11 @@ public class Enemy : MonoBehaviour
     public GameObject experienceItemPrefab;
     public int experienceAmount = 20; // Количество опыта, которое даст предмет
 
+    public GameObject[] bloodPrefabs; // Массив для нескольких текстур крови
+    private float bloodCooldown = 0.5f;
+    private float lastBloodTime = 0f;
+
+
     void Start()
     {
         currentHealth = health;
@@ -71,11 +76,57 @@ public class Enemy : MonoBehaviour
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
+
+        if (Time.time >= lastBloodTime + bloodCooldown)
+        {
+            SpawnBlood();
+            lastBloodTime = Time.time;
+        }
+
         if (currentHealth <= 0)
         {
             Die();
         }
     }
+
+    void SpawnBlood()
+    {
+        if (bloodPrefabs.Length == 0) return;
+
+        // Выбираем случайную текстуру крови
+        GameObject randomBlood = bloodPrefabs[Random.Range(0, bloodPrefabs.Length)];
+
+        // Спавним текстуру крови
+        GameObject blood = Instantiate(randomBlood, transform.position, Quaternion.identity);
+
+        // Начать корутину для плавного исчезновения и удаления через 3 секунды
+        StartCoroutine(FadeAndDestroy(blood, 3f));
+    }
+
+
+    IEnumerator FadeAndDestroy(GameObject blood, float duration)
+    {
+        SpriteRenderer bloodRenderer = blood.GetComponent<SpriteRenderer>();
+        Color originalColor = bloodRenderer.color;
+        float timeElapsed = 0f;
+
+        // Ожидание перед началом исчезновения
+        yield return new WaitForSeconds(2.5f); // Ждем 2.5 секунды перед началом исчезновения
+
+        // Плавное исчезновение
+        while (timeElapsed < duration)
+        {
+            timeElapsed += Time.deltaTime;
+            float alpha = Mathf.Lerp(1, 0, timeElapsed / duration); // Линейная интерполяция для альфа-канала
+            bloodRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+            yield return null;
+        }
+
+        // Удаление объекта после полного исчезновения
+        Destroy(blood);
+    }
+
+
 
     void Die()
     {
