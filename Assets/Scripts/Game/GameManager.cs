@@ -1,112 +1,70 @@
+using TMPro; // Используем TextMeshPro
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
-    private int currentWave;
-    private Player player;
-    private List<Enemy> enemies;
-    private bool isGameOver;
+    public WaveManager waveManager; // Ссылка на WaveManager
+    public TMP_Text nextWaveTimerText; // Ссылка на текст для таймера следующей волны
+    public TMP_Text waveNumberText;
+    private static GameManager instance; // Синглтон для доступа из других классов
 
-    public GameObject enemyPrefab; // Префаб врага
-    public Transform spawnPoint; // Точка спавна
+    void Awake()
+    {
+        // Создаем синглтон
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject); // Не уничтожать при загрузке новой сцены
+        }
+        else
+        {
+            Destroy(gameObject); // Уничтожаем дублирующийся экземпляр
+        }
+    }
 
-    public float waveDuration = 20f; // Длительность каждой волны в секундах
-    public int totalWaves = 1000;
     void Start()
     {
-        currentWave = 1;
-        enemies = new List<Enemy>();
-        isGameOver = false;
+        // Здесь можно инициализировать игру
+        waveManager = FindObjectOfType<WaveManager>(); // Найти WaveManager на сцене
+        if (waveManager != null)
+        {
+            StartGame(); // Запускаем игру, если WaveManager найден
+        }
+        else
+        {
+            Debug.LogError("WaveManager not found! Make sure it's present in the scene.");
+        }
+    }
 
-        StartGame();
+    void Update()
+    {
+        // Обновление UI текстов
+        UpdateWaveUI();
     }
 
     public void StartGame()
     {
-        // Создайте объект игрока и добавьте компонент Player
-        GameObject playerObject = new GameObject("Player");
-        player = playerObject.AddComponent<Player>();
-        // Инициализация игрока, например, здоровье
-        player.Initialize(); // Убедитесь, что у вас есть метод инициализации в классе Player
-
-        StartCoroutine(GameLoop());
+        // Логика для запуска игры
+        Debug.Log("Game has started!");
+        waveManager.StartWave(); // Запускаем первую волну
     }
 
-    private IEnumerator GameLoop() // Coroutine to handle waves and game updates
+    void UpdateWaveUI()
     {
-        while (!isGameOver && currentWave <= totalWaves) // Добавляем условие для проверки количества волн
+        if (waveManager.GetWaveNumber() > 0) // Убедитесь, что хотя бы одна волна прошла
         {
-            StartWave();
-            yield return new WaitForSeconds(1); // Optional: wait a second before starting the next wave
-        }
-
-        if (currentWave > totalWaves)
-        {
-            Debug.Log("Всё завершено! Все волны пройдены.");
+            float timeUntilNext = waveManager.GetTimeUntilNextWave();
+            // Обновите UI с использованием timeUntilNext
+            nextWaveTimerText.text = "Next Wave in: " + Mathf.Ceil(timeUntilNext).ToString() + "s";
+            waveNumberText.text = "Wave: " + waveManager.GetWaveNumber();
         }
     }
 
-
-    private void StartWave()
+    public static GameManager GetInstance()
     {
-        int waveDuration = 20; // Длительность волны в секундах
-        Debug.Log($"Starting wave {currentWave}...");
-
-        SpawnEnemies();
-        StartCoroutine(WaveTimer(waveDuration));
+        return instance; // Возвращаем текущий экземпляр GameManager
     }
 
-    private IEnumerator WaveTimer(int duration)
-    {
-        float startTime = Time.time; // Запоминаем время начала волны
-        while (Time.time - startTime < duration)
-        {
-            if (!player.IsAlive())
-            {
-                EndGame();
-                yield break; // Выходим из корутины, если игрок мертв
-            }
-
-            UpdateGameLogic();
-
-            // Рассчитываем оставшееся время
-            float remainingTime = duration - (Time.time - startTime);
-            Debug.Log($"Оставшееся время волны: {remainingTime:F2} секунд"); // Выводим оставшееся время в консоль
-
-            yield return null; // Ждем до следующего кадра
-        }
-
-        
-        currentWave++; // Переход к следующей волне
-        Debug.Log($"Хвиля {currentWave} закінчена!"); // Выводим сообщение о завершении волны
-    }
-
-
-    private void SpawnEnemies()
-    {
-        int numEnemies = currentWave * 2; // Количество врагов зависит от волны
-        for (int i = 0; i < numEnemies; i++)
-        {
-            Enemy enemy = Enemy.Spawn(enemyPrefab, spawnPoint);
-            if (enemy != null)
-            {
-                enemies.Add(enemy); // Добавьте врага в список, если он успешно создан
-            }
-        }
-    }
-
-    private void UpdateGameLogic()
-    {
-        // Логика для обновления состояния игры
-        // Например, удаление мертвых врагов из списка
-        enemies.RemoveAll(enemy => !enemy.IsAlive());
-    }
-
-    private void EndGame()
-    {
-        isGameOver = true;
-        Debug.Log("Game Over! You died.");
-    }
+    // Вы можете добавить другие методы для управления состоянием игры,
+    // например, для паузы, перезапуска и т.д.
 }
