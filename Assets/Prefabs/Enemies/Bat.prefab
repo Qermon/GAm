@@ -123,13 +123,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 135462e2d88be174081a1192f8444321, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 50
-  currentHealth: 50
-  player: {fileID: 0}
+  currentHealth: 5
+  player: {fileID: 1383351495918629920, guid: a6d7e9f9471bfe74087a41a97be1feb5, type: 3}
   moveSpeed: 1
   attackRange: 0.3
   damage: 10
   attackSpeed: 1
+  enemyPrefab: {fileID: 2911249628101810949}
+  spawnPoint: {fileID: 6338249134507857002, guid: 5c97ed6862e19614aa4132010e044157, type: 3}
+  experienceItemPrefab: {fileID: 6390748793574480857, guid: 79680254a96dfef4d8cbfe54fc8dd6cd, type: 3}
+  experienceAmount: 20
 --- !u!114 &953112274488179930
 MonoBehaviour:
   m_ObjectHideFlags: 0

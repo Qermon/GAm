@@ -15,6 +15,11 @@ public class Enemy : MonoBehaviour
 
     public GameObject enemyPrefab; // Префаб ворога
     public Transform spawnPoint; // Точка спавну
+
+    // Новый префаб предмета, который увеличивает опыт игрока
+    public GameObject experienceItemPrefab;
+    public int experienceAmount = 20; // Количество опыта, которое даст предмет
+
     void Start()
     {
         currentHealth = health;
@@ -45,7 +50,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-     public static Enemy Spawn()
+    public static Enemy Spawn()
     {
         return new Enemy(); // Повертаємо новий об'єкт Enemy
     }
@@ -75,9 +80,15 @@ public class Enemy : MonoBehaviour
     void Die()
     {
         Debug.Log("Enemy died!");
+
+        // Спавним предмет опыта после смерти врага
+        if (experienceItemPrefab != null)
+        {
+            Instantiate(experienceItemPrefab, transform.position, Quaternion.identity);
+        }
+
         gameObject.SetActive(false); // Или уничтожьте объект
     }
-
 
     void FlipSprite(Vector2 direction)
     {
@@ -94,6 +105,7 @@ public class Enemy : MonoBehaviour
             transform.localScale = new Vector3(-Mathf.Abs(currentScale.x), currentScale.y, currentScale.z);
         }
     }
+
     public static Enemy Spawn(GameObject enemyPrefab, Transform spawnPoint)
     {
         if (enemyPrefab != null && spawnPoint != null)
@@ -116,4 +128,3 @@ public class Enemy : MonoBehaviour
         return currentHealth > 0; // Ворог живий, якщо здоров'я більше 0
     }
 }
-
