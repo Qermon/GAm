@@ -10,6 +10,7 @@ public class WaveManager : MonoBehaviour
     public float waveDuration = 30f;      // Время продолжительности волны
     private int waveNumber = 0;           // Номер текущей волны
     public int maxWaves = 50;             // Максимальное количество волн
+    public int maxActiveEnemies = 50;     // Максимальное количество активных врагов одновременно
 
     private bool spawningWave = false;    // Флаг для отслеживания спавна волны
     private float timeStartedWave;         // Время начала волны
@@ -25,7 +26,7 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator StartNextWave()
     {
-        // Ждем 10 секунд после завершения предыдущей волны
+        // Ждем между волнами
         yield return new WaitForSeconds(timeBetweenWaves);
 
         StartWave(); // Запускаем новую волну
@@ -48,43 +49,44 @@ public class WaveManager : MonoBehaviour
         timeStartedWave = Time.time;
 
         // Определение количества врагов в зависимости от номера волны
-        int enemiesToSpawn = Mathf.FloorToInt(5 + waveNumber * 1.5f);
+        int enemiesToSpawn = Mathf.FloorToInt(100 + waveNumber * 1.5f);
+        enemiesToSpawn = Mathf.Min(enemiesToSpawn, maxActiveEnemies); // Убедимся, что количество врагов не превышает лимит
 
-        // Спавн врагов
+        // Рассчитываем время между спавнами врагов
+        float spawnInterval = waveDuration / enemiesToSpawn;
+
         for (int i = 0; i < enemiesToSpawn; i++)
         {
+            // Проверяем количество активных врагов
+            while (GameObject.FindGameObjectsWithTag("Enemy").Length >= maxActiveEnemies)
+            {
+                yield return null; // Ждем, пока количество активных врагов уменьшится
+            }
+
             // Случайная точка появления
             Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
 
-            // Проверяем, если timeUntilNext не равно 0
-            if (GetTimeUntilNextWave() > 0)
-            {
-                // Появление зеленого крестика перед спавном врагов
-                GameObject cross = Instantiate(crossPrefab, spawnPoint.position, Quaternion.identity);
-                Destroy(cross, 1f); // Уничтожаем крестик через 1 секунду
-            }
+            // Спавним крестик перед мобом
+            GameObject cross = Instantiate(crossPrefab, spawnPoint.position, Quaternion.identity);
+            Destroy(cross, 1f); // Уничтожаем крестик через 1 секунду
 
-            // Задержка перед спавном врага
-            yield return new WaitForSeconds(1f);
+            // Небольшая задержка перед спавном моба, чтобы крестик успел отобразиться
+            yield return new WaitForSecondsRealtime(0.3f);
 
             // Спавн врага
             Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
-            yield return new WaitForSeconds(0.5f); // Задержка между спавнами врагов
+
+            // Задержка перед следующим спавном врага
+            yield return new WaitForSecondsRealtime(spawnInterval - 0.3f); // Учитываем время крестика
         }
 
         // Ждем время продолжительности волны, прежде чем удалять оставшихся врагов
-        yield return new WaitForSeconds(waveDuration);
+        yield return new WaitForSecondsRealtime(waveDuration - (enemiesToSpawn * spawnInterval));
 
         // Удаление всех оставшихся врагов
         RemoveRemainingEnemies();
 
         spawningWave = false; // Позволяем запуск новой волны
-    }
-
-    // Функция спавна врага
-    void SpawnEnemy(Transform spawnPoint)
-    {
-        Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
     }
 
     void RemoveRemainingEnemies()
@@ -96,7 +98,6 @@ public class WaveManager : MonoBehaviour
         }
     }
 
-    // Внутри класса WaveManager
     public int GetWaveNumber()
     {
         return waveNumber; // Возвращаем текущий номер волны
@@ -106,22 +107,15 @@ public class WaveManager : MonoBehaviour
     {
         if (spawningWave)
         {
-            // Рассчитаем оставшееся время до конца волны
             float timePassed = Time.time - timeStartedWave; // Время с начала волны
             float timeUntilNext = (waveDuration) - timePassed; // Осталось времени до конца волны
 
-            // Логирование для отладки
-            Debug.Log("Time until next wave: " + timeUntilNext);
+          
 
-            // Если время закончилось, возвращаем 0
             if (timeUntilNext <= 0)
             {
-                // Удаление всех оставшихся врагов
-                RemoveRemainingEnemies();
-
-                // Запускаем новую волну после задержки
-                StartCoroutine(StartNextWave());
-
+                RemoveRemainingEnemies(); // Удаление всех оставшихся врагов
+                StartCoroutine(StartNextWave()); // Запускаем новую волну после задержки
                 return 0; // Возвращаем 0, если время до следующей волны закончилось
             }
 

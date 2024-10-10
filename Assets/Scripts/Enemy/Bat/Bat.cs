@@ -9,9 +9,9 @@ public class Bat : MonoBehaviour
 
     // Параметры передвижения и атаки
     public Transform player;  // Ссылка на игрока
-    public float moveSpeed = 6f;  // Скорость перемещения
+    public float moveSpeed = 6f;  // Скорость перемещения (обычная)
+    private float currentMoveSpeed; // Текущая скорость перемещения (может изменяться)
     private Vector2 targetDirection;  // Направление на игрока
-    private bool isStopped = false;   // Флаг остановки
 
     // Параметры атаки
     public float attackRange = 1.5f;  // Дистанция атаки
@@ -28,7 +28,8 @@ public class Bat : MonoBehaviour
     private float bloodCooldown = 0.5f;  // Таймер для спавна крови
     private float lastBloodTime = 0f;  // Последний раз, когда появилась кровь
 
-
+    // Задержка после спавна
+    public float spawnDelay = 1.3f;  // Задержка в секундах
 
     void Start()
     {
@@ -38,11 +39,8 @@ public class Bat : MonoBehaviour
         // Находим игрока в сцене
         player = FindObjectOfType<PlayerMovement>().transform;
 
-        // Устанавливаем направление на игрока
-        if (player != null)
-        {
-            UpdateTargetDirection();
-        }
+        // Запускаем медленное движение после спавна
+        StartCoroutine(SlowMovementAfterSpawn());
     }
 
     void Update()
@@ -50,15 +48,12 @@ public class Bat : MonoBehaviour
         if (player == null) return;  // Если игрок не найден, ничего не делаем
 
         // Если моб не остановлен, то перемещаем его в сторону игрока
-        if (!isStopped)
-        {
-            transform.position += (Vector3)targetDirection * moveSpeed * Time.deltaTime;
+        transform.position += (Vector3)targetDirection * currentMoveSpeed * Time.deltaTime;
 
-            // Если враг в радиусе атаки, проверяем, можно ли атаковать
-            if (Vector2.Distance(transform.position, player.position) < attackRange && attackCooldown <= 0)
-            {
-                AttackPlayer();
-            }
+        // Если враг в радиусе атаки, проверяем, можно ли атаковать
+        if (Vector2.Distance(transform.position, player.position) < attackRange && attackCooldown <= 0)
+        {
+            AttackPlayer();
         }
 
         // Обновляем таймер кулдауна атаки
@@ -78,6 +73,26 @@ public class Bat : MonoBehaviour
         targetDirection = directionToPlayer;
     }
 
+    // Корутин для медленного движения после спавна
+    IEnumerator SlowMovementAfterSpawn()
+    {
+        // Устанавливаем начальную медленную скорость
+        float slowSpeed = moveSpeed * 0.25f;
+        currentMoveSpeed = slowSpeed;
+
+        // Двигаемся медленно к игроку в течение 1.3 секунд
+        float elapsedTime = 0f;
+        while (elapsedTime < spawnDelay)
+        {
+            UpdateTargetDirection();  // Обновляем направление на игрока каждый кадр
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // После 1.3 секунд переходим на нормальную скорость
+        currentMoveSpeed = moveSpeed;
+    }
+
     // Обрабатываем столкновение с триггером (например, стеной)
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -90,7 +105,9 @@ public class Bat : MonoBehaviour
     // Корутин для остановки моба, его разворота и повторного движения к игроку
     IEnumerator StopAndTurn()
     {
-        isStopped = true;
+        // Останавливаем моба
+        float previousSpeed = currentMoveSpeed; // Сохраняем текущую скорость
+        currentMoveSpeed = 0f;
 
         // Обновляем направление на игрока
         UpdateTargetDirection();
@@ -105,21 +122,8 @@ public class Bat : MonoBehaviour
             yield return null;
         }
 
-        // Движение к игроку с замедленной скоростью
-        float moveDuration = 2f; // Время движения к игроку
-        float moveSpeedReduced = 0.75f; // Замедленная скорость
-        timeElapsed = 0f;
-
-        while (timeElapsed < moveDuration)
-        {
-            transform.position += (Vector3)targetDirection * moveSpeedReduced * Time.deltaTime;
-            timeElapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        // После движения к игроку, обновляем направление на игрока для продолжения преследования
-        UpdateTargetDirection();
-        isStopped = false;
+        // После поворота восстанавливаем скорость
+        currentMoveSpeed = previousSpeed;
     }
 
     // Атака игрока
@@ -204,4 +208,5 @@ public class Bat : MonoBehaviour
     {
         return currentHealth > 0;
     }
+
 }
