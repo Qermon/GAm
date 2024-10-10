@@ -4,6 +4,7 @@ using UnityEngine;
 public class WaveManager : MonoBehaviour
 {
     public GameObject enemyPrefab;        // Префаб врага
+    public GameObject crossPrefab;        // Префаб зеленого крестика
     public Transform[] spawnPoints;       // Точки появления врагов
     public float timeBetweenWaves = 5f;   // Время между волнами
     public float waveDuration = 30f;      // Время продолжительности волны
@@ -52,7 +53,22 @@ public class WaveManager : MonoBehaviour
         // Спавн врагов
         for (int i = 0; i < enemiesToSpawn; i++)
         {
-            SpawnEnemy();
+            // Случайная точка появления
+            Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+
+            // Проверяем, если timeUntilNext не равно 0
+            if (GetTimeUntilNextWave() > 0)
+            {
+                // Появление зеленого крестика перед спавном врагов
+                GameObject cross = Instantiate(crossPrefab, spawnPoint.position, Quaternion.identity);
+                Destroy(cross, 1f); // Уничтожаем крестик через 1 секунду
+            }
+
+            // Задержка перед спавном врага
+            yield return new WaitForSeconds(1f);
+
+            // Спавн врага
+            Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
             yield return new WaitForSeconds(0.5f); // Задержка между спавнами врагов
         }
 
@@ -66,10 +82,8 @@ public class WaveManager : MonoBehaviour
     }
 
     // Функция спавна врага
-    void SpawnEnemy()
+    void SpawnEnemy(Transform spawnPoint)
     {
-        // Случайная точка появления
-        Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
         Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
     }
 
@@ -88,7 +102,6 @@ public class WaveManager : MonoBehaviour
         return waveNumber; // Возвращаем текущий номер волны
     }
 
-   
     public float GetTimeUntilNextWave()
     {
         if (spawningWave)
