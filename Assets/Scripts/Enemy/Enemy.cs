@@ -104,27 +104,40 @@ public class Enemy : MonoBehaviour
     }
 
 
-    IEnumerator FadeAndDestroy(GameObject blood, float duration)
+    IEnumerator FadeAndDestroy(GameObject blood, float fadeDuration)
     {
+        // Получаем SpriteRenderer для объекта крови
         SpriteRenderer bloodRenderer = blood.GetComponent<SpriteRenderer>();
+
+        // Если SpriteRenderer не найден, выводим сообщение и завершаем выполнение
+        if (bloodRenderer == null)
+        {
+            Debug.LogError("SpriteRenderer не найден на объекте крови: " + blood.name);
+            yield break;
+        }
+
+        // Оригинальный цвет крови
         Color originalColor = bloodRenderer.color;
         float timeElapsed = 0f;
 
-        // Ожидание перед началом исчезновения
-        yield return new WaitForSeconds(2.5f); // Ждем 2.5 секунды перед началом исчезновения
+        Debug.Log("Начало исчезновения крови для объекта: " + blood.name);
 
         // Плавное исчезновение
-        while (timeElapsed < duration)
+        while (timeElapsed < fadeDuration)
         {
             timeElapsed += Time.deltaTime;
-            float alpha = Mathf.Lerp(1, 0, timeElapsed / duration); // Линейная интерполяция для альфа-канала
+            float alpha = Mathf.Lerp(1, 0, timeElapsed / fadeDuration); // Линейная интерполяция для альфа-канала
             bloodRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
             yield return null;
         }
 
+        Debug.Log("Объект крови будет уничтожен: " + blood.name);
+
         // Удаление объекта после полного исчезновения
         Destroy(blood);
     }
+
+
 
 
 
