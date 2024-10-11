@@ -8,51 +8,35 @@ public class PlayerLevelUp : MonoBehaviour
 
     void Start()
     {
-        // Инициализация уровня и опыта
         UpdateLevel();
     }
 
-    // Метод для получения опыта
     public void GainExperience(int amount)
     {
         currentExperience += amount;
         Debug.Log("Получено опыта: " + amount);
 
-        // Проверка на повышение уровня
         while (currentExperience >= experienceToNextLevel)
         {
             LevelUp();
         }
     }
 
-    // Повышение уровня
     private void LevelUp()
     {
         currentLevel++;
-        currentExperience -= experienceToNextLevel; // Убираем опыт, потраченный на уровень
+        currentExperience -= experienceToNextLevel;
 
         Debug.Log("Поздравляем! Вы достигли уровня: " + currentLevel);
 
-        // Определяем новый опыт для следующего уровня
+        FindObjectOfType<LevelUpMenu>().OpenLevelUpMenu(); // Открываем меню улучшений
+
         UpdateLevel();
     }
 
-    // Логика обновления опыта для следующего уровня
     private void UpdateLevel()
     {
-        if (currentLevel < 20)
-        {
-            experienceToNextLevel = 5 + (currentLevel - 1) * 10;
-        }
-        else if (currentLevel < 40)
-        {
-            experienceToNextLevel += 13;
-        }
-        else
-        {
-            experienceToNextLevel += 16;
-        }
-
+        experienceToNextLevel = 5 + (currentLevel - 1) * 10;
         Debug.Log("Необходимо опыта для следующего уровня: " + experienceToNextLevel);
     }
 }

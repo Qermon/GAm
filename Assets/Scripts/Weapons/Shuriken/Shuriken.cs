@@ -2,25 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Shuriken : MonoBehaviour
+public class Shuriken : Weapon
 {
     public int hitCount = 0; // Счетчик попаданий
-    public int maxHits = 5; // Максимальное количество попаданий до уничтожения
-    public int damage = 20; // Урон, который наносит шурикен
-    public float attackInterval = 1.0f; // Интервал между атаками на одного врага
+    public int maxHits = 5;  // Максимум попаданий до уничтожения
+    public float attackInterval = 1.0f; // Интервал между атаками
 
-    private Dictionary<Collider2D, float> lastAttackTime = new Dictionary<Collider2D, float>(); // Словарь для отслеживания времени последней атаки
+    private Dictionary<Collider2D, float> lastAttackTime = new Dictionary<Collider2D, float>(); // Для отслеживания времени атаки
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Enemy"))
         {
-            if (CanAttack(collision)) // Проверяем, может ли атаковать
+            if (CanAttack(collision)) // Проверяем, можем ли атаковать
             {
-                hitCount++; // Увеличиваем счетчик попаданий только для этого шурикена
-                Debug.Log($"Shuriken hit enemy: {hitCount}");
-                Debug.Log($"Shuriken {this.GetInstanceID()} hit enemy: {hitCount}"); // ID шурикена
-
+                hitCount++; // Увеличиваем счетчик попаданий
                 Enemy enemy = collision.GetComponent<Enemy>();
                 if (enemy != null)
                 {
@@ -29,9 +25,9 @@ public class Shuriken : MonoBehaviour
 
                 lastAttackTime[collision] = Time.time; // Запоминаем время атаки
 
-                if (hitCount >= maxHits) // Проверяем, достиг ли шурикен максимума
+                if (hitCount >= maxHits) // Если достигли лимита
                 {
-                    DestroyShuriken(); // Уничтожаем шурикен
+                    DestroyShuriken();
                 }
             }
         }
@@ -39,26 +35,17 @@ public class Shuriken : MonoBehaviour
 
     private bool CanAttack(Collider2D enemy)
     {
-        if (!lastAttackTime.ContainsKey(enemy)) // Если это первый удар по врагу
+        if (!lastAttackTime.ContainsKey(enemy))
         {
-            lastAttackTime[enemy] = Time.time; // Запоминаем текущее время
+            lastAttackTime[enemy] = Time.time;
             return true;
         }
 
-        // Проверяем, прошло ли достаточно времени с последнего удара
-        return Time.time >= lastAttackTime[enemy] + attackInterval;
+        return Time.time >= lastAttackTime[enemy] + attackInterval; // Проверяем интервал
     }
 
     private void DestroyShuriken()
     {
-        // Уведомляем менеджер о разрушении шурикена
-        ShurikenManager manager = FindObjectOfType<ShurikenManager>();
-        if (manager != null)
-        {
-            manager.OnShurikenDestroyed(this); // Уведомляем менеджер о разрушении
-        }
-
-        // Уничтожаем шурикен только в этом методе
-        Destroy(gameObject);
+        Destroy(gameObject); // Уничтожаем шурикен
     }
 }

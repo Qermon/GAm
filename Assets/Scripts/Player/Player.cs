@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -8,9 +7,14 @@ public class Player : MonoBehaviour
     private int health;
     private const int maxHealth = 100;
 
+    void Start()
+    {
+        Initialize();
+    }
+
     public void Initialize()
     {
-        health = maxHealth; // Установите здоровье на максимальное значение
+        health = maxHealth; // Устанавливаем здоровье на максимальное значение
         Debug.Log("Игрок инициализирован! Здоровье: " + health);
     }
 
@@ -19,13 +23,31 @@ public class Player : MonoBehaviour
         health -= damage;
         if (health < 0)
         {
-            health = 0; // Здоров'я не може бути менше нуля
+            health = 0; // Здоровье не может быть меньше нуля
         }
-        Console.WriteLine($"Гравець отримав {damage} ушкоджень. Здоров'я: {health}");
+        Debug.Log($"Игрок получил {damage} урона. Текущее здоровье: {health}");
     }
 
-    public bool IsAlive()   
+    public bool IsAlive()
     {
-        return health > 0; // Перевірка, чи живий гравець
+        return health > 0; // Проверяем, жив ли игрок
+    }
+
+    // Увеличение максимального здоровья
+    public void IncreaseMaxHealth(int amount)
+    {
+        health += amount;
+        Debug.Log("Макс. здоровье увеличено на " + amount + ". Текущее здоровье: " + health);
+    }
+
+    // Увеличение урона всех оружий игрока
+    public void IncreaseWeaponDamage(int amount)
+    {
+        Weapon[] weapons = GetComponentsInChildren<Weapon>();
+        foreach (Weapon weapon in weapons)
+        {
+            weapon.IncreaseDamage(amount);
+        }
+        Debug.Log("Урон всех оружий увеличен на " + amount);
     }
 }
