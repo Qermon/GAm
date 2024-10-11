@@ -56,5 +56,3 @@ public class PlayerLevelUp : MonoBehaviour
         Debug.Log("Необходимо опыта для следующего уровня: " + experienceToNextLevel);
     }
 }
-
-
