@@ -2,29 +2,22 @@ using UnityEngine;
 
 public class LevelUpMenu : MonoBehaviour
 {
-    public GameObject levelUpPanel; // Панель с выбором улучшений
-
-    private Player player;
+    public GameObject levelUpPanel; // Панель для уровня
     private PlayerMovement playerMovement;
 
-    void Start()
+    private void Start()
     {
-        // Находим игрока и необходимые компоненты
-        player = FindObjectOfType<Player>();
-        playerMovement = player.GetComponent<PlayerMovement>();
-
-        // Скрываем панель с улучшениями при старте
-        levelUpPanel.SetActive(false);
+        // Найдите компонент PlayerMovement на объекте игрока
+        playerMovement = FindObjectOfType<PlayerMovement>();
     }
 
-    // Открываем меню выбора улучшений
     public void OpenLevelUpMenu()
     {
         if (levelUpPanel != null)
         {
-            levelUpPanel.SetActive(true);  // Активируем панель
+            levelUpPanel.SetActive(true); // Активируем панель
             Debug.Log("Панель Level Up открыта.");
-            Time.timeScale = 0;  // Останавливаем время
+            Time.timeScale = 0; // Останавливаем время
         }
         else
         {
@@ -32,34 +25,35 @@ public class LevelUpMenu : MonoBehaviour
         }
     }
 
-
-    // Закрываем меню
-    public void CloseLevelUpMenu()
-    {
-        Time.timeScale = 1f; // Возвращаем игру в нормальное состояние
-        levelUpPanel.SetActive(false);
-    }
-
-    // Выбираем улучшение
     public void ChooseUpgrade(int choice)
     {
         switch (choice)
         {
-            case 1:
-                playerMovement.moveSpeed += 1f;
-                Debug.Log("Скорость игрока увеличена до: " + playerMovement.moveSpeed);
+            case 1: // Увеличение скорости
+                if (playerMovement != null)
+                {
+                    playerMovement.moveSpeed += 2; // Например, увеличиваем скорость на 2
+                    Debug.Log("Скорость увеличена до: " + playerMovement.moveSpeed);
+                }
                 break;
-            case 2:
-                player.IncreaseMaxHealth(20); // Увеличиваем здоровье
+            case 2: // Увеличение здоровья
+                // Логика увеличения здоровья
                 break;
-            case 3:
-                player.IncreaseWeaponDamage(5); // Увеличиваем урон оружий
-                break;
-            default:
-                Debug.Log("Неверный выбор!");
+            case 3: // Увеличение урона
+                // Логика увеличения урона
                 break;
         }
 
-        CloseLevelUpMenu(); // Закрываем меню
+        CloseLevelUpMenu(); // Закрываем меню после выбора
+    }
+
+    public void CloseLevelUpMenu()
+    {
+        if (levelUpPanel != null)
+        {
+            levelUpPanel.SetActive(false); // Деактивируем панель
+            Debug.Log("Панель Level Up закрыта.");
+            Time.timeScale = 1; // Возвращаем время
+        }
     }
 }

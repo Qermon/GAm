@@ -22,7 +22,6 @@ public class PlayerHealth : MonoBehaviour
             Debug.LogError("HealthBar reference is missing on PlayerHealth!");
         }
 
-        // Убедитесь, что ссылка на Animator задана
         if (animator == null)
         {
             Debug.LogError("Animator reference is missing on PlayerHealth!");
@@ -40,21 +39,17 @@ public class PlayerHealth : MonoBehaviour
             StartCoroutine(Die()); // Запускаем корутину для смерти
         }
 
-        // Обновляем UI здоровья (если есть)
-        UpdateHealthUI();
+        UpdateHealthUI(); // Обновляем UI здоровья
     }
 
     // Теперь метод Die возвращает IEnumerator
     private IEnumerator Die()
     {
         Debug.Log("Player died!");
-        // Отключаем объект сразу после вызова метода
-        gameObject.SetActive(false); // Или используйте Destroy(gameObject), если хотите удалить объект
+        gameObject.SetActive(false);
 
         yield return null; // Убедитесь, что метод возвращает значение
     }
-
-
 
     void OnCollisionEnter2D(Collision2D collision)
     {
@@ -65,8 +60,12 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    void UpdateHealthUI()
+    // Сделаем этот метод публичным, чтобы его можно было вызывать извне
+    public void UpdateHealthUI()
     {
-        healthBar.SetHealth(currentHealth);
+        if (healthBar != null)
+        {
+            healthBar.SetHealth(currentHealth);
+        }
     }
 }
