@@ -54,11 +54,22 @@ public class GameManager : MonoBehaviour
         if (waveManager.GetWaveNumber() > 0) // ”бедитесь, что хот€ бы одна волна прошла
         {
             float timeUntilNext = waveManager.GetTimeUntilNextWave();
-            // ќбновите UI с использованием timeUntilNext
-            nextWaveTimerText.text = "Next Wave in: " + Mathf.Ceil(timeUntilNext).ToString() + "s";
+
+            // ѕроверка на отрицательное значение
+            if (timeUntilNext <= 0)
+            {
+                nextWaveTimerText.text = "0"; // ”станавливаем текст в "0" если врем€ отрицательное или ноль
+            }
+            else
+            {
+                // ќбновите UI с использованием timeUntilNext
+                nextWaveTimerText.text = Mathf.Ceil(timeUntilNext).ToString();
+            }
+
             waveNumberText.text = "Wave: " + waveManager.GetWaveNumber();
         }
     }
+
 
     public static GameManager GetInstance()
     {
