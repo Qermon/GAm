@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -3107194858315378290}
   m_Layer: 0
   m_Name: "\u0421\u044E\u0440\u0438\u043A\u0435\u043D (1)"
-  m_TagString: Untagged
+  m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -183,7 +183,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b07ccc19d39313c44aceee40016da0b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damage: 100
   hitCount: 0
   maxHits: 100000
-  damage: 100
   attackInterval: 1
