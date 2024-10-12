@@ -6,6 +6,8 @@ public class PlayerHealth : MonoBehaviour
 {
     public int maxHealth = 100;
     public int currentHealth;
+    public float regenRate = 5f; // Количество здоровья, восстанавливаемого каждую секунду
+    private bool isRegenerating = false;
     public HealthBar healthBar; // Ссылка на компонент полоски здоровья 
     public Animator animator; // Ссылка на компонент Animator
 
@@ -42,25 +44,55 @@ public class PlayerHealth : MonoBehaviour
         UpdateHealthUI(); // Обновляем UI здоровья
     }
 
-    // Теперь метод Die возвращает IEnumerator
     private IEnumerator Die()
     {
         Debug.Log("Player died!");
         gameObject.SetActive(false);
-
-        yield return null; // Убедитесь, что метод возвращает значение
+        yield return null;
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            // Если столкнулись с врагом, наносим урон
             TakeDamage(20); // Урон 20, например
         }
     }
 
-    // Сделаем этот метод публичным, чтобы его можно было вызывать извне
+    // Регистрация регенерации
+    public void StartHealthRegen()
+    {
+        if (!isRegenerating)
+        {
+            isRegenerating = true;
+            StartCoroutine(RegenerateHealth());
+        }
+    }
+
+    // Пассивная регенерация здоровья
+    private IEnumerator RegenerateHealth()
+    {
+        while (isRegenerating)
+        {
+            if (currentHealth < maxHealth)
+            {
+                currentHealth += Mathf.FloorToInt(regenRate);
+                if (currentHealth > maxHealth)
+                {
+                    currentHealth = maxHealth;
+                }
+                UpdateHealthUI();
+            }
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
+    // Остановить регенерацию
+    public void StopHealthRegen()
+    {
+        isRegenerating = false;
+    }
+
     public void UpdateHealthUI()
     {
         if (healthBar != null)
