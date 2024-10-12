@@ -370,7 +370,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 100
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -708,6 +708,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eec11a8b827cf0c4f8c0932ea77713c8, type: 3}
+--- !u!114 &306362796 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7171762437284784434, guid: a63683f251db0de418ee91ebfb199cf2, type: 3}
+  m_PrefabInstance: {fileID: 8812442043654851317}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9269e4a79be118b48b2190b7b759db1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &313271810 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4684908679492326383, guid: eec11a8b827cf0c4f8c0932ea77713c8, type: 3}
@@ -1040,7 +1051,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 400
+          m_IntArgument: 3
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -1633,7 +1644,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1000
+          m_IntArgument: 2
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -2145,6 +2156,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5235349678435058085, guid: 3e1419dc00279fa458c9fde0a7487457, type: 3}
   m_PrefabInstance: {fileID: 2023303554}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1739528461 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3456665900310118325, guid: 3e1419dc00279fa458c9fde0a7487457, type: 3}
+  m_PrefabInstance: {fileID: 2023303554}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b00765dc2090a3a4b83df2407438451f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1901365875 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4684908679492326383, guid: eec11a8b827cf0c4f8c0932ea77713c8, type: 3}
@@ -2202,6 +2224,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5510265313743956409, guid: 3e1419dc00279fa458c9fde0a7487457, type: 3}
+      propertyPath: healthBar
+      value: 
+      objectReference: {fileID: 306362796}
     - target: {fileID: 6889618224961696483, guid: 3e1419dc00279fa458c9fde0a7487457, type: 3}
       propertyPath: m_Name
       value: Player 1
@@ -2692,6 +2718,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 494860464211177435, guid: a63683f251db0de418ee91ebfb199cf2, type: 3}
+      propertyPath: m_FillAmount
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1843928411675882141, guid: a63683f251db0de418ee91ebfb199cf2, type: 3}
       propertyPath: m_Name
       value: Canvas
@@ -2723,6 +2753,18 @@ PrefabInstance:
     - target: {fileID: 3511831882051796825, guid: a63683f251db0de418ee91ebfb199cf2, type: 3}
       propertyPath: playerLevelUp
       value: 
+      objectReference: {fileID: 1739528461}
+    - target: {fileID: 4039730097954056953, guid: a63683f251db0de418ee91ebfb199cf2, type: 3}
+      propertyPath: m_Type
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4039730097954056953, guid: a63683f251db0de418ee91ebfb199cf2, type: 3}
+      propertyPath: m_FillAmount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4039730097954056953, guid: a63683f251db0de418ee91ebfb199cf2, type: 3}
+      propertyPath: m_FillOrigin
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4151123740799111665, guid: a63683f251db0de418ee91ebfb199cf2, type: 3}
       propertyPath: m_fontSize
