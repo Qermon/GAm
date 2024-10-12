@@ -56,7 +56,7 @@ public class WaveManager : MonoBehaviour
         float spawnDuration = waveDuration - 5f; // ¬рем€, за которое нужно заспавнить всех врагов
 
         // ќпределение количества врагов в зависимости от номера волны
-        int enemiesToSpawn = Mathf.FloorToInt(20 + waveNumber * 1.5f);
+        int enemiesToSpawn = Mathf.FloorToInt(200 + waveNumber * 1.5f);
         enemiesToSpawn = Mathf.Min(enemiesToSpawn, maxActiveEnemies); // ”бедимс€, что количество врагов не превышает лимит
 
         // –ассчитываем врем€ между спавном врагов
