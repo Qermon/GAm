@@ -1,201 +1,120 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    private int health = 100;
-    public int currentHealth;
-    public Transform player; // Ссылка на объект игрока
-    public float moveSpeed; // Скорость передвижения моба
-    public float attackRange = 1.5f;
+    // Основные характеристики мобов
+    public int maxHealth = 100;
+    protected int currentHealth;
+    public float moveSpeed = 2f;
     public int damage = 10;
-    public float attackSpeed = 1f; // Скорость атаки в ударах в секунду
-    private float attackCooldown; // Время, когда враг может снова атаковать
+    public float attackRange = 1.5f;
+    public float attackCooldown = 1f;
+    protected bool isDead = false;
 
-    public GameObject enemyPrefab; // Префаб ворога
-    public Transform spawnPoint; // Точка спавну
+    protected Transform player; // Ссылка на игрока
+    private float attackTimer = 0f; // Внутренний таймер для контроля атак
 
-    // Новый префаб предмета, который увеличивает опыт игрока
+    // Публичные поля для крови и опыта
     public GameObject experienceItemPrefab;
-    public int experienceAmount = 20; // Количество опыта, которое даст предмет
+    public int experienceAmount = 20;
+    public GameObject[] bloodPrefabs; // Массив текстур крови
 
-    public GameObject[] bloodPrefabs; // Массив для нескольких текстур крови
-    private float bloodCooldown = 0.5f;
-    private float lastBloodTime = 0f;
-
-    
-
-
-    void Start()
+    protected virtual void Start()
     {
-        currentHealth = health;
-        attackCooldown = 0f; // Изначально враг может атаковать
-        player = FindObjectOfType<PlayerMovement>().transform; // Найти объект игрока
-       
+        // Инициализация здоровья и нахождение игрока
+        currentHealth = maxHealth;
+        player = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
-    void Update()
+    protected virtual void Update()
     {
-        if (player == null) return; // Если игрок не задан, выходим
+        if (isDead || player == null) return;
 
-        // Рассчитать направление на игрока
-        Vector2 moveDir = (player.position - transform.position).normalized;
+        // Движение к игроку
+        MoveTowardsPlayer();
 
-        // Поворот моба в сторону игрока
-        FlipSprite(moveDir);
-
-        // Движение моба в сторону игрока
-        transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
-
-        // Уменьшаем таймер кулдауна
-        attackCooldown -= Time.deltaTime;
-
-        // Проверяем, может ли враг атаковать
-        if (Vector2.Distance(transform.position, player.position) < attackRange && attackCooldown <= 0)
+        // Проверка на возможность атаки
+        attackTimer -= Time.deltaTime;
+        if (Vector2.Distance(transform.position, player.position) <= attackRange && attackTimer <= 0f)
         {
             AttackPlayer();
         }
     }
 
-    public static Enemy Spawn()
+    // Метод для движения к игроку
+    protected virtual void MoveTowardsPlayer()
     {
-        return new Enemy(); // Повертаємо новий об'єкт Enemy
+        if (player != null)
+        {
+            Vector2 direction = (player.position - transform.position).normalized;
+            transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
+            FlipSprite(direction); // Метод для поворота спрайта
+        }
     }
 
-    public void AttackPlayer()
+    // Метод для атаки игрока
+    protected virtual void AttackPlayer()
     {
-        // Наносим урон игроку
+        attackTimer = attackCooldown;
         PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
         if (playerHealth != null)
         {
             playerHealth.TakeDamage(damage);
         }
-
-        // Устанавливаем время на кулдаун
-        attackCooldown = 1f / attackSpeed; // Например, если скорость атаки 2, кулдаун будет 0.5 секунды
     }
 
-    public void TakeDamage(int damage)
+    // Метод для получения урона
+    public virtual void TakeDamage(int damage)
     {
         currentHealth -= damage;
-
-        if (Time.time >= lastBloodTime + bloodCooldown)
-        {
-            SpawnBlood();
-            lastBloodTime = Time.time;
-        }
-
-        if (currentHealth <= 0)
+        if (currentHealth <= 0 && !isDead)
         {
             Die();
         }
     }
 
-    void SpawnBlood()
+    // Метод для смерти
+    protected virtual void Die()
     {
-        if (bloodPrefabs.Length == 0) return;
-
-        // Выбираем случайную текстуру крови
-        GameObject randomBlood = bloodPrefabs[Random.Range(0, bloodPrefabs.Length)];
-
-        // Спавним текстуру крови
-        GameObject blood = Instantiate(randomBlood, transform.position, Quaternion.identity);
-
-        // Начать корутину для плавного исчезновения и удаления через 3 секунды
-        StartCoroutine(FadeAndDestroy(blood, 3f));
+        isDead = true;
+        SpawnExperience();
+        SpawnBlood();
+        Destroy(gameObject);
     }
 
-
-    IEnumerator FadeAndDestroy(GameObject blood, float fadeDuration)
+    // Спавн предмета опыта
+    protected virtual void SpawnExperience()
     {
-        // Получаем SpriteRenderer для объекта крови
-        SpriteRenderer bloodRenderer = blood.GetComponent<SpriteRenderer>();
-
-        // Если SpriteRenderer не найден, выводим сообщение и завершаем выполнение
-        if (bloodRenderer == null)
-        {
-            Debug.LogError("SpriteRenderer не найден на объекте крови: " + blood.name);
-            yield break;
-        }
-
-        // Оригинальный цвет крови
-        Color originalColor = bloodRenderer.color;
-        float timeElapsed = 0f;
-
-        Debug.Log("Начало исчезновения крови для объекта: " + blood.name);
-
-        // Плавное исчезновение
-        while (timeElapsed < fadeDuration)
-        {
-            timeElapsed += Time.deltaTime;
-            float alpha = Mathf.Lerp(1, 0, timeElapsed / fadeDuration); // Линейная интерполяция для альфа-канала
-            bloodRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
-            yield return null;
-        }
-
-        Debug.Log("Объект крови будет уничтожен: " + blood.name);
-
-        // Удаление объекта после полного исчезновения
-        Destroy(blood);
-    }
-
-
-
-
-
-    void Die()
-    {
-        Debug.Log("Enemy died!");
-
-        // Спавним предмет опыта после смерти врага
         if (experienceItemPrefab != null)
         {
             Instantiate(experienceItemPrefab, transform.position, Quaternion.identity);
         }
-
-        gameObject.SetActive(false); // Или уничтожьте объект
     }
 
-    void FlipSprite(Vector2 direction)
+    // Спавн крови
+    protected virtual void SpawnBlood()
     {
-        // Получаем текущий масштаб
-        Vector3 currentScale = transform.localScale;
+        if (bloodPrefabs.Length > 0) // Проверка, есть ли текстуры крови в массиве
+        {
+            // Случайный выбор текстуры крови из массива
+            int randomIndex = Random.Range(0, bloodPrefabs.Length);
+            Instantiate(bloodPrefabs[randomIndex], transform.position, Quaternion.identity);
+        }
+    }
 
-        // Если игрок находится справа, развернуть моба вправо (по оси X), если слева — влево
+    // Метод для поворота спрайта моба в сторону игрока
+    protected virtual void FlipSprite(Vector2 direction)
+    {
+        Vector3 localScale = transform.localScale;
         if (direction.x > 0)
         {
-            transform.localScale = new Vector3(Mathf.Abs(currentScale.x), currentScale.y, currentScale.z);
+            localScale.x = Mathf.Abs(localScale.x); // Повернуть вправо
         }
         else if (direction.x < 0)
         {
-            transform.localScale = new Vector3(-Mathf.Abs(currentScale.x), currentScale.y, currentScale.z);
+            localScale.x = -Mathf.Abs(localScale.x); // Повернуть влево
         }
+        transform.localScale = localScale;
     }
-
-    public static Enemy Spawn(GameObject enemyPrefab, Transform spawnPoint)
-    {
-        if (enemyPrefab != null && spawnPoint != null)
-        {
-            GameObject enemyObject = Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
-            Debug.Log("Ворог спавнено!");
-
-            // Повертаємо компонент Enemy з нового об'єкта
-            return enemyObject.GetComponent<Enemy>();
-        }
-        else
-        {
-            Debug.LogError("Префаб ворога або точка спавну не вказані!");
-            return null; // Якщо не вдалося спавнити ворога
-        }
-    }
-
-    public bool IsAlive()
-    {
-        return currentHealth > 0; // Ворог живий, якщо здоров'я більше 0
-    }
-  
-
-
-
 }
