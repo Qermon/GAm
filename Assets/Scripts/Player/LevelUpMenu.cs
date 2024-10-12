@@ -11,10 +11,24 @@ public class LevelUpMenu : MonoBehaviour
     public Weapon[] weaponsToBuff;
 
 
+    public ShurikenManager abilityOne;
+    public KnifeController abilityTwo;
+    public LightningWeapon abilityThree;
+    public BoomerangController abilityFour;
+    public FireBallController abilityFive;
+
     private void Start()
     {
         playerMovement = FindObjectOfType<PlayerMovement>();
         playerHealth = FindObjectOfType<PlayerHealth>();
+        
+        abilityOne.enabled = false;
+        abilityTwo.enabled = false;
+        abilityThree.enabled = false;
+        abilityFour.enabled = false;
+        abilityFive.enabled = false;
+        
+
 
     }
 
@@ -80,9 +94,43 @@ public class LevelUpMenu : MonoBehaviour
                 }
                 break;
 
+            case 6: // Активация способности шурикена
+                ActivateAbility(abilityOne);
+                break;
+
+            case 7: // Активация способности ножа
+                ActivateAbility(abilityTwo);
+                break;
+
+            case 8: // Активация способности молнии
+                ActivateAbility(abilityThree);
+                break;
+
+            case 9: // Активация способности бумеранга
+                ActivateAbility(abilityFour);
+                break;
+
+            case 10: // Активация способности огненного шара
+                ActivateAbility(abilityFive);
+                break;
+
         }
 
         CloseLevelUpMenu();
+       
+    }
+
+    private void ActivateAbility(MonoBehaviour ability)
+    {
+        if (ability != null)
+        {
+            ability.enabled = true; // Активируем способность
+            Debug.Log(ability.GetType().Name + " активирована.");
+        }
+        else
+        {
+            Debug.LogError("Способность не назначена.");
+        }
     }
 
     public void CloseLevelUpMenu()
