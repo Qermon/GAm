@@ -6,10 +6,16 @@ public class LevelUpMenu : MonoBehaviour
     private PlayerMovement playerMovement;
     private PlayerHealth playerHealth;
 
+
+    // Массив оружий, которые будут бафаться
+    public Weapon[] weaponsToBuff;
+
+
     private void Start()
     {
         playerMovement = FindObjectOfType<PlayerMovement>();
         playerHealth = FindObjectOfType<PlayerHealth>();
+
     }
 
     public void OpenLevelUpMenu()
@@ -54,6 +60,26 @@ public class LevelUpMenu : MonoBehaviour
                     Debug.Log("Пассивная регенерация активирована.");
                 }
                 break;
+
+            case 4: // Баф всех оружий
+                foreach (Weapon weapon in weaponsToBuff)
+                {
+                    if (weapon != null)
+                    {
+                        weapon.damage += 10; // Увеличиваем урон на 10
+                        Debug.Log(weapon.name + " урон увеличен до: " + weapon.damage);
+                    }
+                }
+                break;
+
+            case 5: // Увеличение защиты
+                if (playerHealth != null)
+                {
+                    playerHealth.IncreaseDefense(10); // Увеличиваем защиту на 10
+                    Debug.Log("Защита игрока увеличена до: " + playerHealth.defense);
+                }
+                break;
+
         }
 
         CloseLevelUpMenu();

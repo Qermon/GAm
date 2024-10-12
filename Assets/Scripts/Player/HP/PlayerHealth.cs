@@ -10,6 +10,9 @@ public class PlayerHealth : MonoBehaviour
     private bool isRegenerating = false;
     public HealthBar healthBar; // Ссылка на компонент полоски здоровья 
     public Animator animator; // Ссылка на компонент Animator
+    public int defense = 0; // Уровень защиты игрока (0-200)
+    private const int maxDefense = 200; // Максимальный уровень защиты
+    private const float maxDamageReduction = 0.8f; // Максимальное уменьшение урона (80%)
 
     void Start()
     {
@@ -32,7 +35,11 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        currentHealth -= damage;
+        // Рассчитываем уменьшение урона на основе уровня защиты
+        float damageReduction = Mathf.Min(defense / 10 * 0.04f, maxDamageReduction);
+        int reducedDamage = Mathf.RoundToInt(damage * (1 - damageReduction));
+
+        currentHealth -= reducedDamage;
 
         // Ограничиваем текущее здоровье, чтобы оно не уходило ниже 0
         if (currentHealth <= 0)
@@ -40,6 +47,8 @@ public class PlayerHealth : MonoBehaviour
             currentHealth = 0;
             StartCoroutine(Die()); // Запускаем корутину для смерти
         }
+
+        Debug.Log("Игрок получил урон: " + reducedDamage + ", защита уменьшила урон на: " + (damage - reducedDamage));
 
         UpdateHealthUI(); // Обновляем UI здоровья
     }
@@ -99,5 +108,11 @@ public class PlayerHealth : MonoBehaviour
         {
             healthBar.SetHealth(currentHealth);
         }
+    }
+
+    public void IncreaseDefense(int amount)
+    {
+        defense = Mathf.Clamp(defense + amount, 0, maxDefense);
+        Debug.Log("Защита игрока увеличена до: " + defense);
     }
 }

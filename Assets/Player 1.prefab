@@ -329,6 +329,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   currentHealth: 100
+  regenRate: 5
   healthBar: {fileID: 0}
   animator: {fileID: 0}
 --- !u!114 &2476516375064441584
