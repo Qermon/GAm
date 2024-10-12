@@ -24,12 +24,15 @@ public class Enemy : MonoBehaviour
     private float bloodCooldown = 0.5f;
     private float lastBloodTime = 0f;
 
+    
+
 
     void Start()
     {
         currentHealth = health;
         attackCooldown = 0f; // Изначально враг может атаковать
         player = FindObjectOfType<PlayerMovement>().transform; // Найти объект игрока
+       
     }
 
     void Update()
@@ -191,4 +194,8 @@ public class Enemy : MonoBehaviour
     {
         return currentHealth > 0; // Ворог живий, якщо здоров'я більше 0
     }
+  
+
+
+
 }

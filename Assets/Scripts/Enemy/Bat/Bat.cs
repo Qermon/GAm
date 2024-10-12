@@ -31,6 +31,8 @@ public class Bat : MonoBehaviour
     // Задержка после спавна
     public float spawnDelay = 1.3f;  // Задержка в секундах
 
+    
+
     void Start()
     {
         // Инициализируем текущее здоровье
@@ -41,6 +43,8 @@ public class Bat : MonoBehaviour
 
         // Запускаем медленное движение после спавна
         StartCoroutine(SlowMovementAfterSpawn());
+
+       
     }
 
     void Update()
@@ -208,5 +212,7 @@ public class Bat : MonoBehaviour
     {
         return currentHealth > 0;
     }
+
+  
 
 }
