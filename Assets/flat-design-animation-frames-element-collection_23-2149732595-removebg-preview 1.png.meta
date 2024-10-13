@@ -1,0 +1,296 @@
+fileFormatVersion: 2
+guid: 50ada0ae65ce1064b947e6c36583ed3f
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 25
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 0
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Windows Store Apps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_0
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 55
+        width: 81
+        height: 216
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7696e4a936a72094cbd3c9227052cc1d
+      internalID: -1560876173
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_1
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 56
+        width: 81
+        height: 215
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc4eb09840306874a80d06cbc551c151
+      internalID: 461854557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_2
+      rect:
+        serializedVersion: 2
+        x: 207
+        y: 56
+        width: 87
+        height: 215
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f36915cb7504e849a2a7ae5aefecd78
+      internalID: 2146550168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_3
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 55
+        width: 94
+        height: 216
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5ce6c262222e214781fb53ef5e9c89c
+      internalID: 523489320
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_4
+      rect:
+        serializedVersion: 2
+        x: 419
+        y: 55
+        width: 99
+        height: 216
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ddf3db17f1b70174c97b8c22064c848a
+      internalID: -1163262166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_5
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 55
+        width: 53
+        height: 216
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 310f192aaae0da14584aac967fcb5f54
+      internalID: -459989253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_0: -1560876173
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_1: 461854557
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_10: -312431900
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_11: 1089606375
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_12: 420144720
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_13: 1550798350
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_14: 985671252
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_15: -257314115
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_16: -1616169018
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_17: -1024953339
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_18: 758644570
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_19: -669806211
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_2: 2146550168
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_20: 1758618252
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_21: 1822778632
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_22: 1511958878
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_23: -2000779529
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_24: 449262361
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_25: 2104981869
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_26: -1022087498
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_27: 1691619426
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_28: -224536452
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_29: -509746512
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_3: 523489320
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_4: -1163262166
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_5: -459989253
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_6: 1334994030
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_7: -243339465
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_8: -276929233
+      flat-design-animation-frames-element-collection_23-2149732595-removebg-preview_9: -2090609828
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
