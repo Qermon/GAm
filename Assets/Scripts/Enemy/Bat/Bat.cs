@@ -31,6 +31,8 @@ public class Bat : MonoBehaviour
     // Задержка после спавна
     public float spawnDelay = 1.3f;  // Задержка в секундах
 
+    
+
     void Start()
     {
         // Инициализируем текущее здоровье
@@ -41,6 +43,8 @@ public class Bat : MonoBehaviour
 
         // Запускаем медленное движение после спавна
         StartCoroutine(SlowMovementAfterSpawn());
+
+       
     }
 
     void Update()
@@ -100,6 +104,7 @@ public class Bat : MonoBehaviour
         {
             StartCoroutine(StopAndTurn());
         }
+        
     }
 
     // Корутин для остановки моба, его разворота и повторного движения к игроку
@@ -142,6 +147,7 @@ public class Bat : MonoBehaviour
     // Получение урона мобом
     public void TakeDamage(int damage)
     {
+        Debug.Log($"Bat took {damage} damage!");  // Добавлено для отладки
         currentHealth -= damage;
 
         // Спавн крови при получении урона
@@ -157,6 +163,7 @@ public class Bat : MonoBehaviour
             Die();
         }
     }
+
 
     // Спавн эффекта крови
     void SpawnBlood()
@@ -208,5 +215,7 @@ public class Bat : MonoBehaviour
     {
         return currentHealth > 0;
     }
+
+  
 
 }

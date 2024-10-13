@@ -9,10 +9,7 @@ public class KnifeController : WeaponController
         base.Start();
     }
 
-    public void Activate()
-    {
-        Debug.Log("Активирована способность 1");
-    }
+
 
     protected override void Attack()
     {

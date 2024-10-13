@@ -16,7 +16,7 @@ public class Shuriken : Weapon
         {
             if (CanAttack(collision)) // Проверяем, можем ли атаковать
             {
-                hitCount++; // Увеличиваем счетчик попаданий
+               
                 Enemy enemy = collision.GetComponent<Enemy>();
                 if (enemy != null)
                 {
