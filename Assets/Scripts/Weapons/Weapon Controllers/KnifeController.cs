@@ -28,7 +28,7 @@ public class KnifeController : WeaponController
             collision.GetComponent<Enemy>().TakeDamage((int)damage);
             Destroy(gameObject);
         }
-        else if (collision.CompareTag("Destructible"))
+        else if (collision.CompareTag("Wall"))
         {
             Destroy(collision.gameObject);
             Destroy(gameObject);

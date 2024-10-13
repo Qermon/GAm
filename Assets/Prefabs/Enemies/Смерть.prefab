@@ -122,7 +122,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  moveSpeed: 0
+  enemyMoveSpeed: 0
   damage: 25
   attackRange: 0.1
   attackCooldown: 1
@@ -147,6 +147,8 @@ MonoBehaviour:
   spawnInterval: 7
   mobsToSpawn: 5
   miniMobPrefab: {fileID: 3627252762921998399, guid: 7560895ba4cbef04eb588a876d3428e0, type: 3}
+  enemyPrefab: {fileID: 0}
+  summonPoints: []
 --- !u!58 &-3729028956883675882
 CircleCollider2D:
   m_ObjectHideFlags: 0

@@ -4,24 +4,26 @@ using UnityEngine;
 
 public class WaveManager : MonoBehaviour
 {
-    public GameObject enemyPrefab;        // Префаб врага
-    public GameObject crossPrefab;        // Префаб зеленого крестика
-    public Transform[] spawnPoints;       // Точки появления врагов
-    public float timeBetweenWaves = 5f;   // Время между волнами
-    public float waveDuration = 30f;      // Время продолжительности волны
-    private int waveNumber = 0;           // Номер текущей волны
-    public int maxWaves = 1000;             // Максимальное количество волн
-    public int maxActiveEnemies = 100000;     // Максимальное количество активных врагов одновременно
+    public GameObject enemyPrefab;
+    public GameObject crossPrefab;
+    public Transform[] spawnPoints;
+    public float timeBetweenWaves = 5f;
+    public float waveDuration = 30f;
+    private int waveNumber = 0;
+    public int maxWaves = 1000;
+    public int maxActiveEnemies = 100000;
 
-    private bool spawningWave = false;    // Флаг для отслеживания спавна волны
-    private float timeStartedWave;         // Время начала волны
+    private bool spawningWave = false;
+    private float timeStartedWave;
 
-    private bool isWaveEnded = false; // Флаг для отслеживания завершения волны
+    private List<GameObject> activeEnemies = new List<GameObject>(); // Храним активных врагов
+
+    public BloodManager bloodManager; // Переменная для ссылки на ваш BloodManager
 
     void Update()
     {
         // Запускаем следующую волну, если прошли все враги
-        if (!spawningWave && GameObject.FindGameObjectsWithTag("Enemy").Length == 0 && waveNumber < maxWaves)
+        if (!spawningWave && activeEnemies.Count == 0 && waveNumber < maxWaves)
         {
             StartCoroutine(StartNextWave());
         }
@@ -29,17 +31,25 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator StartNextWave()
     {
-        // Ждем между волнами
         yield return new WaitForSeconds(timeBetweenWaves);
-
-        StartWave(); // Запускаем новую волну
+        StartWave();
     }
 
     public void StartWave()
     {
-        if (!spawningWave) // Проверяем, не запущена ли волна
+        if (!spawningWave)
         {
             StartCoroutine(SpawnWave());
+        }
+
+        RemoveBloodAfterWave();
+    }
+
+    public void RemoveBloodAfterWave()
+    {
+        if (bloodManager != null)
+        {
+            bloodManager.RemoveAllBlood();
         }
     }
 
@@ -47,88 +57,71 @@ public class WaveManager : MonoBehaviour
     {
         spawningWave = true;
         waveNumber++;
-
-        // Установка времени начала волны
         timeStartedWave = Time.time;
 
-        // Устанавливаем время продолжительности волны
-        float waveDuration = 30f; // Устанавливаем продолжительность волны в 30 секунд
-        float spawnDuration = waveDuration - 5f; // Время, за которое нужно заспавнить всех врагов
-
-        // Определение количества врагов в зависимости от номера волны
+        float spawnDuration = waveDuration - 5f;
         int enemiesToSpawn = Mathf.FloorToInt(200 + waveNumber * 1.5f);
-        enemiesToSpawn = Mathf.Min(enemiesToSpawn, maxActiveEnemies); // Убедимся, что количество врагов не превышает лимит
+        enemiesToSpawn = Mathf.Min(enemiesToSpawn, maxActiveEnemies);
 
-        // Рассчитываем время между спавном врагов
-        float spawnInterval = spawnDuration / enemiesToSpawn; // Делим на количество врагов
+        float spawnInterval = spawnDuration / enemiesToSpawn;
 
         for (int i = 0; i < enemiesToSpawn; i++)
         {
-            // Проверяем количество активных врагов
-            while (GameObject.FindGameObjectsWithTag("Enemy").Length >= maxActiveEnemies)
+            // Проверка активных врагов
+            while (activeEnemies.Count >= maxActiveEnemies)
             {
-                yield return null; // Ждем, пока количество активных врагов уменьшится
+                yield return null;
             }
 
-            // Случайная точка появления
             Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
 
-            // Спавним крестик перед мобом
             GameObject cross = Instantiate(crossPrefab, spawnPoint.position, Quaternion.identity);
 
-            // Запускаем корутину для спавна врага
             StartCoroutine(SpawnEnemy(cross, spawnPoint));
 
-            // Задержка перед следующим спавном врага
-            yield return new WaitForSecondsRealtime(spawnInterval); // Используем фиксированный интервал
+            yield return new WaitForSeconds(spawnInterval);
         }
 
-        // Ждем оставшиеся 5 секунд после спавна всех врагов
-        yield return new WaitForSecondsRealtime(5f);
-
-        // Удаление всех оставшихся врагов
+        yield return new WaitForSeconds(5f);
         RemoveRemainingEnemies();
-
-        spawningWave = false; // Позволяем запуск новой волны
-        StartCoroutine(StartNextWave()); // Запускаем следующую волну
+        spawningWave = false;
+        StartCoroutine(StartNextWave());
     }
 
     IEnumerator SpawnEnemy(GameObject cross, Transform spawnPoint)
     {
-        // Небольшая задержка, чтобы крестик успел отобразиться
-        yield return new WaitForSecondsRealtime(0.5f); // Задержка 0.5 секунд
+        yield return new WaitForSeconds(0.5f);
 
-        // Проверяем, все ли еще в процессе спавна
-        if (!spawningWave) // Если волна завершена, выходим
+        if (!spawningWave)
         {
             Destroy(cross);
-            yield break; // Прерываем корутину
+            yield break;
         }
 
-        // Спавн врага
         GameObject enemy = Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
+        activeEnemies.Add(enemy);
 
-        // Уничтожаем крестик сразу после спавна врага
         Destroy(cross);
     }
 
-
-
-
-
-
     void RemoveRemainingEnemies()
     {
-        GameObject[] remainingEnemies = GameObject.FindGameObjectsWithTag("Enemy");
-        foreach (GameObject enemy in remainingEnemies)
+        foreach (var enemy in activeEnemies)
         {
-            Destroy(enemy);
+            if (enemy != null)
+                Destroy(enemy);
         }
+        activeEnemies.Clear();
+        // Удаляем всех оставшихся врагов с тегом "Enemy"
+        RemoveAllEnemiesWithTag();
+
+        // Очищаем список активных врагов
+        activeEnemies.Clear();
     }
 
     public int GetWaveNumber()
     {
-        return waveNumber; // Возвращаем текущий номер волны
+        return waveNumber;
     }
 
     public float GetTimeUntilNextWave()
@@ -143,25 +136,48 @@ public class WaveManager : MonoBehaviour
             {
                 timeUntilNext = 0; // Устанавливаем время в 0, чтобы оно не уходило в отрицательные значения
                 RemoveRemainingEnemies(); // Удаление всех оставшихся врагов
-
-                // Устанавливаем флаг, что волна завершена
-                isWaveEnded = true;
-
-                // Запускаем новую волну, только если она еще не запущена
-                if (!spawningWave)
-                {
-                    StartCoroutine(StartNextWave()); // Запускаем новую волну после задержки
-                }
             }
 
             return timeUntilNext; // Возвращаем оставшееся время
         }
 
         // Если волна завершена, возвращаем -1
-        return isWaveEnded ? -1 : -1;
+        return -1;
     }
 
+    public void AddEnemy(GameObject enemy)
+    {
+        activeEnemies.Add(enemy);
 
+        if (enemy != null)
+        {
+            activeEnemies.Add(enemy);
+        }
+    }
+
+    public void RemoveEnemy(GameObject enemy)
+    {
+        if (activeEnemies.Contains(enemy))
+        {
+            activeEnemies.Remove(enemy);
+        }
+    }
+
+    public void RemoveAllEnemiesWithTag()
+    {
+        // Находим все объекты с тегом "Enemy"
+        GameObject[] enemiesWithTag = GameObject.FindGameObjectsWithTag("Enemy");
+
+        // Проходим по каждому объекту и удаляем его
+        foreach (GameObject enemy in enemiesWithTag)
+        {
+            // Удаляем моба из списка активных врагов, если он там есть
+            RemoveEnemy(enemy);
+
+            // Уничтожаем объект моба
+            Destroy(enemy);
+        }
+    }
 
 
 }
