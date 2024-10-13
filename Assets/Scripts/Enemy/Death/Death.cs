@@ -17,7 +17,7 @@ public class Death : Enemy // Убедитесь, что MobDeath наследует от Enemy
     {
         base.Start(); // Вызываем метод Start() базового класса
         animator = GetComponent<Animator>();
-        StartCoroutine(SpawnMobRoutine()); // Запускаем корутину для спавна
+        
     }
 
     protected override void Update() // Используем override

@@ -103,14 +103,20 @@ public class Enemy : MonoBehaviour
             // Случайный выбор текстуры крови из массива
             int randomIndex = Random.Range(0, bloodPrefabs.Length);
             GameObject blood = Instantiate(bloodPrefabs[randomIndex], transform.position, Quaternion.identity);
+            blood.tag = "Blood"; // Устанавливаем тег для объекта крови
 
             // Если ссылка на BloodManager задана, запускаем корутину для удаления крови
             if (bloodManager != null)
             {
-                StartCoroutine(bloodManager.FadeAndDestroyBlood(blood));
+                StartCoroutine(bloodManager.RemoveBlood(blood)); // Запускаем корутину для удаления крови
+            }
+            else
+            {
+                Debug.LogWarning("BloodManager не задан в Enemy.");
             }
         }
     }
+
 
     // Метод для поворота спрайта моба в сторону игрока
     protected virtual void FlipSprite(Vector2 direction)
