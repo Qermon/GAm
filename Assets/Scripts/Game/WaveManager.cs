@@ -11,7 +11,7 @@ public class WaveManager : MonoBehaviour
     public float waveDuration = 30f;      // Время продолжительности волны
     private int waveNumber = 0;           // Номер текущей волны
     public int maxWaves = 1000;             // Максимальное количество волн
-    public int maxActiveEnemies = 100000;     // Максимальное количество активных врагов одновременно
+    public int maxActiveEnemies = 1000;     // Максимальное количество активных врагов одновременно
 
     private bool spawningWave = false;    // Флаг для отслеживания спавна волны
     private float timeStartedWave;         // Время начала волны

@@ -1,12 +1,12 @@
 using System.Collections;
-using System.Collections.Generic;
+using System.Collections.Generic; // Не забудьте добавить этот using, если его нет
 using UnityEngine;
 
 public class BloodManager : MonoBehaviour
 {
     public GameObject[] bloodObjects; // Массив для хранения всех объектов крови
-    public float timeVisible = 7f;    // Время, в течение которого кровь будет видна
-    public float fadeDuration = 3f;   // Время плавного исчезновения крови
+    public float timeVisible = 7f;     // Время, в течение которого кровь будет видна
+    public float fadeDuration = 3f;     // Время плавного исчезновения крови
 
     // Метод для удаления крови
     public void RemoveAllBlood()
@@ -16,10 +16,7 @@ public class BloodManager : MonoBehaviour
 
     private IEnumerator FadeAndDestroyAllBlood()
     {
-        // Обновляем массив объектов крови перед началом удаления
-        UpdateBloodObjects();
-
-        // Ждем заданное время перед началом удаления
+        // Ждем 7 секунд перед началом удаления
         yield return new WaitForSeconds(timeVisible);
 
         // Плавное исчезновение каждого объекта крови
@@ -45,9 +42,6 @@ public class BloodManager : MonoBehaviour
                 }
             }
         }
-
-        // Очищаем массив после удаления
-        bloodObjects = new GameObject[0];
     }
 
     // Метод для обновления массива объектов крови
