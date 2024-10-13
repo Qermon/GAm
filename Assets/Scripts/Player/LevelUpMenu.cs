@@ -1,16 +1,21 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LevelUpMenu : MonoBehaviour
 {
-    public GameObject levelUpPanel;
-    private PlayerMovement playerMovement;
-    private PlayerHealth playerHealth;
+    public GameObject levelUpPanel; // Панель меню повышения уровня
+    private PlayerMovement playerMovement; // Ссылка на PlayerMovement
+    private PlayerHealth playerHealth; // Ссылка на PlayerHealth
 
+    // Массив спрайтов для улучшений
+    public Sprite[] upgradeSprites; // Массив спрайтов для улучшений
+    public Image[] upgradeIcons; // Изображения для отображения спрайтов на панели
 
     // Массив оружий, которые будут бафаться
     public Weapon[] weaponsToBuff;
 
-
+    // Способности
     public ShurikenManager abilityOne;
     public KnifeController abilityTwo;
     public LightningWeapon abilityThree;
@@ -21,33 +26,63 @@ public class LevelUpMenu : MonoBehaviour
     {
         playerMovement = FindObjectOfType<PlayerMovement>();
         playerHealth = FindObjectOfType<PlayerHealth>();
-        
-        abilityOne.enabled = false;
-        abilityTwo.enabled = false;
-        abilityThree.enabled = false;
-        abilityFour.enabled = false;
-        abilityFive.enabled = false;
-        
 
-
+        // Скрываем панель и иконки
+        levelUpPanel.SetActive(false);
+        foreach (Image icon in upgradeIcons)
+        {
+            icon.gameObject.SetActive(false);
+        }
     }
 
     public void OpenLevelUpMenu()
     {
-        if (levelUpPanel != null)
+        if (upgradeSprites.Length < 3)
         {
-            levelUpPanel.SetActive(true);
-            Debug.Log("Панель Level Up открыта.");
-            Time.timeScale = 0;
+            Debug.LogError("Недостаточно спрайтов для выбора.");
+            return;
         }
-        else
+
+        // Создаем список доступных спрайтов
+        List<Sprite> availableSprites = new List<Sprite>(upgradeSprites);
+
+        // Выбираем 3 случайных спрайта
+        Sprite[] selectedSprites = new Sprite[3];
+        for (int i = 0; i < 3; i++)
         {
-            Debug.LogError("Панель Level Up не назначена в инспекторе.");
+            int randomIndex = Random.Range(0, availableSprites.Count);
+            selectedSprites[i] = availableSprites[randomIndex];
+            availableSprites.RemoveAt(randomIndex); // Убираем выбранный спрайт из списка
+        }
+
+        // Открываем меню с выбранными спрайтами
+        DisplayUpgradeSprites(selectedSprites);
+    }
+
+    private void DisplayUpgradeSprites(Sprite[] selectedSprites)
+    {
+        levelUpPanel.SetActive(true);
+        Debug.Log("Панель Level Up открыта.");
+        Time.timeScale = 0;
+
+        // Отображаем спрайты для выбранных улучшений
+        for (int i = 0; i < upgradeIcons.Length; i++)
+        {
+            if (i < selectedSprites.Length)
+            {
+                upgradeIcons[i].sprite = selectedSprites[i]; // Устанавливаем спрайт
+                upgradeIcons[i].gameObject.SetActive(true); // Активируем иконку
+            }
+            else
+            {
+                upgradeIcons[i].gameObject.SetActive(false); // Деактивируем иконку, если ее нет
+            }
         }
     }
 
     public void ChooseUpgrade(int choice)
     {
+        // Здесь choice - это индекс выбранного улучшения
         switch (choice)
         {
             case 1: // Увеличение скорости
@@ -113,11 +148,9 @@ public class LevelUpMenu : MonoBehaviour
             case 10: // Активация способности огненного шара
                 ActivateAbility(abilityFive);
                 break;
-
         }
 
         CloseLevelUpMenu();
-       
     }
 
     private void ActivateAbility(MonoBehaviour ability)
