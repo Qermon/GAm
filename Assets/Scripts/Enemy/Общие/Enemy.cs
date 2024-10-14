@@ -6,7 +6,7 @@ public class Enemy : MonoBehaviour
     // Основные характеристики мобов
     public int maxHealth = 100;
     protected int currentHealth;
-    public float moveSpeed = 2f;
+    public float enemyMoveSpeed = 2f;
     public int damage = 10;
     public float attackRange = 1.5f;
     public float attackCooldown = 1f;
@@ -19,6 +19,9 @@ public class Enemy : MonoBehaviour
     public GameObject experienceItemPrefab;
     public int experienceAmount = 20;
     public GameObject[] bloodPrefabs; // Массив текстур крови
+
+    // Ссылка на BloodManager
+    public BloodManager bloodManager;
 
     protected virtual void Start()
     {
@@ -48,7 +51,7 @@ public class Enemy : MonoBehaviour
         if (player != null)
         {
             Vector2 direction = (player.position - transform.position).normalized;
-            transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, player.position, enemyMoveSpeed * Time.deltaTime);
             FlipSprite(direction); // Метод для поворота спрайта
         }
     }
@@ -99,9 +102,21 @@ public class Enemy : MonoBehaviour
         {
             // Случайный выбор текстуры крови из массива
             int randomIndex = Random.Range(0, bloodPrefabs.Length);
-            Instantiate(bloodPrefabs[randomIndex], transform.position, Quaternion.identity);
+            GameObject blood = Instantiate(bloodPrefabs[randomIndex], transform.position, Quaternion.identity);
+            blood.tag = "Blood"; // Устанавливаем тег для объекта крови
+
+            // Если ссылка на BloodManager задана, запускаем корутину для удаления крови
+            if (bloodManager != null)
+            {
+                StartCoroutine(bloodManager.RemoveBlood(blood)); // Запускаем корутину для удаления крови
+            }
+            else
+            {
+                Debug.LogWarning("BloodManager не задан в Enemy.");
+            }
         }
     }
+
 
     // Метод для поворота спрайта моба в сторону игрока
     protected virtual void FlipSprite(Vector2 direction)

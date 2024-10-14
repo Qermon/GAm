@@ -3,18 +3,21 @@ using UnityEngine;
 
 public class Death : Enemy // Убедитесь, что MobDeath наследует от Enemy
 {
-    public new float moveSpeed = 0.8f; // Скорость передвижения
+    public float moveSpeed = 0.8f; // Скорость передвижения
     public float spawnInterval = 7f; // Интервал между спавнами
     public int mobsToSpawn = 5; // Количество спавнимых мобов
     public GameObject miniMobPrefab; // Префаб мини-моба
     private bool isSpawning = false; // Флаг, указывающий на спавн
     private Animator animator; // Аниматор
 
+    public GameObject enemyPrefab;
+    public Transform[] summonPoints;
+
     protected override void Start() // Используем override
     {
         base.Start(); // Вызываем метод Start() базового класса
         animator = GetComponent<Animator>();
-        StartCoroutine(SpawnMobRoutine()); // Запускаем корутину для спавна
+        
     }
 
     protected override void Update() // Используем override
@@ -98,5 +101,20 @@ public class Death : Enemy // Убедитесь, что MobDeath наследует от Enemy
     {
         // Спавн мини-моба в указанной позиции
         Instantiate(miniMobPrefab, spawnPosition, Quaternion.identity);
+    }
+
+
+
+    // Метод, который отвечает за призыв мобов
+    public void SummonEnemies()
+    {
+        foreach (Transform summonPoint in summonPoints)
+        {
+            // Создаём моба
+            GameObject summonedEnemy = Instantiate(enemyPrefab, summonPoint.position, summonPoint.rotation);
+
+            // Добавляем моба в список активных врагов через WaveManager
+            FindObjectOfType<WaveManager>().AddEnemy(summonedEnemy);
+        }
     }
 }
