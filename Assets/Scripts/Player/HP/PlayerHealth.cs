@@ -1,14 +1,13 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
-    public int maxHealth = 100;
-    public int currentHealth;
-    public float regenRate = 5f; // Количество здоровья, восстанавливаемого каждую секунду
-    private bool isRegenerating = false;
-    public HealthBar healthBar; // Ссылка на компонент полоски здоровья 
+    public int maxHealth = 100; // Максимальное здоровье
+    public int currentHealth; // Текущее здоровье
+    private const int regenRate = 5; // Количество здоровья, восстанавливаемого каждую секунду
+    private bool isRegenerating = false; // Флаг для отслеживания регенерации
+    public HealthBar healthBar; // Ссылка на компонент полоски здоровья
     public Animator animator; // Ссылка на компонент Animator
     public int defense = 0; // Уровень защиты игрока (0-200)
     private const int maxDefense = 200; // Максимальный уровень защиты
@@ -71,10 +70,16 @@ public class PlayerHealth : MonoBehaviour
     // Регистрация регенерации
     public void StartHealthRegen()
     {
-        if (!isRegenerating)
+        Debug.Log("Попытка запустить регенерацию.");
+        if (!isRegenerating && currentHealth < maxHealth)
         {
+            Debug.Log("Запуск регенерации.");
             isRegenerating = true;
             StartCoroutine(RegenerateHealth());
+        }
+        else
+        {
+            Debug.Log("Регенерация уже активна или здоровье на максимуме.");
         }
     }
 
@@ -85,14 +90,23 @@ public class PlayerHealth : MonoBehaviour
         {
             if (currentHealth < maxHealth)
             {
+                int previousHealth = currentHealth; // Сохраняем предыдущее здоровье
                 currentHealth += Mathf.FloorToInt(regenRate);
                 if (currentHealth > maxHealth)
                 {
                     currentHealth = maxHealth;
                 }
+
+                Debug.Log($"Регенерация: текущее здоровье: {previousHealth} -> {currentHealth} из {maxHealth}");
                 UpdateHealthUI();
             }
-            yield return new WaitForSeconds(1f);
+            else
+            {
+                Debug.Log("Здоровье полностью восстановлено. Остановка регенерации.");
+                StopHealthRegen();
+            }
+
+            yield return new WaitForSeconds(1f); // Регенерация каждую секунду
         }
     }
 
