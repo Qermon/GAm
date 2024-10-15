@@ -183,4 +183,10 @@ public class Enemy : MonoBehaviour
         }
         transform.localScale = localScale;
     }
+
+    public void SetDamage(float newDamage)
+    {
+        damage = (int)newDamage; // Устанавливаем новый урон
+    }
+
 }
