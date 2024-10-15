@@ -211,4 +211,4 @@ MonoBehaviour:
   explosionRadius: 1.5
   detectionRadius: 0.8
   explosionDelay: 2
-  explosionDamage: 100000
+  explosionDamage: 100
