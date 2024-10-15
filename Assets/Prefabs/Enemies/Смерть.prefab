@@ -143,11 +143,12 @@ MonoBehaviour:
   - {fileID: 5469531237655120259, guid: d419f38c017de994c8dbd724a047d3a8, type: 3}
   - {fileID: 336186041612917338, guid: e2f4af4bccfe53e4da3fc6d8a00ed082, type: 3}
   - {fileID: 6103947597723192743, guid: 94f6f4aa0af17814b89dc9ce7414bd63, type: 3}
+  bloodManager: {fileID: 5948699707618501534, guid: 95612192a9703a94e9df078e4fef2222, type: 3}
   moveSpeed: 0.8
   spawnInterval: 7
   mobsToSpawn: 5
   miniMobPrefab: {fileID: 3627252762921998399, guid: 7560895ba4cbef04eb588a876d3428e0, type: 3}
-  enemyPrefab: {fileID: 0}
+  enemyPrefab: {fileID: 3627252762921998399, guid: 7560895ba4cbef04eb588a876d3428e0, type: 3}
   summonPoints: []
 --- !u!58 &-3729028956883675882
 CircleCollider2D:

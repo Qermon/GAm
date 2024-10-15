@@ -52,6 +52,7 @@ public class PlayerHealth : MonoBehaviour
         UpdateHealthUI(); // Обновляем UI здоровья
     }
 
+
     private IEnumerator Die()
     {
         Debug.Log("Player died!");

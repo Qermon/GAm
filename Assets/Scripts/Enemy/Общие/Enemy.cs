@@ -27,7 +27,20 @@ public class Enemy : MonoBehaviour
     {
         // Инициализация здоровья и нахождение игрока
         currentHealth = maxHealth;
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        // Получаем ссылку на объект игрока
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+
+        // Проверяем, найден ли объект с тегом "Player"
+        if (playerObject != null)
+        {
+            // Если найден, получаем Transform
+            player = playerObject.transform;
+        }
+        else
+        {
+            // Если не найден, выводим ошибку в консоль
+            Debug.LogError("Объект Player не найден в сцене!");
+        }
     }
 
     protected virtual void Update()
