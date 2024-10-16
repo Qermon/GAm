@@ -60,7 +60,7 @@ public class WaveManager : MonoBehaviour
         timeStartedWave = Time.time;
 
         float spawnDuration = waveDuration - 5f;
-        int enemiesToSpawn = Mathf.FloorToInt(200 + waveNumber * 1.5f);
+        int enemiesToSpawn = Mathf.FloorToInt(50 + waveNumber * 1.5f);
         enemiesToSpawn = Mathf.Min(enemiesToSpawn, maxActiveEnemies);
 
         float spawnInterval = spawnDuration / enemiesToSpawn;

@@ -26,7 +26,7 @@ public class Enemy : MonoBehaviour
     public GameObject[] bloodPrefabs; // Массив текстур крови
 
     // Ссылка на BloodManager
-   
+
     public bool IsDead
     {
         get { return isDead; }
@@ -62,7 +62,7 @@ public class Enemy : MonoBehaviour
     {
         if (isDead || player == null) return;
 
-        
+
 
         // Проверка на возможность атаки
         attackTimer -= Time.deltaTime;
@@ -156,7 +156,7 @@ public class Enemy : MonoBehaviour
             blood.tag = "Blood"; // Устанавливаем тег для объекта крови
 
             // Если ссылка на BloodManager задана, запускаем корутину для удаления крови
-          
+
         }
     }
 

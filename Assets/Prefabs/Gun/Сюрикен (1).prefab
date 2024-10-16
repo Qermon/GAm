@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 3888276331003431042}
   - component: {fileID: 7187355403247572592}
   - component: {fileID: 3428627206441034735}
-  - component: {fileID: -3107194858315378290}
   m_Layer: 0
   m_Name: "\u0421\u044E\u0440\u0438\u043A\u0435\u043D (1)"
   m_TagString: Weapon
@@ -171,19 +170,3 @@ CircleCollider2D:
   m_Offset: {x: -0.016749412, y: 0.021534935}
   serializedVersion: 2
   m_Radius: 0.21950343
---- !u!114 &-3107194858315378290
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3029241081560625099}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b07ccc19d39313c44aceee40016da0b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damage: 10
-  hitCount: 0
-  maxHits: 100000
-  attackInterval: 1

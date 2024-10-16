@@ -1,51 +1,75 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Shuriken : Weapon
 {
-    public int hitCount = 0; // Счетчик попаданий
-    public int maxHits = 5;  // Максимум попаданий до уничтожения
-    public float attackInterval = 1.0f; // Интервал между атаками
+    public GameObject shurikenPrefab; // Префаб сюрикена
+    public int shurikenCount = 5; // Количество сюрикенов
+    public float rotationRadius = 5f; // Радиус вращения вокруг игрока
 
-    private Dictionary<Collider2D, float> lastAttackTime = new Dictionary<Collider2D, float>(); // Для отслеживания времени атаки
+    private GameObject[] shurikens; // Массив сюрикенов
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    protected override void Start()
     {
-        if (collision.CompareTag("Enemy"))
+        base.Start();
+
+        // Создаем сюрикены
+        shurikens = new GameObject[shurikenCount];
+        for (int i = 0; i < shurikenCount; i++)
         {
-            if (CanAttack(collision)) // Проверяем, можем ли атаковать
+            shurikens[i] = Instantiate(shurikenPrefab, transform.position, Quaternion.identity);
+            shurikens[i].transform.parent = transform; // Сделать игрока родителем
+            shurikens[i].transform.localPosition = new Vector3(Mathf.Cos((360f / shurikenCount) * i * Mathf.Deg2Rad) * rotationRadius,
+                                                                Mathf.Sin((360f / shurikenCount) * i * Mathf.Deg2Rad) * rotationRadius, 0);
+            Collider2D collider = shurikens[i].AddComponent<BoxCollider2D>();
+            collider.isTrigger = true; // Сделать коллайдер триггером
+            collider.tag = "Weapon"; // Установить тег для триггера
+
+            // Добавляем компонент для обработки столкновений
+            ShurikenCollision shurikenCollision = shurikens[i].AddComponent<ShurikenCollision>();
+            shurikenCollision.weapon = this; // Передаем ссылку на текущее оружие
+        }
+    }
+
+    protected override void Update() // Добавлено ключевое слово override
+    {
+        base.Update(); // Вызов метода Update() из базового класса
+
+        // Вращаем сюрикены вокруг игрока
+        for (int i = 0; i < shurikenCount; i++)
+        {
+            float angle = Time.time * rotationSpeed + (360f / shurikenCount) * i; // Учитываем время и индекс
+            float x = Mathf.Cos(angle * Mathf.Deg2Rad) * rotationRadius;
+            float y = Mathf.Sin(angle * Mathf.Deg2Rad) * rotationRadius;
+
+            // Обновляем позицию сюрикена
+            shurikens[i].transform.localPosition = new Vector3(x, y, 0);
+        }
+    }
+
+
+    protected override void PerformAttack()
+    {
+        // Атака при выполнении метода
+        Debug.Log("Атака сюрикена выполнена с уроном: " + CalculateDamage());
+    }
+}
+
+public class ShurikenCollision : MonoBehaviour
+{
+    public Weapon weapon; // Ссылка на оружие
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Enemy"))
+        {
+            Enemy enemy = other.GetComponent<Enemy>();
+            if (enemy != null)
             {
+                float finalDamage = weapon.CalculateDamage(); // Рассчитываем финальный урон
+                enemy.TakeDamage((int)finalDamage); // Наносим урон врагу
+                Debug.Log("Урон нанесён: " + finalDamage);
                
-                Enemy enemy = collision.GetComponent<Enemy>();
-                if (enemy != null)
-                {
-                    enemy.TakeDamage(damage); // Наносим урон
-                }
-
-                lastAttackTime[collision] = Time.time; // Запоминаем время атаки
-
-                if (hitCount >= maxHits) // Если достигли лимита
-                {
-                    DestroyShuriken();
-                }
             }
         }
-    }
-
-    private bool CanAttack(Collider2D enemy)
-    {
-        if (!lastAttackTime.ContainsKey(enemy))
-        {
-            lastAttackTime[enemy] = Time.time;
-            return true;
-        }
-
-        return Time.time >= lastAttackTime[enemy] + attackInterval; // Проверяем интервал
-    }
-
-    private void DestroyShuriken()
-    {
-        Destroy(gameObject); // Уничтожаем шурикен
     }
 }
