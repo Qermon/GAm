@@ -8,6 +8,7 @@ TagManager:
   - Wall
   - Weapon
   - Blood
+  - Projectile
   layers:
   - Default
   - TransparentFX
@@ -23,7 +24,7 @@ TagManager:
   - ColliderCamera
   - Death
   - Crip
-  - 
+  - Projectile
   - 
   - 
   - 
