@@ -5,6 +5,7 @@ public class PlayerHealth : MonoBehaviour
 {
     public int maxHealth = 100; // Максимальное здоровье
     public int currentHealth; // Текущее здоровье
+    private int lifestealPercent = 0;
     private const int regenRate = 5; // Количество здоровья, восстанавливаемого каждую секунду
     private bool isRegenerating = false; // Флаг для отслеживания регенерации
     public HealthBar healthBar; // Ссылка на компонент полоски здоровья
@@ -30,6 +31,20 @@ public class PlayerHealth : MonoBehaviour
         {
             Debug.LogError("Animator reference is missing on PlayerHealth!");
         }
+    }
+    public void AddLifesteal(int amount)
+    {
+        lifestealPercent += amount;
+        Debug.Log("Вампиризм увеличен на " + amount + "%. Текущий уровень вампиризма: " + lifestealPercent + "%");
+    }
+
+    // Метод для восстановления здоровья при убийстве врага
+    public void HealOnKill(int enemyHealth)
+    {
+        int healAmount = Mathf.FloorToInt(enemyHealth * (lifestealPercent / 100f));
+        currentHealth = Mathf.Clamp(currentHealth + healAmount, 0, maxHealth);
+        Debug.Log("Восстановлено " + healAmount + " здоровья за убийство врага. Текущее здоровье: " + currentHealth);
+        UpdateHealthUI();
     }
 
     public void TakeDamage(int damage)

@@ -123,6 +123,14 @@ public class Enemy : MonoBehaviour
     protected virtual void Die()
     {
         isDead = true;
+
+        // ¬осстановление здоровь€ игрока при убийстве
+        PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
+        if (playerHealth != null)
+        {
+            playerHealth.HealOnKill(maxHealth); // ¬осстанавливаем здоровье на основе здоровь€ врага
+        }
+
         SpawnExperience();
         SpawnBlood();
         Destroy(gameObject);

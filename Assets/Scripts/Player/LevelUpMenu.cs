@@ -9,7 +9,9 @@ public enum UpgradeType
     HealthRegen,
     WeaponBuff,
     Defense,
-    Weapon // Новый тип улучшения для оружия
+    Weapon, // Новый тип улучшения для оружия
+    Lifesteal,
+
 }
 
 [System.Serializable]
@@ -137,6 +139,9 @@ public class LevelUpMenu : MonoBehaviour
                     weapon.SetActive(true);
                     Debug.Log(upgrade.weaponPrefab.name + " получено.");
                 }
+                break;
+            case UpgradeType.Lifesteal: // Добавляем новый случай для вампиризма
+                playerHealth.AddLifesteal(10); // Добавляем 10% вампиризма
                 break;
         }
 
