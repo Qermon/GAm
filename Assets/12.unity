@@ -194,8 +194,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.00013351, y: 3.417}
-  m_SizeDelta: {x: 189.02, y: 196.8}
+  m_AnchoredPosition: {x: 0.0009346, y: -0.00096869}
+  m_SizeDelta: {x: 189.02, y: 203.64}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!4 &197372891 stripped
 Transform:
@@ -568,8 +568,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0014982, y: 3.9158}
-  m_SizeDelta: {x: 191.35, y: 206.51}
+  m_AnchoredPosition: {x: 0.00076578, y: 0.00042534}
+  m_SizeDelta: {x: 191.35, y: 214.34}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1264556009
 MonoBehaviour:
@@ -624,6 +624,11 @@ MonoBehaviour:
 Transform:
   m_CorrespondingSourceObject: {fileID: 8218940893967351775, guid: 935d1b723d0f9854a8fab17613b2186c, type: 3}
   m_PrefabInstance: {fileID: 1468923520191123774}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1358876732 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 287904281276707961, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+  m_PrefabInstance: {fileID: 7708897844206280136}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1368672349
 GameObject:
@@ -946,8 +951,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000015259, y: 6.7958}
-  m_SizeDelta: {x: 181.77, y: 201.579}
+  m_AnchoredPosition: {x: -0.0008831, y: 0.000065804}
+  m_SizeDelta: {x: 189.02, y: 205.01}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!4 &2114923989 stripped
 Transform:
@@ -1028,7 +1033,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 463061990831670134, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
   m_PrefabInstance: {fileID: 7708897844206280136}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1358876732}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b00765dc2090a3a4b83df2407438451f, type: 3}
@@ -1064,7 +1069,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3153222354959549292, guid: 271a293604e79a04f97906deb2290df1, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3639721046344569389, guid: 271a293604e79a04f97906deb2290df1, type: 3}
       propertyPath: m_IsActive
@@ -1203,7 +1208,15 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 4165848509496534008}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 959617981473160583, guid: 271a293604e79a04f97906deb2290df1, type: 3}
+    - {fileID: 1502348975846433534, guid: 271a293604e79a04f97906deb2290df1, type: 3}
+    - {fileID: 2453201952368892354, guid: 271a293604e79a04f97906deb2290df1, type: 3}
+    - {fileID: 8997969198265879845, guid: 271a293604e79a04f97906deb2290df1, type: 3}
+    - {fileID: 4319742562711655713, guid: 271a293604e79a04f97906deb2290df1, type: 3}
+    - {fileID: 1647844415881422924, guid: 271a293604e79a04f97906deb2290df1, type: 3}
+    - {fileID: 7849982207531964744, guid: 271a293604e79a04f97906deb2290df1, type: 3}
+    - {fileID: 3639721046344569389, guid: 271a293604e79a04f97906deb2290df1, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 2030125042530378668, guid: 271a293604e79a04f97906deb2290df1, type: 3}
       insertIndex: -1
@@ -1602,12 +1615,26 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
   m_PrefabInstance: {fileID: 7708897844206280136}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1358876732}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a5b73ad93f0d10442af13d46ed2b801b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4165848509496534021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1358876732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c5486642825c44eb181377587c98f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerHealth: {fileID: 0}
+  playerMovement: {fileID: 0}
 --- !u!114 &4888609383594220292 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6364873001600100085, guid: 28fbbd5814c37164ea1ee561f0f8734a, type: 3}
@@ -1748,6 +1775,14 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeButtons.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.size
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: upgradeSprites.Array.size
       value: 10
       objectReference: {fileID: 0}
@@ -1763,6 +1798,18 @@ PrefabInstance:
       propertyPath: upgradeIcons.Array.data[2]
       value: 
       objectReference: {fileID: 1264556009}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeButtons.Array.data[0]
+      value: 
+      objectReference: {fileID: 1368672351}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeButtons.Array.data[1]
+      value: 
+      objectReference: {fileID: 1071560898}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeButtons.Array.data[2]
+      value: 
+      objectReference: {fileID: 561638311}
     - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: upgradeSprites.Array.data[0]
       value: 
@@ -1803,14 +1850,125 @@ PrefabInstance:
       propertyPath: upgradeSprites.Array.data[9]
       value: 
       objectReference: {fileID: 21300000, guid: 71fdf701af340db43be662d37bfb9892, type: 3}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[0].upgradeName
+      value: Speed
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[1].upgradeName
+      value: Maxhp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[1].upgradeType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[2].upgradeName
+      value: Regenaration
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[2].upgradeType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[3].upgradeName
+      value: Defense
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[3].upgradeType
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[4].upgradeName
+      value: Weapon Buff
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[4].upgradeType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[5].upgradeName
+      value: Weapon Buff
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[5].upgradeType
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[6].upgradeName
+      value: Weapon
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[6].upgradeType
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[0].upgradeSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: f6722acfa4a15d041bd70c24aab14962, type: 3}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[1].upgradeSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 4ce991c1fb54bf444ad6f65b1f308c44, type: 3}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[2].upgradeSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c48e1c5fb7e60d84dbe5dbb05731f26b, type: 3}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[3].upgradeSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 1964317af55b9c242b9c3f06680a09d0, type: 3}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[4].upgradeSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: ebff2e92e142871468c24ff8970db45d, type: 3}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[5].upgradeSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: ebff2e92e142871468c24ff8970db45d, type: 3}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[6].upgradeSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: ebff2e92e142871468c24ff8970db45d, type: 3}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[4].weaponsToBuff.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[5].weaponsToBuff.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[6].weaponsToBuff.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[4].weaponsToBuff.Array.data[0]
+      value: 
+      objectReference: {fileID: -1535617945880535581, guid: 9f3f7530f6e1f7746bbf56728a88b669, type: 3}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[5].weaponsToBuff.Array.data[0]
+      value: 
+      objectReference: {fileID: -1535617945880535581, guid: 9f3f7530f6e1f7746bbf56728a88b669, type: 3}
+    - target: {fileID: 5996446936522614427, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: upgradeOptions.Array.data[6].weaponsToBuff.Array.data[0]
+      value: 
+      objectReference: {fileID: -1535617945880535581, guid: 9f3f7530f6e1f7746bbf56728a88b669, type: 3}
     - target: {fileID: 7923906331223232959, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: healthBar
       value: 
       objectReference: {fileID: 989268677}
+    - target: {fileID: 7923906331223232959, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: regenRate
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 287904281276707961, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4165848509496534021}
   m_SourcePrefab: {fileID: 100100000, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
