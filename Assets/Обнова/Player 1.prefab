@@ -16,7 +16,6 @@ GameObject:
   - component: {fileID: 2577839240956411376}
   - component: {fileID: 6133861669684157274}
   - component: {fileID: 3685786716739689364}
-  - component: {fileID: 756287381940381443}
   - component: {fileID: 7768890264194154909}
   - component: {fileID: 5489928623217115332}
   - component: {fileID: 1981880753292652687}
@@ -236,22 +235,6 @@ MonoBehaviour:
   healthBar: {fileID: 0}
   animator: {fileID: 0}
   defense: 0
---- !u!114 &756287381940381443
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8037590024076266931}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 306b64c8a7ef7c84ab4bf33f694b9c1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  shurikenPrefab: {fileID: 3029241081560625099, guid: d96c0236ade09f54a9e217d4d124ee6d, type: 3}
-  rotationSpeed: 125
-  shurikenDistance: 10
-  maxShurikens: 6
 --- !u!114 &7768890264194154909
 MonoBehaviour:
   m_ObjectHideFlags: 0

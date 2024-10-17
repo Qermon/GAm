@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 841996027236295692}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: SpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -45,9 +45,9 @@ GameObject:
   - component: {fileID: 959836877639631742}
   - component: {fileID: 2149372846645649180}
   - component: {fileID: 5463997891291919126}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Archer
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

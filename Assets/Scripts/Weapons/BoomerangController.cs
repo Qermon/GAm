@@ -1,29 +1,17 @@
 using System.Collections;
 using UnityEngine;
 
-public class BoomerangController : MonoBehaviour
+public class BoomerangController : Weapon
 {
     public GameObject boomerangPrefab; // Префаб бумеранга
-    public float speed = 10f; // Скорость бумеранга
     public float attackInterval = 1.0f; // Интервал между атаками
-    public int boomerangDamage = 10; // Урон бумеранга
+    public float speed = 10f; // Скорость бумеранга
     public float returnSpeed = 5f; // Скорость возвращения бумеранга
     public float maxDistance = 5f; // Максимальное расстояние полета
 
-    private Vector3 lastMovedVector = Vector3.right; // Последний вектор движения (по умолчанию вправо)
-
-    private void Start()
+    private new void Start()
     {
-        StartCoroutine(ShootBoomerangs());
-    }
-
-    private void Update()
-    {
-        // Обновляем последний вектор движения игрока
-        if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
-        {
-            lastMovedVector = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0).normalized;
-        }
+        StartCoroutine(ShootBoomerangs()); // Запускаем корутину для броска бумерангов
     }
 
     private IEnumerator ShootBoomerangs()
@@ -37,18 +25,38 @@ public class BoomerangController : MonoBehaviour
 
     private void ShootBoomerang()
     {
-        if (lastMovedVector != Vector3.zero) // Проверяем, есть ли движение
+        GameObject closestEnemy = FindClosestEnemy(); // Находим ближайшего врага
+        if (closestEnemy != null) // Проверяем, есть ли враги
         {
+            Vector3 directionToEnemy = (closestEnemy.transform.position - transform.position).normalized; // Получаем направление к врагу
             GameObject spawnedBoomerang = Instantiate(boomerangPrefab, transform.position, Quaternion.identity);
             BoomerangBehaviour boomerangBehaviour = spawnedBoomerang.AddComponent<BoomerangBehaviour>(); // Добавляем поведение бумеранга
-            boomerangBehaviour.Initialize(lastMovedVector, speed, boomerangDamage, transform, returnSpeed, maxDistance); // Устанавливаем параметры
+            boomerangBehaviour.Initialize(directionToEnemy, speed, (int)CalculateDamage(), transform, returnSpeed, maxDistance); // Устанавливаем параметры
         }
+    }
+
+    private GameObject FindClosestEnemy()
+    {
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 10f, LayerMask.GetMask("Mobs", "MobsFly")); // Находим всех врагов в радиусе 10f
+        GameObject closestEnemy = null;
+        float closestDistance = float.MaxValue;
+
+        foreach (Collider2D enemy in enemies)
+        {
+            float distance = Vector3.Distance(transform.position, enemy.transform.position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestEnemy = enemy.gameObject; // Запоминаем ближайшего врага
+            }
+        }
+        return closestEnemy; // Возвращаем ближайшего врага
     }
 }
 
 public class BoomerangBehaviour : MonoBehaviour
 {
-    private Vector3 direction;
+    private Vector3 direction; // Направление движения бумеранга
     private float speed; // Скорость бумеранга
     private int damage; // Урон бумеранга
     private Transform player; // Ссылка на игрока
@@ -82,31 +90,17 @@ public class BoomerangBehaviour : MonoBehaviour
         }
         else
         {
-            // Двигаем бумеранг в направлении врага
+            // Двигаем бумеранг в заданном направлении
             transform.position += direction * speed * Time.deltaTime;
             distanceTraveled += speed * Time.deltaTime;
 
             // Проверяем на столкновение с врагом
-            Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 0.5f, LayerMask.GetMask("Enemy"));
-            if (enemies.Length > 0)
+            Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 0.5f, LayerMask.GetMask("Mobs", "MobsFly")); // Находим всех врагов в радиусе 0.5f
+
+            foreach (var enemy in enemies)
             {
-                // Находим ближайшего врага
-                Collider2D closestEnemy = enemies[0];
-                float closestDistance = Vector3.Distance(transform.position, closestEnemy.transform.position);
-
-                foreach (var enemy in enemies)
-                {
-                    float distance = Vector3.Distance(transform.position, enemy.transform.position);
-                    if (distance < closestDistance)
-                    {
-                        closestEnemy = enemy;
-                        closestDistance = distance;
-                    }
-                }
-
                 // Наносим урон врагу
-                closestEnemy.GetComponent<Enemy>().TakeDamage(damage);
-                returning = true; // Начинаем возвращение
+                enemy.GetComponent<Enemy>().TakeDamage(damage);
             }
 
             // Проверяем, не превысило ли расстояние

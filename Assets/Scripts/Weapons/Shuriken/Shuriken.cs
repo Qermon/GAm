@@ -12,11 +12,22 @@ public class Shuriken : Weapon
     {
         base.Start();
 
+        if (shurikenPrefab == null)
+        {
+           
+            return;
+        }
+
         // Создаем сюрикены
         shurikens = new GameObject[shurikenCount];
         for (int i = 0; i < shurikenCount; i++)
         {
             shurikens[i] = Instantiate(shurikenPrefab, transform.position, Quaternion.identity);
+            if (shurikens[i] == null)
+            {
+                Debug.LogError($"Сюрикен {i} не был создан! Проверьте префаб.");
+                return; // Остановить выполнение, если создание не удалось
+            }
             shurikens[i].transform.parent = transform; // Сделать игрока родителем
             shurikens[i].transform.localPosition = new Vector3(Mathf.Cos((360f / shurikenCount) * i * Mathf.Deg2Rad) * rotationRadius,
                                                                 Mathf.Sin((360f / shurikenCount) * i * Mathf.Deg2Rad) * rotationRadius, 0);
@@ -28,24 +39,29 @@ public class Shuriken : Weapon
             ShurikenCollision shurikenCollision = shurikens[i].AddComponent<ShurikenCollision>();
             shurikenCollision.weapon = this; // Передаем ссылку на текущее оружие
         }
+
+        Debug.Log("Все сюрикены успешно созданы.");
     }
 
-    protected override void Update() // Добавлено ключевое слово override
+    protected override void Update()
     {
-        base.Update(); // Вызов метода Update() из базового класса
+        base.Update();
 
-        // Вращаем сюрикены вокруг игрока
         for (int i = 0; i < shurikenCount; i++)
         {
-            float angle = Time.time * rotationSpeed + (360f / shurikenCount) * i; // Учитываем время и индекс
+            if (shurikens == null || shurikens[i] == null) // Проверка на null
+            {
+              
+                continue;
+            }
+
+            float angle = Time.time * rotationSpeed + (360f / shurikenCount) * i;
             float x = Mathf.Cos(angle * Mathf.Deg2Rad) * rotationRadius;
             float y = Mathf.Sin(angle * Mathf.Deg2Rad) * rotationRadius;
 
-            // Обновляем позицию сюрикена
             shurikens[i].transform.localPosition = new Vector3(x, y, 0);
         }
     }
-
 
     protected override void PerformAttack()
     {
@@ -68,7 +84,6 @@ public class ShurikenCollision : MonoBehaviour
                 float finalDamage = weapon.CalculateDamage(); // Рассчитываем финальный урон
                 enemy.TakeDamage((int)finalDamage); // Наносим урон врагу
                 Debug.Log("Урон нанесён: " + finalDamage);
-               
             }
         }
     }
