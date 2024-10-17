@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Shuriken : Weapon
@@ -14,7 +16,6 @@ public class Shuriken : Weapon
 
         if (shurikenPrefab == null)
         {
-           
             return;
         }
 
@@ -51,7 +52,6 @@ public class Shuriken : Weapon
         {
             if (shurikens == null || shurikens[i] == null) // Проверка на null
             {
-              
                 continue;
             }
 
@@ -74,17 +74,46 @@ public class ShurikenCollision : MonoBehaviour
 {
     public Weapon weapon; // Ссылка на оружие
 
+    // Словарь для отслеживания времени последней атаки по каждому врагу
+    private static Dictionary<GameObject, float> lastAttackTimes = new Dictionary<GameObject, float>();
+    private float attackCooldown = 1f; // Время между атаками по одному и тому же врагу (1 секунда)
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Enemy"))
         {
             Enemy enemy = other.GetComponent<Enemy>();
-            if (enemy != null)
+            if (enemy != null && CanAttackEnemy(enemy.gameObject)) // Проверяем, можем ли атаковать
             {
                 float finalDamage = weapon.CalculateDamage(); // Рассчитываем финальный урон
                 enemy.TakeDamage((int)finalDamage); // Наносим урон врагу
                 Debug.Log("Урон нанесён: " + finalDamage);
+                UpdateLastAttackTime(enemy.gameObject); // Обновляем время последней атаки
             }
+        }
+    }
+
+    // Метод для проверки, можем ли мы атаковать врага (на основе времени последней атаки)
+    private bool CanAttackEnemy(GameObject enemy)
+    {
+        if (lastAttackTimes.ContainsKey(enemy))
+        {
+            float timeSinceLastAttack = Time.time - lastAttackTimes[enemy];
+            return timeSinceLastAttack >= attackCooldown; // Проверяем, прошло ли больше attackCooldown секунд
+        }
+        return true; // Если атаки по этому врагу еще не было, можем атаковать
+    }
+
+    // Метод для обновления времени последней атаки
+    private void UpdateLastAttackTime(GameObject enemy)
+    {
+        if (lastAttackTimes.ContainsKey(enemy))
+        {
+            lastAttackTimes[enemy] = Time.time; // Обновляем время последней атаки
+        }
+        else
+        {
+            lastAttackTimes.Add(enemy, Time.time); // Добавляем запись о времени атаки, если врага еще нет в словаре
         }
     }
 }

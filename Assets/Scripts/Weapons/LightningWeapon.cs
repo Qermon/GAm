@@ -1,5 +1,6 @@
-using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class LightningWeapon : Weapon
 {
@@ -58,11 +59,11 @@ public class LightningWeapon : Weapon
     }
 }
 
-
-
 public class LightningBehaviour : MonoBehaviour
 {
     private int damage; // Урон молнии
+    private static Dictionary<GameObject, float> lastAttackTimes = new Dictionary<GameObject, float>(); // Словарь для отслеживания времени последней атаки
+    private float attackCooldown = 0.5f; // Время между атаками по одному врагу (1 секунда)
 
     private void Start()
     {
@@ -73,13 +74,41 @@ public class LightningBehaviour : MonoBehaviour
     {
         if (collision.CompareTag("Enemy"))
         {
-            collision.GetComponent<Enemy>().TakeDamage(damage); // Наносим урон врагу
-           
+            GameObject enemy = collision.gameObject;
+            if (CanAttackEnemy(enemy)) // Проверяем, можем ли атаковать врага
+            {
+                collision.GetComponent<Enemy>().TakeDamage(damage); // Наносим урон врагу
+                UpdateLastAttackTime(enemy); // Обновляем время последней атаки
+            }
         }
     }
 
     public void SetDamage(int lightningDamage)
     {
         damage = lightningDamage; // Устанавливаем урон
+    }
+
+    // Проверка, можно ли атаковать врага (учитывая время последней атаки)
+    private bool CanAttackEnemy(GameObject enemy)
+    {
+        if (lastAttackTimes.ContainsKey(enemy))
+        {
+            float timeSinceLastAttack = Time.time - lastAttackTimes[enemy];
+            return timeSinceLastAttack >= attackCooldown; // Проверяем, прошло ли достаточно времени
+        }
+        return true; // Если враг ещё не атакован, можем атаковать
+    }
+
+    // Обновление времени последней атаки
+    private void UpdateLastAttackTime(GameObject enemy)
+    {
+        if (lastAttackTimes.ContainsKey(enemy))
+        {
+            lastAttackTimes[enemy] = Time.time; // Обновляем время последней атаки
+        }
+        else
+        {
+            lastAttackTimes.Add(enemy, Time.time); // Добавляем врага в словарь
+        }
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class FireBallController : Weapon
@@ -36,8 +37,7 @@ public class FireBallController : Weapon
             GameObject fireBall = Instantiate(fireBallPrefab, transform.position, Quaternion.identity);
             fireBall.tag = "Weapon"; // Устанавливаем тег
             FireBall fireBallScript = fireBall.AddComponent<FireBall>(); // Добавляем компонент для логики снаряда
-            fireBallScript.Initialize(nearestEnemy.transform.position, projectileSpeed, projectileLifetime, this); // Передаем ссылку на текущее оружие
-
+            fireBallScript.Initialize(nearestEnemy.transform.position, projectileSpeed, projectileLifetime, this); // Передаем параметры
         }
     }
 
@@ -61,7 +61,6 @@ public class FireBallController : Weapon
     }
 }
 
-
 public class FireBall : MonoBehaviour
 {
     private Vector3 direction; // Направление полета снаряда
@@ -69,12 +68,16 @@ public class FireBall : MonoBehaviour
     private float lifetime; // Время жизни
     private Weapon weapon; // Ссылка на оружие
 
+    // Словарь для отслеживания времени последней атаки по врагу
+    private static Dictionary<GameObject, float> lastAttackTimes = new Dictionary<GameObject, float>();
+    private float attackCooldown = 1f; // Время между атаками по одному врагу (1 секунда)
+
     public void Initialize(Vector3 targetPosition, float projectileSpeed, float projectileLifetime, Weapon weaponInstance)
     {
-        direction = (targetPosition - transform.position).normalized; // Вычисляем направление к ближайшему врагу
+        direction = (targetPosition - transform.position).normalized; // Вычисляем направление к врагу
         speed = projectileSpeed;
         lifetime = projectileLifetime;
-        weapon = weaponInstance; // Сохраняем ссылку на родительское оружие
+        weapon = weaponInstance; // Сохраняем ссылку на оружие
 
         // Поворачиваем снаряд в сторону цели
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
@@ -94,13 +97,37 @@ public class FireBall : MonoBehaviour
         if (other.CompareTag("Enemy")) // Если попали во врага
         {
             Enemy enemy = other.GetComponent<Enemy>();
-            if (enemy != null)
+            if (enemy != null && CanAttackEnemy(enemy.gameObject)) // Проверяем, можем ли атаковать врага
             {
-                float finalDamage = weapon.CalculateDamage(); // Рассчитываем финальный урон
-                enemy.TakeDamage((int)finalDamage); // Наносим урон врагу
+                float finalDamage = weapon.CalculateDamage(); // Рассчитываем урон
+                enemy.TakeDamage((int)finalDamage); // Наносим урон
                 Debug.Log("Урон огненного шара нанесён: " + finalDamage);
+                UpdateLastAttackTime(enemy.gameObject); // Обновляем время последней атаки
             }
         }
     }
-}
 
+    // Проверка, можно ли атаковать врага (учитывая время последней атаки)
+    private bool CanAttackEnemy(GameObject enemy)
+    {
+        if (lastAttackTimes.ContainsKey(enemy))
+        {
+            float timeSinceLastAttack = Time.time - lastAttackTimes[enemy];
+            return timeSinceLastAttack >= attackCooldown; // Проверяем, прошло ли достаточно времени
+        }
+        return true; // Если враг ещё не атакован, можем атаковать
+    }
+
+    // Обновление времени последней атаки
+    private void UpdateLastAttackTime(GameObject enemy)
+    {
+        if (lastAttackTimes.ContainsKey(enemy))
+        {
+            lastAttackTimes[enemy] = Time.time; // Обновляем время последней атаки
+        }
+        else
+        {
+            lastAttackTimes.Add(enemy, Time.time); // Добавляем врага в словарь
+        }
+    }
+}

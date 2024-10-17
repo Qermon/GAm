@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BoomerangController : Weapon
@@ -67,6 +68,10 @@ public class BoomerangBehaviour : MonoBehaviour
     private Vector3 startPosition; // Ќачальна€ позици€ бумеранга
     private float distanceTraveled; // ѕройденное рассто€ние
 
+    // —ловарь дл€ отслеживани€ времени последней атаки по каждому врагу
+    private static Dictionary<GameObject, float> lastAttackTimes = new Dictionary<GameObject, float>();
+    private float attackCooldown = 0.3f; // ¬рем€ между атаками по одному и тому же врагу (1 секунда)
+
     private void Start()
     {
         startPosition = transform.position; // ”станавливаем начальную позицию
@@ -99,8 +104,12 @@ public class BoomerangBehaviour : MonoBehaviour
 
             foreach (var enemy in enemies)
             {
-                // Ќаносим урон врагу
-                enemy.GetComponent<Enemy>().TakeDamage(damage);
+                if (CanAttackEnemy(enemy.gameObject)) // ѕровер€ем, можно ли атаковать врага
+                {
+                    // Ќаносим урон врагу
+                    enemy.GetComponent<Enemy>().TakeDamage(damage);
+                    UpdateLastAttackTime(enemy.gameObject); // ќбновл€ем врем€ последней атаки
+                }
             }
 
             // ѕровер€ем, не превысило ли рассто€ние
@@ -119,5 +128,29 @@ public class BoomerangBehaviour : MonoBehaviour
         player = playerTransform; // —охран€ем ссылку на игрока
         this.returnSpeed = returnSpeed; // ”станавливаем скорость возвращени€
         this.maxDistance = maxDistance; // ”станавливаем максимальное рассто€ние
+    }
+
+    // ћетод дл€ проверки, можем ли мы атаковать врага (на основе времени последней атаки)
+    private bool CanAttackEnemy(GameObject enemy)
+    {
+        if (lastAttackTimes.ContainsKey(enemy))
+        {
+            float timeSinceLastAttack = Time.time - lastAttackTimes[enemy];
+            return timeSinceLastAttack >= attackCooldown; // ѕровер€ем, прошло ли больше attackCooldown секунд
+        }
+        return true; // ≈сли атаки по этому врагу еще не было, можем атаковать
+    }
+
+    // ћетод дл€ обновлени€ времени последней атаки
+    private void UpdateLastAttackTime(GameObject enemy)
+    {
+        if (lastAttackTimes.ContainsKey(enemy))
+        {
+            lastAttackTimes[enemy] = Time.time; // ќбновл€ем врем€ последней атаки
+        }
+        else
+        {
+            lastAttackTimes.Add(enemy, Time.time); // ƒобавл€ем запись о времени атаки, если врага еще нет в словаре
+        }
     }
 }
