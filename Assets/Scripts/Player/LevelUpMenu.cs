@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 using UnityEngine.UI;
 
 public enum UpgradeType
@@ -9,37 +9,39 @@ public enum UpgradeType
     HealthRegen,
     WeaponBuff,
     Defense,
-    Weapon, // Новый тип улучшения для оружия
+    Weapon,
     Lifesteal,
-
+    CriticalAttack,   // Новая способность: критический урон
+    CriticalChance    // Новая способность: шанс критической атаки
 }
 
 [System.Serializable]
 public class UpgradeOption
 {
-    public string upgradeName; // Название улучшения (для удобства)
-    public Sprite upgradeSprite; // Спрайт, который будет отображаться в меню
-    public UpgradeType upgradeType; // Тип улучшения
-    public Weapon[] weaponsToBuff; // Оружия, которые будут бафаться (если это WeaponBuff)
-    public GameObject weaponPrefab; // Префаб оружия, которое будет предоставлено игроку
+    public string upgradeName;
+    public Sprite upgradeSprite;
+    public UpgradeType upgradeType;
+    public Weapon[] weaponsToBuff;
+    public GameObject weaponPrefab;
 }
 
 public class LevelUpMenu : MonoBehaviour
 {
-    public GameObject levelUpPanel; // Панель меню повышения уровня
-    public Image[] upgradeIcons; // Иконки для отображения выбранных улучшений
-    public Button[] upgradeButtons; // Кнопки для выбора улучшений
-    public List<UpgradeOption> upgradeOptions; // Список всех возможных улучшений
+    public GameObject levelUpPanel;
+    public Image[] upgradeIcons;
+    public Button[] upgradeButtons;
+    public List<UpgradeOption> upgradeOptions;
 
     private PlayerMovement playerMovement;
     private PlayerHealth playerHealth;
+    private Weapon playerWeapon;
 
     private void Start()
     {
         playerMovement = FindObjectOfType<PlayerMovement>();
         playerHealth = FindObjectOfType<PlayerHealth>();
+        playerWeapon = FindObjectOfType<Weapon>();
 
-        // Скрываем панель и кнопки
         levelUpPanel.SetActive(false);
         foreach (Image icon in upgradeIcons)
         {
@@ -49,17 +51,13 @@ public class LevelUpMenu : MonoBehaviour
 
     public void OpenLevelUpMenu()
     {
-        // Убедитесь, что есть достаточно вариантов для выбора
         if (upgradeOptions.Count < 3)
         {
             Debug.LogError("Недостаточно доступных улучшений.");
             return;
         }
 
-        // Выбираем три случайных варианта
         List<UpgradeOption> selectedUpgrades = GetRandomUpgrades(3);
-
-        // Отображаем их на панели
         DisplayUpgradeOptions(selectedUpgrades);
     }
 
@@ -72,7 +70,7 @@ public class LevelUpMenu : MonoBehaviour
         {
             int randomIndex = Random.Range(0, availableOptions.Count);
             selectedUpgrades.Add(availableOptions[randomIndex]);
-            availableOptions.RemoveAt(randomIndex); // Убираем выбранный вариант, чтобы не повторялся
+            availableOptions.RemoveAt(randomIndex);
         }
 
         return selectedUpgrades;
@@ -81,16 +79,15 @@ public class LevelUpMenu : MonoBehaviour
     private void DisplayUpgradeOptions(List<UpgradeOption> upgrades)
     {
         levelUpPanel.SetActive(true);
-        Time.timeScale = 0; // Останавливаем время
+        Time.timeScale = 0;
 
         for (int i = 0; i < upgrades.Count; i++)
         {
-            upgradeIcons[i].sprite = upgrades[i].upgradeSprite; // Присваиваем спрайт
-            upgradeIcons[i].gameObject.SetActive(true); // Активируем иконку
+            upgradeIcons[i].sprite = upgrades[i].upgradeSprite;
+            upgradeIcons[i].gameObject.SetActive(true);
 
-            // Присваиваем кнопке соответствующую функцию при нажатии
-            int index = i; // Нужно для правильной передачи индекса в лямбда-функцию
-            upgradeButtons[i].onClick.RemoveAllListeners(); // Очищаем старые события
+            int index = i;
+            upgradeButtons[i].onClick.RemoveAllListeners();
             upgradeButtons[i].onClick.AddListener(() => ChooseUpgrade(upgrades[index]));
         }
     }
@@ -111,7 +108,6 @@ public class LevelUpMenu : MonoBehaviour
                 break;
 
             case UpgradeType.HealthRegen:
-                Debug.Log("Игрок выбрал регенерацию здоровья.");
                 playerHealth.StartHealthRegen();
                 Debug.Log("Пассивная регенерация активирована.");
                 break;
@@ -140,8 +136,19 @@ public class LevelUpMenu : MonoBehaviour
                     Debug.Log(upgrade.weaponPrefab.name + " получено.");
                 }
                 break;
-            case UpgradeType.Lifesteal: // Добавляем новый случай для вампиризма
-                playerHealth.AddLifesteal(10); // Добавляем 10% вампиризма
+
+            case UpgradeType.Lifesteal:
+                playerHealth.AddLifesteal(10);
+                break;
+
+            case UpgradeType.CriticalAttack:
+                playerWeapon.criticalDamage += 10;
+                Debug.Log("Критический урон увеличен до: " + playerWeapon.criticalDamage);
+                break;
+
+            case UpgradeType.CriticalChance:
+                playerWeapon.criticalChance += 0.05f;
+                Debug.Log("Шанс критического удара увеличен до: " + playerWeapon.criticalChance * 100 + "%");
                 break;
         }
 
@@ -151,6 +158,6 @@ public class LevelUpMenu : MonoBehaviour
     public void CloseLevelUpMenu()
     {
         levelUpPanel.SetActive(false);
-        Time.timeScale = 1; // Возвращаем нормальное время
+        Time.timeScale = 1;
     }
 }
