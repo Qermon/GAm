@@ -16,7 +16,8 @@
         public float hitCooldown = 1f; // Время в секундах между ударами по одному врагу
 
         // Внутренний таймер для контроля атаки
-        private float attackTimer;
+        protected float attackTimer;
+    
 
         protected virtual void Start()
         {  
@@ -98,4 +99,6 @@
                 attackTimer -= Time.deltaTime; // Уменьшаем таймер
             }
         }
-    }
+    
+    
+}

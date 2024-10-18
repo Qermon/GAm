@@ -1,92 +1,133 @@
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class FireBallController : MonoBehaviour
+public class FireBallController : Weapon
 {
     public GameObject fireBallPrefab; // Префаб огненного шара
-    public float speed = 10f; // Скорость огненного шара
-    public float attackInterval = 1.0f; // Интервал между атаками
-    public int fireBallDamage = 10; // Урон огненного шара
+    public float spawnCooldown = 4f; // Время между спавном снарядов
+    public float projectileLifetime = 5f; // Время жизни снаряда
+    private float spawnTimer; // Таймер спавна снарядов
 
-    private Vector3 lastMovedVector = Vector3.right; // Последний вектор движения (по умолчанию вправо)
-
-    private void Start()
+    protected override void Start()
     {
-        StartCoroutine(ShootFireBalls());
+        base.Start();
+        spawnTimer = spawnCooldown; // Инициализируем таймер спавна
     }
 
-    private void Update()
+    protected override void Update()
     {
-        // Обновляем последний вектор движения игрока
-        if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
+        base.Update();
+
+        // Обновляем таймер спавна
+        spawnTimer -= Time.deltaTime;
+
+        if (spawnTimer <= 0f) // Если время для спавна истекло
         {
-            lastMovedVector = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0).normalized;
+            SpawnFireBall();
+            spawnTimer = spawnCooldown; // Сбрасываем таймер
         }
     }
 
-    private IEnumerator ShootFireBalls()
+    private void SpawnFireBall()
     {
-        while (true)
+        GameObject nearestEnemy = FindNearestEnemy(); // Ищем ближайшего врага
+        if (nearestEnemy != null)
         {
-            yield return new WaitForSeconds(attackInterval); // Ждем перед следующим выстрелом
-            ShootFireBall();
+            // Создаем огненный шар
+            GameObject fireBall = Instantiate(fireBallPrefab, transform.position, Quaternion.identity);
+            fireBall.tag = "Weapon"; // Устанавливаем тег
+            FireBall fireBallScript = fireBall.AddComponent<FireBall>(); // Добавляем компонент для логики снаряда
+            fireBallScript.Initialize(nearestEnemy.transform.position, projectileSpeed, projectileLifetime, this); // Передаем параметры
         }
     }
 
-    private void ShootFireBall()
+    private GameObject FindNearestEnemy()
     {
-        if (lastMovedVector != Vector3.zero) // Проверяем, есть ли движение
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy"); // Находим всех врагов
+        GameObject nearestEnemy = null;
+        float nearestDistance = Mathf.Infinity;
+
+        foreach (GameObject enemy in enemies)
         {
-            GameObject spawnedFireBall = Instantiate(fireBallPrefab, transform.position, Quaternion.identity);
-            FireBallBehaviour fireBallBehaviour = spawnedFireBall.AddComponent<FireBallBehaviour>(); // Добавляем поведение огненного шара
-            fireBallBehaviour.SetDirection(lastMovedVector, speed, fireBallDamage); // Устанавливаем направление, скорость и урон
+            float distance = Vector3.Distance(transform.position, enemy.transform.position);
+            if (distance < nearestDistance)
+            {
+                nearestDistance = distance;
+                nearestEnemy = enemy; // Обновляем ближайшего врага
+            }
         }
+
+        return nearestEnemy; // Возвращаем ближайшего врага
     }
 }
 
-public class FireBallBehaviour : MonoBehaviour
+public class FireBall : MonoBehaviour
 {
-    private Vector3 direction;
-    private float speed;
-    private int damage; // Урон огненного шара
+    private Vector3 direction; // Направление полета снаряда
+    private float speed; // Скорость
+    private float lifetime; // Время жизни
+    private Weapon weapon; // Ссылка на оружие
 
-    private void Start()
+    // Словарь для отслеживания времени последней атаки по врагу
+    private static Dictionary<GameObject, float> lastAttackTimes = new Dictionary<GameObject, float>();
+    private float attackCooldown = 1f; // Время между атаками по одному врагу (1 секунда)
+
+    public void Initialize(Vector3 targetPosition, float projectileSpeed, float projectileLifetime, Weapon weaponInstance)
     {
-        Destroy(gameObject, 5f); // Уничтожаем огненный шар через 5 секунд, если он не столкнулся с чем-то
+        direction = (targetPosition - transform.position).normalized; // Вычисляем направление к врагу
+        speed = projectileSpeed;
+        lifetime = projectileLifetime;
+        weapon = weaponInstance; // Сохраняем ссылку на оружие
+
+        // Поворачиваем снаряд в сторону цели
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+
+        Destroy(gameObject, lifetime); // Уничтожаем снаряд через lifetime секунд
     }
 
     private void Update()
     {
-        // Двигаем огненный шар по направлению с учётом скорости
+        // Двигаем снаряд по направлению
         transform.position += direction * speed * Time.deltaTime;
     }
 
-    public void SetDirection(Vector3 newDirection, float fireBallSpeed, int fireBallDamage)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        direction = newDirection.normalized; // Нормализуем направление
-        speed = fireBallSpeed;
-        damage = fireBallDamage; // Устанавливаем урон
-
-        // Поворачиваем огненный шар в сторону движения
-        if (direction != Vector3.zero)
+        if (other.CompareTag("Enemy")) // Если попали во врага
         {
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg; // Вычисляем угол
-            transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle)); // Поворачиваем огненный шар
+            Enemy enemy = other.GetComponent<Enemy>();
+            if (enemy != null && CanAttackEnemy(enemy.gameObject)) // Проверяем, можем ли атаковать врага
+            {
+                float finalDamage = weapon.CalculateDamage(); // Рассчитываем урон
+                enemy.TakeDamage((int)finalDamage); // Наносим урон
+                Debug.Log("Урон огненного шара нанесён: " + finalDamage);
+                UpdateLastAttackTime(enemy.gameObject); // Обновляем время последней атаки
+            }
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    // Проверка, можно ли атаковать врага (учитывая время последней атаки)
+    private bool CanAttackEnemy(GameObject enemy)
     {
-        if (collision.CompareTag("Enemy"))
+        if (lastAttackTimes.ContainsKey(enemy))
         {
-            collision.GetComponent<Enemy>().TakeDamage(damage); // Наносим урон врагу
-
-            // Здесь можно добавить логику для визуального эффекта или звука
-            // Например, показать частицы или воспроизвести звук удара
-
-            // Если вы хотите, чтобы огненный шар пролетел сквозь врага, уберите строку Destroy
-            // Но при этом нужно убедиться, что у врагов нет коллайдеров, которые могли бы мешать движению шарика
+            float timeSinceLastAttack = Time.time - lastAttackTimes[enemy];
+            return timeSinceLastAttack >= attackCooldown; // Проверяем, прошло ли достаточно времени
         }
+        return true; // Если враг ещё не атакован, можем атаковать
+    }
 
+    // Обновление времени последней атаки
+    private void UpdateLastAttackTime(GameObject enemy)
+    {
+        if (lastAttackTimes.ContainsKey(enemy))
+        {
+            lastAttackTimes[enemy] = Time.time; // Обновляем время последней атаки
+        }
+        else
+        {
+            lastAttackTimes.Add(enemy, Time.time); // Добавляем врага в словарь
+        }
     }
 }

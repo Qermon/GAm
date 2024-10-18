@@ -33,6 +33,8 @@ public class Enemy : MonoBehaviour
     }
 
 
+
+
     protected virtual void Start()
     {
 
@@ -83,6 +85,11 @@ public class Enemy : MonoBehaviour
         // Здесь может быть логика для движения моба
 
         MoveTowardsPlayer();
+    }
+
+    public float GetCurrentHP()
+    {
+        return currentHealth;
     }
 
 

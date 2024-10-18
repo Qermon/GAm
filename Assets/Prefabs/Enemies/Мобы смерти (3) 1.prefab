@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 85079938372858752}
   - component: {fileID: 2783631589555261751}
   - component: {fileID: 4844805209740176063}
-  m_Layer: 13
+  m_Layer: 3
   m_Name: "\u041C\u043E\u0431\u044B \u0441\u043C\u0435\u0440\u0442\u0438 (3) 1"
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -144,7 +144,6 @@ MonoBehaviour:
   - {fileID: 5469531237655120259, guid: d419f38c017de994c8dbd724a047d3a8, type: 3}
   - {fileID: 336186041612917338, guid: e2f4af4bccfe53e4da3fc6d8a00ed082, type: 3}
   - {fileID: 6103947597723192743, guid: 94f6f4aa0af17814b89dc9ce7414bd63, type: 3}
-  bloodManager: {fileID: 0}
 --- !u!58 &2783631589555261751
 CircleCollider2D:
   m_ObjectHideFlags: 0
