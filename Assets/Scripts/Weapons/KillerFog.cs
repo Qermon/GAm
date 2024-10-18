@@ -7,6 +7,7 @@ public class KillerFog : Weapon
     public int projectileCount = 4; // Количество снарядов в залпе
     public float projectileDelay = 0.2f; // Задержка между снарядами в одном залпе
     public float salvoDelay = 2f; // Задержка между залпами
+    public float activationRange = 10f; // Радиус активации для поиска врагов
 
     protected override void Start()
     {
@@ -20,7 +21,10 @@ public class KillerFog : Weapon
         {
             for (int i = 0; i < projectileCount; i++)
             {
-                LaunchProjectile(); // Запускаем снаряд
+                if (IsEnemyInRange()) // Проверяем, есть ли враги в радиусе активации
+                {
+                    LaunchProjectile(); // Запускаем снаряд
+                }
                 yield return new WaitForSeconds(projectileDelay); // Ждем задержку между снарядами
             }
 
@@ -28,11 +32,23 @@ public class KillerFog : Weapon
         }
     }
 
+    private bool IsEnemyInRange()
+    {
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, activationRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        return enemies.Length > 0; // Если есть хотя бы один враг в радиусе активации, возвращаем true
+    }
+
     private void LaunchProjectile()
     {
         GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
         projectile.tag = "Weapon"; // Устанавливаем тег для снаряда
         projectile.AddComponent<ProjectileFog>().Initialize(this); // Добавляем компонент ProjectileFog и передаем ссылку на текущее оружие
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, activationRange); // Рисуем радиус активации в редакторе
     }
 }
 
@@ -60,7 +76,7 @@ public class ProjectileFog : MonoBehaviour
 
     private void FindRandomTarget()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 10f, LayerMask.GetMask("Mobs", "MobsFly")); // Находим всех врагов в радиусе 10
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, weapon.activationRange, LayerMask.GetMask("Mobs", "MobsFly")); // Используем радиус активации из оружия
         if (enemies.Length > 0)
         {
             target = enemies[Random.Range(0, enemies.Length)].GetComponent<Enemy>(); // Выбираем случайного врага
