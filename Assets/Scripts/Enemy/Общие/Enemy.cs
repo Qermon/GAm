@@ -15,47 +15,33 @@ public class Enemy : MonoBehaviour
     protected Transform player; // Ссылка на игрока
     private float attackTimer = 0f; // Внутренний таймер для контроля атак
 
-
     private float originalMass; // Исходная масса
     private Rigidbody2D rb; // Rigidbody для изменения массы
-
 
     // Публичные поля для крови и опыта
     public GameObject experienceItemPrefab;
     public int experienceAmount = 20;
     public GameObject[] bloodPrefabs; // Массив текстур крови
 
-    // Ссылка на BloodManager
-
     public bool IsDead
     {
         get { return isDead; }
     }
 
-
-
-
     protected virtual void Start()
     {
-
         rb = GetComponent<Rigidbody2D>();
         originalMass = rb.mass; // Сохраняем исходную массу
 
-
-        // Инициализация здоровья и нахождение игрока
         currentHealth = maxHealth;
-        // Получаем ссылку на объект игрока
-        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
 
-        // Проверяем, найден ли объект с тегом "Player"
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         if (playerObject != null)
         {
-            // Если найден, получаем Transform
             player = playerObject.transform;
         }
         else
         {
-            // Если не найден, выводим ошибку в консоль
             Debug.LogError("Объект Player не найден в сцене!");
         }
     }
@@ -64,9 +50,6 @@ public class Enemy : MonoBehaviour
     {
         if (isDead || player == null) return;
 
-
-
-        // Проверка на возможность атаки
         attackTimer -= Time.deltaTime;
         if (Vector2.Distance(transform.position, player.position) <= attackRange && attackTimer <= 0f)
         {
@@ -82,8 +65,6 @@ public class Enemy : MonoBehaviour
             rb.mass = originalMass; // Возвращаем исходную массу
         }
 
-        // Здесь может быть логика для движения моба
-
         MoveTowardsPlayer();
     }
 
@@ -92,6 +73,21 @@ public class Enemy : MonoBehaviour
         return currentHealth;
     }
 
+    // Метод для изменения скорости
+    public void ModifySpeed(float speedMultiplier, float duration)
+    {
+        StartCoroutine(ApplySpeedChange(speedMultiplier, duration));
+    }
+
+    private IEnumerator ApplySpeedChange(float speedMultiplier, float duration)
+    {
+        float originalSpeed = enemyMoveSpeed;
+        enemyMoveSpeed *= speedMultiplier; // Применяем изменение скорости
+
+        yield return new WaitForSeconds(duration); // Ожидание конца действия
+
+        enemyMoveSpeed = originalSpeed; // Восстанавливаем исходную скорость
+    }
 
 
     // Метод для движения к игроку
@@ -105,7 +101,6 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    // Метод для атаки игрока
     protected virtual void AttackPlayer()
     {
         attackTimer = attackCooldown;
@@ -116,7 +111,6 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    // Метод для получения урона
     public virtual void TakeDamage(int damage)
     {
         currentHealth -= damage;
@@ -126,16 +120,14 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    // Метод для смерти
     protected virtual void Die()
     {
         isDead = true;
 
-        // Восстановление здоровья игрока при убийстве
         PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
         if (playerHealth != null)
         {
-            playerHealth.HealOnKill(maxHealth); // Восстанавливаем здоровье на основе здоровья врага
+            playerHealth.HealOnKill(maxHealth); // Восстанавливаем здоровье игроку
         }
 
         SpawnExperience();
@@ -143,7 +135,6 @@ public class Enemy : MonoBehaviour
         Destroy(gameObject);
     }
 
-    // Спавн предмета опыта
     protected virtual void SpawnExperience()
     {
         if (experienceItemPrefab != null)
@@ -152,28 +143,22 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    // Спавн крови
     protected virtual void SpawnBlood()
     {
-        if (bloodPrefabs.Length > 0) // Проверка, есть ли текстуры крови в массиве
+        if (bloodPrefabs.Length > 0)
         {
-            // Случайный выбор текстуры крови из массива
             int randomIndex = Random.Range(0, bloodPrefabs.Length);
             GameObject blood = Instantiate(bloodPrefabs[randomIndex], transform.position, Quaternion.identity);
-            blood.tag = "Blood"; // Устанавливаем тег для объекта крови
-
-            // Если ссылка на BloodManager задана, запускаем корутину для удаления крови
-
+            blood.tag = "Blood";
         }
     }
 
     public void Heal(float amount)
     {
-        if (isDead) return; // Если враг мертв, он не может быть вылечен
+        if (isDead) return;
 
-        currentHealth += (int)amount; // Приведение float к int
+        currentHealth += (int)amount;
 
-        // Убедимся, что текущее здоровье не превышает максимальное
         if (currentHealth > maxHealth)
         {
             currentHealth = maxHealth;
@@ -182,26 +167,22 @@ public class Enemy : MonoBehaviour
         Debug.Log(gameObject.name + " был вылечен на " + amount + " единиц.");
     }
 
-
-
-    // Метод для поворота спрайта моба в сторону игрока
     protected virtual void FlipSprite(Vector2 direction)
     {
         Vector3 localScale = transform.localScale;
         if (direction.x > 0)
         {
-            localScale.x = Mathf.Abs(localScale.x); // Повернуть вправо
+            localScale.x = Mathf.Abs(localScale.x);
         }
         else if (direction.x < 0)
         {
-            localScale.x = -Mathf.Abs(localScale.x); // Повернуть влево
+            localScale.x = -Mathf.Abs(localScale.x);
         }
         transform.localScale = localScale;
     }
 
     public void SetDamage(float newDamage)
     {
-        damage = (int)newDamage; // Устанавливаем новый урон
+        damage = (int)newDamage;
     }
-
 }

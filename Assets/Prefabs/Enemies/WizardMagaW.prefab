@@ -154,7 +154,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  enemyMoveSpeed: 0.6
+  currentHealth: 0
+  enemyMoveSpeed: 0.5
   damage: 0
   attackRange: 0
   attackCooldown: 2
@@ -175,11 +176,11 @@ MonoBehaviour:
   - {fileID: 1160608206058526748, guid: 5566c4f6a494cb64ea7135271b8e6201, type: 3}
   - {fileID: 336186041612917338, guid: e2f4af4bccfe53e4da3fc6d8a00ed082, type: 3}
   - {fileID: 6103947597723192743, guid: 94f6f4aa0af17814b89dc9ce7414bd63, type: 3}
-  bloodManager: {fileID: 5948699707618501534, guid: 95612192a9703a94e9df078e4fef2222, type: 3}
   animator: {fileID: 0}
   projectilePrefab: {fileID: 42981042196358202, guid: 0a451c48845cee146a81a9a0e5e62666, type: 3}
   firePoint: {fileID: 8754278015135722575}
   safeDistance: 5
+  moveDuration: 2
 --- !u!58 &8167315143061242943
 CircleCollider2D:
   m_ObjectHideFlags: 0
