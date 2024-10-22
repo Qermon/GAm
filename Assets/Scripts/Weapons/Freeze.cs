@@ -81,25 +81,6 @@ public class FreezeProjectile : MonoBehaviour
         }
     }
 
-    private void FindNearestTarget()
-    {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 10f, LayerMask.GetMask("Mobs", "MobsFly"));
-        float closestDistance = float.MaxValue;
-        foreach (Collider2D enemyCollider in enemies)
-        {
-            Enemy enemy = enemyCollider.GetComponent<Enemy>();
-            if (enemy != null && !hitEnemies.Contains(enemy))
-            {
-                float distance = Vector2.Distance(transform.position, enemy.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    target = enemy;
-                }
-            }
-        }
-    }
-
     private IEnumerator MoveProjectile(Vector3 direction)
     {
         float lifetime = projectileLifetime;
@@ -108,13 +89,14 @@ public class FreezeProjectile : MonoBehaviour
         {
             if (target == null)
             {
-                FindNearestTarget();
+                FindNearestTarget(); // Ищем нового врага, если текущий был уничтожен
                 if (target == null)
                 {
-                    Destroy(gameObject);
+                    // Если нет цели в радиусе 1.5, уничтожаем снаряд
+                    Destroy(gameObject); // Уничтожаем снаряд, если больше нет целей
                     yield break;
                 }
-                direction = (target.transform.position - transform.position).normalized;
+                direction = (target.transform.position - transform.position).normalized; // Обновляем направление
             }
 
             transform.position += direction * projectileSpeed * Time.deltaTime;
@@ -126,6 +108,7 @@ public class FreezeProjectile : MonoBehaviour
 
             lifetime -= Time.deltaTime;
 
+            // Если враг был уничтожен, убираем его из списка целей
             if (target != null && !target.gameObject.activeInHierarchy)
             {
                 target = null;
@@ -134,6 +117,28 @@ public class FreezeProjectile : MonoBehaviour
 
         Destroy(gameObject);
     }
+
+    private void FindNearestTarget()
+    {
+        // Ищем врагов в радиусе 1.5
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 1.5f, LayerMask.GetMask("Mobs", "MobsFly"));
+        float closestDistance = float.MaxValue;
+
+        foreach (Collider2D enemyCollider in enemies)
+        {
+            Enemy enemy = enemyCollider.GetComponent<Enemy>();
+            if (enemy != null && !hitEnemies.Contains(enemy)) // Не выбираем уже пораженных врагов
+            {
+                float distance = Vector2.Distance(transform.position, enemy.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    target = enemy;
+                }
+            }
+        }
+    }
+
 
 
 

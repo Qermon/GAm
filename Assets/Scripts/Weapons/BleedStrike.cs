@@ -87,25 +87,6 @@ public class BleedProjectile : MonoBehaviour
         }
     }
 
-    private void FindNearestTarget()
-    {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 10f, LayerMask.GetMask("Mobs", "MobsFly")); // Ищем врагов
-        float closestDistance = float.MaxValue;
-        foreach (Collider2D enemyCollider in enemies)
-        {
-            Enemy enemy = enemyCollider.GetComponent<Enemy>();
-            if (enemy != null && !hitEnemies.Contains(enemy)) // Не выбираем уже пораженных врагов
-            {
-                float distance = Vector2.Distance(transform.position, enemy.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    target = enemy;
-                }
-            }
-        }
-    }
-
     private IEnumerator MoveProjectile(Vector3 direction)
     {
         float lifetime = projectileLifetime;
@@ -117,6 +98,7 @@ public class BleedProjectile : MonoBehaviour
                 FindNearestTarget(); // Ищем нового врага, если текущий был уничтожен
                 if (target == null)
                 {
+                    // Если нет цели в радиусе 1.5, уничтожаем снаряд
                     Destroy(gameObject); // Уничтожаем снаряд, если больше нет целей
                     yield break;
                 }
@@ -142,6 +124,27 @@ public class BleedProjectile : MonoBehaviour
 
         Destroy(gameObject); // Уничтожаем снаряд по истечении времени или после максимального количества попаданий
     }
+
+    private void FindNearestTarget()
+    {
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 1.5f, LayerMask.GetMask("Mobs", "MobsFly")); // Ищем врагов в радиусе 1.5
+        float closestDistance = float.MaxValue;
+
+        foreach (Collider2D enemyCollider in enemies)
+        {
+            Enemy enemy = enemyCollider.GetComponent<Enemy>();
+            if (enemy != null && !hitEnemies.Contains(enemy)) // Не выбираем уже пораженных врагов
+            {
+                float distance = Vector2.Distance(transform.position, enemy.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    target = enemy;
+                }
+            }
+        }
+    }
+
 
     private void OnTriggerEnter2D(Collider2D other)
     {

@@ -85,8 +85,11 @@ public class FireProjectile : MonoBehaviour
 
     private void FindNearestTarget()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 10f, LayerMask.GetMask("Mobs", "MobsFly")); // Ищем врагов
+        // Ищем врагов в радиусе 1.5f
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 1.5f, LayerMask.GetMask("Mobs", "MobsFly"));
         float closestDistance = float.MaxValue;
+        target = null; // Обнуляем цель перед поиском
+
         foreach (Collider2D enemyCollider in enemies)
         {
             Enemy enemy = enemyCollider.GetComponent<Enemy>();
@@ -96,11 +99,12 @@ public class FireProjectile : MonoBehaviour
                 if (distance < closestDistance)
                 {
                     closestDistance = distance;
-                    target = enemy;
+                    target = enemy; // Находим ближайшего врага
                 }
             }
         }
     }
+
 
     private IEnumerator MoveProjectile(Vector3 direction)
     {

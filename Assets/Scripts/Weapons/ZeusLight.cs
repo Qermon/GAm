@@ -88,7 +88,8 @@ public class ZeusProjectile : MonoBehaviour
 
     private void FindRandomTarget()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, weapon.activationRange, LayerMask.GetMask("Mobs", "MobsFly")); // Находим врагов в радиусе
+        // Находим врагов в радиусе 1.5
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 1.5f, LayerMask.GetMask("Mobs", "MobsFly"));
         if (enemies.Length > 0)
         {
             target = enemies[Random.Range(0, enemies.Length)].GetComponent<Enemy>(); // Выбираем случайного врага
@@ -103,7 +104,8 @@ public class ZeusProjectile : MonoBehaviour
 
     private void FindNearestTarget()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, weapon.activationRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        // Находим врагов в радиусе 1.5
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 1.5f, LayerMask.GetMask("Mobs", "MobsFly"));
         float closestDistance = float.MaxValue;
         Enemy closestEnemy = null;
 
@@ -208,3 +210,4 @@ public class ZeusProjectile : MonoBehaviour
         Destroy(gameObject);
     }
 }
+

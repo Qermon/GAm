@@ -323,14 +323,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6498770511958726082}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 195a935a21f2e11469dfa5da7a7a7656, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
+  damage: 20
   criticalDamage: 20
-  criticalChance: 0
+  criticalChance: 0.05
   attackSpeed: 1
   rotationSpeed: 0
   projectileSpeed: 0
@@ -346,20 +346,20 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6498770511958726082}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f717ede821df2e44bbe47cb963408292, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
+  damage: 50
   criticalDamage: 20
-  criticalChance: 0
+  criticalChance: 0.05
   attackSpeed: 3
   rotationSpeed: 0
   projectileSpeed: 5
   hitCooldown: 1
   fireBallPrefab: {fileID: 1214236203580795921, guid: 3552c2bf2a5630c46be6b92f892d25bf, type: 3}
-  spawnCooldown: 4
+  spawnCooldown: 3
   projectileLifetime: 5
   activationRange: 3.5
 --- !u!114 &4725728448337572973
@@ -369,14 +369,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6498770511958726082}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 51c30d2b6aab01044b7168c82df5e46c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
+  damage: 15
   criticalDamage: 20
-  criticalChance: 0
+  criticalChance: 0.05
   attackSpeed: 1
   rotationSpeed: 0
   projectileSpeed: 3
@@ -394,20 +394,20 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6498770511958726082}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b07ccc19d39313c44aceee40016da0b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
+  damage: 25
   criticalDamage: 10
-  criticalChance: 0
+  criticalChance: 0.05
   attackSpeed: 0
   rotationSpeed: 100
   projectileSpeed: 0
   hitCooldown: 1
   shurikenPrefab: {fileID: 3029241081560625099, guid: d96c0236ade09f54a9e217d4d124ee6d, type: 3}
-  shurikenCount: 6
+  shurikenCount: 4
   rotationRadius: 7
 --- !u!114 &4847191281234216912
 MonoBehaviour:
@@ -421,17 +421,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34cc28e68090e9940b0208b22cbd7f74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
+  damage: 25
   criticalDamage: 20
-  criticalChance: 0
+  criticalChance: 0.05
   attackSpeed: 1
   rotationSpeed: 0
   projectileSpeed: 100
   hitCooldown: 1
   projectilePrefab: {fileID: 1045637516039309919, guid: 8ccd2d4f5e5f17942ad8abec4d01ae5f, type: 3}
-  projectileCount: 4
+  projectileCount: 5
   projectileDelay: 0.2
-  salvoDelay: 2
+  salvoDelay: 0.75
   activationRange: 3
 --- !u!114 &8079618099919998205
 MonoBehaviour:
@@ -440,20 +440,20 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6498770511958726082}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ef2c5f62c6a0be44bae089e52b6a18bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
+  damage: 35
   criticalDamage: 20
-  criticalChance: 0
+  criticalChance: 0.05
   attackSpeed: 1
   rotationSpeed: 0
   projectileSpeed: 0
   hitCooldown: 1
   knifePrefab: {fileID: 2020597055152082064, guid: 08aef7e1d0174d042bd0dd22ce1f30ef, type: 3}
-  attackInterval: 1
+  attackInterval: 2
   speed: 5
   maxDistance: 10
   activationRange: 4
@@ -464,22 +464,22 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6498770511958726082}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d96df22641768a14581b6db3c5a51400, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
+  damage: 24
   criticalDamage: 20
-  criticalChance: 0.1
+  criticalChance: 0.05
   attackSpeed: 0.2
   rotationSpeed: 0
   projectileSpeed: 4
   hitCooldown: 1
   projectilePrefab: {fileID: 578360187957718639, guid: 8a35528fa7e0d1340b027632e57154cb, type: 3}
-  maxBounces: 5
+  maxBounces: 10
   bounceDamageReduction: 0.1
-  activationRange: 3
+  activationRange: 2.6
   spawnCooldown: 0.5
 --- !u!114 &6932876325213558038
 MonoBehaviour:
@@ -488,23 +488,23 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6498770511958726082}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3e049adf427b9384e8db55dab9c188bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
+  damage: 20
   criticalDamage: 20
-  criticalChance: 0.1
+  criticalChance: 0.05
   attackSpeed: 1
   rotationSpeed: 0
   projectileSpeed: 4
   hitCooldown: 1
   projectilePrefab: {fileID: 1469391300657170324, guid: 20232e6c4c21e3a4f8b6111440bbc476, type: 3}
-  maxTargets: 5
+  maxTargets: 10
   burnDuration: 3
-  projectileLifetime: 5
-  activationRange: 3
+  projectileLifetime: 2
+  activationRange: 2.5
 --- !u!114 &2354807572737606747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -512,23 +512,23 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6498770511958726082}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 57642554ec400cf4c9f33e1287113c9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
+  damage: 25
   criticalDamage: 20
-  criticalChance: 0.1
+  criticalChance: 0.05
   attackSpeed: 2
   rotationSpeed: 0
   projectileSpeed: 3.5
   hitCooldown: 1
   projectilePrefab: {fileID: 6449837784014568740, guid: 0dfd0b9302152fd4e8400b0e8e8b49b8, type: 3}
-  maxTargets: 5
+  maxTargets: 10
   freezeDuration: 4
-  projectileLifetime: 5
-  activationRange: 3.1
+  projectileLifetime: 2
+  activationRange: 3
 --- !u!114 &233083481958635557
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -536,23 +536,23 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6498770511958726082}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cb77130997a99c54b9f41efd90109bd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
+  damage: 20
   criticalDamage: 20
-  criticalChance: 0.1
+  criticalChance: 0.05
   attackSpeed: 1
   rotationSpeed: 0
   projectileSpeed: 2.5
   hitCooldown: 1
   projectilePrefab: {fileID: 5350826935612024673, guid: 80b489e08b17ef84fac26d9c3cc8fa0d, type: 3}
-  maxTargets: 5
+  maxTargets: 10
   poisonDuration: 5
-  projectileLifetime: 5
-  activationRange: 3.2
+  projectileLifetime: 2
+  activationRange: 2.7
 --- !u!114 &7957083078924591980
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -560,21 +560,21 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6498770511958726082}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6acd7150a104484bac00dd849bbd510, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
+  damage: 25
   criticalDamage: 20
-  criticalChance: 0.1
+  criticalChance: 0.05
   attackSpeed: 1
   rotationSpeed: 0
   projectileSpeed: 5
   hitCooldown: 1
   projectilePrefab: {fileID: 1274030252072796168, guid: 0ee50157a371ef749958f4b0a043d205, type: 3}
-  maxTargets: 5
+  maxTargets: 10
   bleedDuration: 5
   slowEffect: 0.15
-  projectileLifetime: 5
-  activationRange: 10
+  projectileLifetime: 2
+  activationRange: 2.5
