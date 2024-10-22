@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class WaveManager : MonoBehaviour
@@ -63,54 +64,50 @@ public class WaveManager : MonoBehaviour
         if (waveConfigs.ContainsKey(waveNumber))
         {
             WaveConfig currentWave = waveConfigs[waveNumber];
-            waveDuration = currentWave.waveDuration;
+            waveDuration = currentWave.waveDuration;  // Время волны
             timeStartedWave = Time.time;
 
-            // Создаем списки для мобов
-            List<EnemySpawn> nonBatAndDeathMobs = new List<EnemySpawn>();
-            List<EnemySpawn> batsAndDeathMobs = new List<EnemySpawn>();
+            // Создаем список всех мобов для спавна
+            List<EnemySpawn> allEnemiesToSpawn = new List<EnemySpawn>(currentWave.enemiesToSpawn);
 
-            foreach (var enemySpawn in currentWave.enemiesToSpawn)
+            // Рассчитываем время для спавна мобов (равномерно за (время волны - 7 секунд))
+            float spawnTimeLimit = waveDuration - 7f;  // Мобы спавнятся за (время волны - 7 секунд)
+            float totalEnemies = allEnemiesToSpawn.Sum(enemySpawn => enemySpawn.count);  // Суммарное количество мобов
+            float spawnInterval = spawnTimeLimit / totalEnemies;  // Интервал спавна
+
+            float currentTime = 0f;
+
+            // Спавним мобов равномерно в течение времени спавна
+            while (currentTime < spawnTimeLimit)
             {
-                // Разделяем мобы на группы
-                if (enemySpawn.enemyPrefab.name.Contains("Bat") || enemySpawn.enemyPrefab.name.Contains("Мобы смерти"))
-                {
-                    batsAndDeathMobs.Add(enemySpawn);
-                }
-                else
-                {
-                    nonBatAndDeathMobs.Add(enemySpawn);
-                }
-            }
+                // Выбираем случайного моба для спавна
+                EnemySpawn randomEnemySpawn = GetRandomEnemySpawn(allEnemiesToSpawn);
 
-            // Спавним мобы
-            float timeElapsed = 0f;
-
-            // Если есть мобы летучих мышей или мобы смерти, создаем отдельный поток для их спавна
-            if (batsAndDeathMobs.Count > 0)
-            {
-                StartCoroutine(SpawnBatsAndDeaths(batsAndDeathMobs, currentWave.spawnInterval));
-            }
-
-            // Спавним обычные мобы в течение всей волны
-            foreach (var enemySpawn in nonBatAndDeathMobs)
-            {
-                for (int j = 0; j < enemySpawn.count; j++)
+                if (randomEnemySpawn != null && randomEnemySpawn.count > 0)
                 {
                     Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-                    GameObject enemyPrefab = enemySpawn.enemyPrefab;
+                    GameObject enemyPrefab = randomEnemySpawn.enemyPrefab;
 
                     GameObject enemy = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
                     AddEnemy(enemy);
-                    yield return new WaitForSeconds(currentWave.spawnInterval);
+
+                    // Уменьшаем количество оставшихся мобов этого типа
+                    randomEnemySpawn.count--;
+
+                    // Ожидаем следующий спавн
+                    yield return new WaitForSeconds(spawnInterval);
+
+                    currentTime = Time.time - timeStartedWave;  // Обновляем текущее время
                 }
+
+                // Удаляем мобов с count = 0 из списка для оптимизации
+                allEnemiesToSpawn.RemoveAll(enemySpawn => enemySpawn.count <= 0);
             }
 
-            // Ждем завершения всей волны
-            while (timeElapsed < waveDuration)
+            // Прекращаем спавн мобов, но продолжаем отсчет времени волны
+            while (Time.time - timeStartedWave < waveDuration)
             {
-                timeElapsed += currentWave.spawnInterval;
-                yield return new WaitForSeconds(currentWave.spawnInterval);
+                yield return null;  // Ждем окончания волны
             }
 
             // Уничтожаем оставшихся мобов после завершения волны
@@ -118,8 +115,23 @@ public class WaveManager : MonoBehaviour
         }
 
         spawningWave = false;
+
         StartCoroutine(StartNextWave());
     }
+
+    // Функция для случайного выбора моба
+    private EnemySpawn GetRandomEnemySpawn(List<EnemySpawn> enemiesToSpawn)
+    {
+        if (enemiesToSpawn.Count > 0)
+        {
+            int randomIndex = Random.Range(0, enemiesToSpawn.Count);
+            return enemiesToSpawn[randomIndex];
+        }
+
+        return null;
+    }
+
+
 
     private IEnumerator SpawnBatsAndDeaths(List<EnemySpawn> batsAndDeathMobs, float spawnInterval)
     {

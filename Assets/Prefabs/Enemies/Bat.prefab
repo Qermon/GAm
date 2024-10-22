@@ -212,7 +212,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentHealth: 25
   player: {fileID: 0}
-  moveSpeed: 10
+  moveSpeed: 5
   attackRange: 0.1
   damage: 10
   attackSpeed: 1
@@ -247,7 +247,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 25
-  moveSpeed: 2
+  currentHealth: 0
+  enemyMoveSpeed: 0
   damage: 10
   attackRange: 0.1
   attackCooldown: 1
