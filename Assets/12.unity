@@ -1256,8 +1256,12 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 233083481958635557, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: damage
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 233083481958635557, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 528685079314247260, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1300,6 +1304,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2354807572737606747, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: damage
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 2354807572737606747, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
@@ -1316,20 +1324,60 @@ PrefabInstance:
       value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 4009727459069964674, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: damage
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 4009727459069964674, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4009727459069964674, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: shurikenCount
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4009727459069964674, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: criticalChance
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 4725728448337572973, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: damage
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 4725728448337572973, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4725728448337572973, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: criticalChance
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 4847191281234216912, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: damage
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 4847191281234216912, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4847191281234216912, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: salvoDelay
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 4847191281234216912, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: criticalChance
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 5249100412223257423, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: damage
+      value: 24
+      objectReference: {fileID: 0}
     - target: {fileID: 5249100412223257423, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5249100412223257423, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: criticalChance
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 5883712729551448394, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: levelUpPanel
@@ -1368,6 +1416,10 @@ PrefabInstance:
       value: Player 1
       objectReference: {fileID: 0}
     - target: {fileID: 6932876325213558038, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: damage
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 6932876325213558038, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
@@ -1380,8 +1432,20 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8079618099919998205, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: damage
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 8079618099919998205, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8079618099919998205, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: attackInterval
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8079618099919998205, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: criticalChance
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 8872669925841041822, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: damage
@@ -1389,7 +1453,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8872669925841041822, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8872669925841041822, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: spawnCooldown
