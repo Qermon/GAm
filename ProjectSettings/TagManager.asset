@@ -9,6 +9,7 @@ TagManager:
   - Weapon
   - Blood
   - Projectile
+  - EXP
   layers:
   - Default
   - TransparentFX
