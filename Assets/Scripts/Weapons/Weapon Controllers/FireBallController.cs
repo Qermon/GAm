@@ -44,8 +44,10 @@ public class FireBallController : Weapon
 
     private GameObject FindNearestEnemy()
     {
-        // Находим всех врагов в радиусе activationRange
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, activationRange, LayerMask.GetMask("Enemy"));
+        // Находим всех врагов в радиусе activationRange на слоях Mobs и MobsFly
+        int enemyLayerMask = LayerMask.GetMask("Mobs", "MobsFly");
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, activationRange, enemyLayerMask);
+
         GameObject nearestEnemy = null;
         float nearestDistance = Mathf.Infinity;
 
@@ -61,6 +63,7 @@ public class FireBallController : Weapon
 
         return nearestEnemy; // Возвращаем ближайшего врага
     }
+
 }
 
 public class FireBall : MonoBehaviour

@@ -122,6 +122,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+  currentHealth: 0
   enemyMoveSpeed: 0.5
   damage: 10
   attackRange: 0.1
@@ -137,12 +138,9 @@ MonoBehaviour:
   - {fileID: 6567081571678948421, guid: 5420c1faacf56bc47b1fb68f986425b1, type: 3}
   - {fileID: 5504151077189107348, guid: 1e5ff10fdedbdb04f9f0712c3d4aa20e, type: 3}
   - {fileID: 6246333273063148668, guid: 0b1269d97d1b7c948930b1494451483a, type: 3}
-  bloodManager: {fileID: 5948699707618501534, guid: 95612192a9703a94e9df078e4fef2222, type: 3}
-  healAnimationPrefab: {fileID: 4893186087788416365, guid: 5e53964be5fc72a468ecd7c26a17dbe6, type: 3}
-  healRadius: 3
-  healAmountPercent: 0.2
-  healInterval: 6
-  castTime: 2
+  buffPrefab: {fileID: 4893186087788416365, guid: 5e53964be5fc72a468ecd7c26a17dbe6, type: 3}
+  attackAnimationDuration: 2
+  buffSpawnCooldown: 5
 --- !u!58 &2867744172303204272
 CircleCollider2D:
   m_ObjectHideFlags: 0

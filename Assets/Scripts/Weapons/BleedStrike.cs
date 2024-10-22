@@ -9,7 +9,7 @@ public class BleedStrike : Weapon
     public float bleedDuration = 5f; // Продолжительность кровотечения
     public float slowEffect = 0.5f; // Степень замедления врага
     public float projectileLifetime = 5f; // Время жизни снаряда
-    public float activationRange = 10f; // Радиус активации снарядов
+    public float activationRange = 3f; // Радиус активации снарядов
 
     protected override void Start()
     {
@@ -39,8 +39,9 @@ public class BleedStrike : Weapon
     {
         GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
         projectile.tag = "Weapon"; // Устанавливаем тег
-        projectile.AddComponent<BleedProjectile>().Initialize(this, maxTargets, bleedDuration, slowEffect, damage * 0.5f); // Устанавливаем урон от кровотечения и замедление
+        projectile.AddComponent<BleedProjectile>().Initialize(this, maxTargets, bleedDuration, slowEffect, damage * 0.1f); // Урон от кровотечения теперь 10% от урона
     }
+
 
     private void OnDrawGizmosSelected()
     {

@@ -4,25 +4,37 @@ using UnityEngine;
 
 public class WaveManager : MonoBehaviour
 {
-    public GameObject enemyPrefab;
-    public GameObject crossPrefab;
-    public Transform[] spawnPoints;
+    public GameObject[] deathMobPrefabs;  // Префабы мобов Смерти
+    public GameObject[] deathPrefabs;
+    public GameObject[] batPrefabs;       // Префабы мобов Летучих мышей
+    public GameObject[] wizardPrefabs;    // Префабы мобов магов
+    public GameObject[] skeletonPrefabs;  // Префабы скелетов
+    public GameObject[] archerPrefabs;    // Префабы лучников
+    public GameObject[] boomPrefabs;      // Префабы бомбардировщиков
+    public GameObject[] healerPrefabs;    // Префабы лекарей
+    public GameObject[] buffMobPrefabs;   // Префабы бафферов
+    public Transform[] spawnPoints;       // Точки спауна
     public float timeBetweenWaves = 5f;
-    public float waveDuration = 30f;
-    private int waveNumber = 0;
-    public int maxWaves = 1000;
-    public int maxActiveEnemies = 100000;
 
+    private int waveNumber = 0;
+    public int maxWaves = 10;
     private bool spawningWave = false;
     private float timeStartedWave;
+    private float waveDuration;
 
-    private List<GameObject> activeEnemies = new List<GameObject>(); // Храним активных врагов
+    private List<GameObject> activeEnemies = new List<GameObject>();
 
-    public BloodManager bloodManager; // Переменная для ссылки на ваш BloodManager
+    public BloodManager bloodManager;
+
+    private Dictionary<int, WaveConfig> waveConfigs;
+
+    void Start()
+    {
+        InitializeWaves();
+    }
 
     void Update()
     {
-        // Запускаем следующую волну, если прошли все враги
         if (!spawningWave && activeEnemies.Count == 0 && waveNumber < maxWaves)
         {
             StartCoroutine(StartNextWave());
@@ -41,67 +53,218 @@ public class WaveManager : MonoBehaviour
         {
             StartCoroutine(SpawnWave());
         }
-
-        RemoveBloodAfterWave();
-    }
-
-    public void RemoveBloodAfterWave()
-    {
-        if (bloodManager != null)
-        {
-            bloodManager.RemoveAllBlood();
-        }
     }
 
     IEnumerator SpawnWave()
     {
         spawningWave = true;
         waveNumber++;
-        timeStartedWave = Time.time;
 
-        float spawnDuration = waveDuration - 5f;
-        int enemiesToSpawn = Mathf.FloorToInt(50 + waveNumber * 1.5f);
-        enemiesToSpawn = Mathf.Min(enemiesToSpawn, maxActiveEnemies);
-
-        float spawnInterval = spawnDuration / enemiesToSpawn;
-
-        for (int i = 0; i < enemiesToSpawn; i++)
+        if (waveConfigs.ContainsKey(waveNumber))
         {
-            // Проверка активных врагов
-            while (activeEnemies.Count >= maxActiveEnemies)
+            WaveConfig currentWave = waveConfigs[waveNumber];
+            waveDuration = currentWave.waveDuration;
+            timeStartedWave = Time.time;
+
+            // Создаем списки для мобов
+            List<EnemySpawn> nonBatAndDeathMobs = new List<EnemySpawn>();
+            List<EnemySpawn> batsAndDeathMobs = new List<EnemySpawn>();
+
+            foreach (var enemySpawn in currentWave.enemiesToSpawn)
             {
-                yield return null;
+                // Разделяем мобы на группы
+                if (enemySpawn.enemyPrefab.name.Contains("Bat") || enemySpawn.enemyPrefab.name.Contains("Мобы смерти"))
+                {
+                    batsAndDeathMobs.Add(enemySpawn);
+                }
+                else
+                {
+                    nonBatAndDeathMobs.Add(enemySpawn);
+                }
             }
 
-            Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+            // Спавним мобы
+            float timeElapsed = 0f;
 
-            GameObject cross = Instantiate(crossPrefab, spawnPoint.position, Quaternion.identity);
+            // Если есть мобы летучих мышей или мобы смерти, создаем отдельный поток для их спавна
+            if (batsAndDeathMobs.Count > 0)
+            {
+                StartCoroutine(SpawnBatsAndDeaths(batsAndDeathMobs, currentWave.spawnInterval));
+            }
 
-            StartCoroutine(SpawnEnemy(cross, spawnPoint));
+            // Спавним обычные мобы в течение всей волны
+            foreach (var enemySpawn in nonBatAndDeathMobs)
+            {
+                for (int j = 0; j < enemySpawn.count; j++)
+                {
+                    Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+                    GameObject enemyPrefab = enemySpawn.enemyPrefab;
 
-            yield return new WaitForSeconds(spawnInterval);
+                    GameObject enemy = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+                    AddEnemy(enemy);
+                    yield return new WaitForSeconds(currentWave.spawnInterval);
+                }
+            }
+
+            // Ждем завершения всей волны
+            while (timeElapsed < waveDuration)
+            {
+                timeElapsed += currentWave.spawnInterval;
+                yield return new WaitForSeconds(currentWave.spawnInterval);
+            }
+
+            // Уничтожаем оставшихся мобов после завершения волны
+            RemoveRemainingEnemies();
         }
 
-        yield return new WaitForSeconds(5f);
-        RemoveRemainingEnemies();
         spawningWave = false;
         StartCoroutine(StartNextWave());
     }
 
-    IEnumerator SpawnEnemy(GameObject cross, Transform spawnPoint)
+    private IEnumerator SpawnBatsAndDeaths(List<EnemySpawn> batsAndDeathMobs, float spawnInterval)
     {
-        yield return new WaitForSeconds(0.5f);
-
-        if (!spawningWave)
+        while (spawningWave)
         {
-            Destroy(cross);
-            yield break;
+            foreach (var enemySpawn in batsAndDeathMobs)
+            {
+                for (int j = 0; j < enemySpawn.count; j++)
+                {
+                    Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+                    GameObject enemyPrefab = enemySpawn.enemyPrefab;
+
+                    GameObject enemy = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+                    AddEnemy(enemy);
+                    yield return new WaitForSeconds(spawnInterval);
+                }
+            }
+        }
+    }
+
+
+
+
+
+    private void InitializeWaves()
+    {
+        waveConfigs = new Dictionary<int, WaveConfig>();
+
+        // Волна 1
+        waveConfigs.Add(1, new WaveConfig(20f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(50 + 1 * 1.5f)) // 50 Смертей
+    }));
+
+        // Волна 2
+        waveConfigs.Add(2, new WaveConfig(25f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(50 + 2 * 1.5f)), // 50 Смертей
+        new EnemySpawn(batPrefabs[0], 10) // 10 Летучих мышей
+    }));
+
+        // Волна 3
+        waveConfigs.Add(3, new WaveConfig(30f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(55 + 3 * 1.5f)), // 55 Смертей
+        new EnemySpawn(batPrefabs[0], 20) // 20 Летучих мышей
+    }));
+
+        // Волна 4
+        waveConfigs.Add(4, new WaveConfig(35f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(55 + 4 * 1.5f)), // 55 Смертей
+        new EnemySpawn(batPrefabs[0], 20), // 20 Летучих мышей
+        new EnemySpawn(wizardPrefabs[0], 5) // 5 Магов
+    }));
+
+        // Волна 5
+        waveConfigs.Add(5, new WaveConfig(40f, new List<EnemySpawn>
+    {
+        new EnemySpawn(batPrefabs[0], Mathf.FloorToInt(50 + 5 * 1.5f)) // 50 Летучих мышей
+    }));
+
+        // Волна 6
+        waveConfigs.Add(6, new WaveConfig(45f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(60 + 6 * 1.5f)), // 60 Смертей
+        new EnemySpawn(deathPrefabs[0], 6), // 6 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(batPrefabs[0], 20) // 20 Летучих мышей
+    }));
+
+        // Волна 7
+        waveConfigs.Add(7, new WaveConfig(50f, new List<EnemySpawn>
+    {
+        new EnemySpawn(batPrefabs[0], Mathf.FloorToInt(50 + 7 * 1.5f)), // 50 Летучих мышей
+        new EnemySpawn(archerPrefabs[0], 5), // 5 Лучников
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(boomPrefabs[0], 5) // 5 Бомбардировщиков
+    }));
+
+        // Волна 8
+        waveConfigs.Add(8, new WaveConfig(55f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 8 * 1.5f)), // 20 Смертей
+        new EnemySpawn(skeletonPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2) // 2 Лучника
+    }));
+
+        // Волна 9
+        waveConfigs.Add(9, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 9 * 1.5f)), // 20 Смертей
+        new EnemySpawn(skeletonPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2), // 2 Лучника
+        new EnemySpawn(buffMobPrefabs[0], 2) // 2 Баффера
+    }));
+
+        // Волна 10
+        waveConfigs.Add(10, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(batPrefabs[0], Mathf.FloorToInt(100 + 10 * 1.5f)), // 100 Летучих мышей
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(boomPrefabs[0], 5) // 5 Бомбардировщиков
+    }));
+    }
+
+
+    public int GetWaveNumber()
+    {
+        return waveNumber;
+    }
+
+    public void AddEnemy(GameObject enemy)
+    {
+        if (enemy != null && !activeEnemies.Contains(enemy))
+        {
+            activeEnemies.Add(enemy);
+        }
+    }
+
+    public float GetTimeUntilNextWave()
+    {
+        if (spawningWave)
+        {
+            float timePassed = Time.time - timeStartedWave;
+            float timeUntilNext = waveDuration - timePassed;
+
+            if (timeUntilNext <= 0)
+            {
+                timeUntilNext = 0;
+                RemoveRemainingEnemies();
+            }
+
+            return timeUntilNext;
         }
 
-        GameObject enemy = Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
-        activeEnemies.Add(enemy);
-
-        Destroy(cross);
+        return -1;
     }
 
     void RemoveRemainingEnemies()
@@ -112,72 +275,41 @@ public class WaveManager : MonoBehaviour
                 Destroy(enemy);
         }
         activeEnemies.Clear();
-        // Удаляем всех оставшихся врагов с тегом "Enemy"
-        RemoveAllEnemiesWithTag();
+    }
+}
 
-        // Очищаем список активных врагов
-        activeEnemies.Clear();
+public class WaveConfig
+{
+    public float waveDuration;
+    public List<EnemySpawn> enemiesToSpawn;
+    public float spawnInterval;
+
+    public WaveConfig(float waveDuration, List<EnemySpawn> enemies)
+    {
+        this.waveDuration = waveDuration;
+        this.enemiesToSpawn = enemies;
+        this.spawnInterval = waveDuration / GetTotalEnemies();
     }
 
-    public int GetWaveNumber()
+    private int GetTotalEnemies()
     {
-        return waveNumber;
-    }
-
-    public float GetTimeUntilNextWave()
-    {
-        if (spawningWave)
+        int total = 0;
+        foreach (var enemySpawn in enemiesToSpawn)
         {
-            float timePassed = Time.time - timeStartedWave; // Время с начала волны
-            float timeUntilNext = waveDuration - timePassed; // Осталось времени до конца волны
-
-            // Если время до конца волны <= 0
-            if (timeUntilNext <= 0)
-            {
-                timeUntilNext = 0; // Устанавливаем время в 0, чтобы оно не уходило в отрицательные значения
-                RemoveRemainingEnemies(); // Удаление всех оставшихся врагов
-            }
-
-            return timeUntilNext; // Возвращаем оставшееся время
+            total += enemySpawn.count;
         }
-
-        // Если волна завершена, возвращаем -1
-        return -1;
+        return total;
     }
+}
 
-    public void AddEnemy(GameObject enemy)
+public class EnemySpawn
+{
+    public GameObject enemyPrefab;
+    public int count;
+
+    public EnemySpawn(GameObject prefab, int count)
     {
-        activeEnemies.Add(enemy);
-
-        if (enemy != null)
-        {
-            activeEnemies.Add(enemy);
-        }
+        this.enemyPrefab = prefab;
+        this.count = count;
     }
-
-    public void RemoveEnemy(GameObject enemy)
-    {
-        if (activeEnemies.Contains(enemy))
-        {
-            activeEnemies.Remove(enemy);
-        }
-    }
-
-    public void RemoveAllEnemiesWithTag()
-    {
-        // Находим все объекты с тегом "Enemy"
-        GameObject[] enemiesWithTag = GameObject.FindGameObjectsWithTag("Enemy");
-
-        // Проходим по каждому объекту и удаляем его
-        foreach (GameObject enemy in enemiesWithTag)
-        {
-            // Удаляем моба из списка активных врагов, если он там есть
-            RemoveEnemy(enemy);
-
-            // Уничтожаем объект моба
-            Destroy(enemy);
-        }
-    }
-
-
 }

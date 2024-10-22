@@ -135,6 +135,8 @@ public class FreezeProjectile : MonoBehaviour
         Destroy(gameObject);
     }
 
+
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Enemy"))
@@ -142,6 +144,8 @@ public class FreezeProjectile : MonoBehaviour
             Enemy enemy = other.GetComponent<Enemy>();
             if (enemy != null && CanHitEnemy(enemy))
             {
+                float damage = weapon.CalculateDamage(); // Рассчитайте урон
+                enemy.TakeDamage((int)damage); // Нанесите урон
                 ApplyFreezeEffect(enemy); // Применение эффекта заморозки
                 targetsHit++;
 
@@ -152,6 +156,7 @@ public class FreezeProjectile : MonoBehaviour
             }
         }
     }
+
 
     private bool CanHitEnemy(Enemy enemy)
     {
@@ -173,4 +178,5 @@ public class FreezeProjectile : MonoBehaviour
 
         Debug.Log($"Freeze effect on {enemy.name} has ended.");
     }
+        
 }
