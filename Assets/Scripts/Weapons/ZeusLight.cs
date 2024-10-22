@@ -7,7 +7,7 @@ public class ZeusLight : Weapon
     public GameObject projectilePrefab; // Префаб снаряда
     public int maxBounces = 5; // Количество отскоков
     public float bounceDamageReduction = 0.1f; // Процент уменьшения урона на каждом отскоке
-    public float targetRadius = 7f; // Радиус поиска целей
+    public float activationRange = 3.5f; // Радиус активации (переменная, как у FireStrike)
     public float spawnCooldown = 2f; // Кулдаун между спавном снарядов
 
     private bool canSpawnProjectile = true; // Флаг, можно ли спавнить новый снаряд
@@ -39,6 +39,18 @@ public class ZeusLight : Weapon
         GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
         projectile.tag = "Weapon"; // Устанавливаем тег для снаряда
         projectile.AddComponent<ZeusProjectile>().Initialize(this, maxBounces, bounceDamageReduction); // Инициализируем снаряд
+    }
+
+    private bool IsEnemyInRange()
+    {
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, activationRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        return enemies.Length > 0; // Если есть хотя бы один враг в радиусе активации, возвращаем true
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, activationRange); // Рисуем радиус активации
     }
 }
 
@@ -76,7 +88,7 @@ public class ZeusProjectile : MonoBehaviour
 
     private void FindRandomTarget()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, weapon.targetRadius, LayerMask.GetMask("Mobs", "MobsFly")); // Находим врагов в радиусе
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, weapon.activationRange, LayerMask.GetMask("Mobs", "MobsFly")); // Находим врагов в радиусе
         if (enemies.Length > 0)
         {
             target = enemies[Random.Range(0, enemies.Length)].GetComponent<Enemy>(); // Выбираем случайного врага
@@ -91,7 +103,7 @@ public class ZeusProjectile : MonoBehaviour
 
     private void FindNearestTarget()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, weapon.targetRadius, LayerMask.GetMask("Mobs", "MobsFly"));
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, weapon.activationRange, LayerMask.GetMask("Mobs", "MobsFly"));
         float closestDistance = float.MaxValue;
         Enemy closestEnemy = null;
 

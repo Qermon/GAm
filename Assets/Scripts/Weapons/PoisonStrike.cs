@@ -2,21 +2,21 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class FireStrike : Weapon
+public class PoisonStrike : Weapon
 {
     public GameObject projectilePrefab; // Префаб снаряда
     public int maxTargets = 5; // Максимальное количество целей, по которым может пройти снаряд
-    public float burnDuration = 3f; // Продолжительность горения
+    public float poisonDuration = 5f; // Продолжительность отравления
     public float projectileLifetime = 5f; // Время жизни снаряда
     public float activationRange = 10f; // Радиус, в котором снаряды начинают спавниться
 
     protected override void Start()
     {
         base.Start();
-        StartCoroutine(LaunchFireStrike()); // Запуск корутины атаки
+        StartCoroutine(LaunchPoisonStrike()); // Запуск корутины атаки
     }
 
-    private IEnumerator LaunchFireStrike()
+    private IEnumerator LaunchPoisonStrike()
     {
         while (true) // Бесконечный цикл для постоянного запуска снарядов
         {
@@ -38,34 +38,34 @@ public class FireStrike : Weapon
     {
         GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
         projectile.tag = "Weapon"; // Устанавливаем тег
-        projectile.AddComponent<FireProjectile>().Initialize(this, maxTargets, burnDuration, damage * 0.5f); // Устанавливаем урон от горения
+        projectile.AddComponent<PoisonProjectile>().Initialize(this, maxTargets, poisonDuration, damage * 0.5f); // Устанавливаем урон от яда
     }
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.red;
+        Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, activationRange); // Рисуем радиус активации
     }
 }
 
-public class FireProjectile : MonoBehaviour
+public class PoisonProjectile : MonoBehaviour
 {
-    private FireStrike weapon; // Ссылка на оружие
+    private PoisonStrike weapon; // Ссылка на оружие
     private Enemy target; // Текущая цель
     private int targetsHit = 0; // Счетчик пораженных целей
     private int maxTargets; // Максимальное количество целей
-    private float burnDuration; // Продолжительность горения
-    private float burnDamagePerSecond; // Урон от горения в секунду
+    private float poisonDuration; // Продолжительность отравления
+    private float poisonDamagePerSecond; // Урон от яда в секунду
     private List<Enemy> hitEnemies = new List<Enemy>(); // Список пораженных врагов
     private float projectileSpeed; // Скорость снаряда
     private float projectileLifetime; // Время жизни снаряда
 
-    public void Initialize(FireStrike weapon, int maxTargets, float burnDuration, float burnDamagePerSecond)
+    public void Initialize(PoisonStrike weapon, int maxTargets, float poisonDuration, float poisonDamagePerSecond)
     {
         this.weapon = weapon;
         this.maxTargets = maxTargets;
-        this.burnDuration = burnDuration; // Присваиваем значение продолжительности горения
-        this.burnDamagePerSecond = burnDamagePerSecond; // Присваиваем значение урона от горения в секунду
+        this.poisonDuration = poisonDuration; // Присваиваем значение продолжительности отравления
+        this.poisonDamagePerSecond = poisonDamagePerSecond; // Присваиваем значение урона от яда в секунду
         this.projectileSpeed = weapon.projectileSpeed;
         this.projectileLifetime = weapon.projectileLifetime;
 
@@ -146,8 +146,8 @@ public class FireProjectile : MonoBehaviour
             Enemy enemy = other.GetComponent<Enemy>();
             if (enemy != null && CanHitEnemy(enemy)) // Проверяем, можно ли ударить врага
             {
-                DealDamage(enemy); // Наносим урон
-                StartCoroutine(ApplyBurningEffect(enemy)); // Применяем эффект горения
+                DealDamage(enemy); // Наносим мгновенный урон
+                StartCoroutine(ApplyPoisonEffect(enemy)); // Применяем эффект яда
                 targetsHit++; // Увеличиваем счетчик пораженных целей
 
                 if (targetsHit >= maxTargets)
@@ -165,27 +165,27 @@ public class FireProjectile : MonoBehaviour
 
     private void DealDamage(Enemy enemy)
     {
-        float finalDamage = weapon.CalculateDamage(); // Рассчитываем урон
+        float finalDamage = weapon.CalculateDamage(); // Рассчитываем мгновенный урон
         Debug.Log($"Direct damage dealt to {enemy.name}: {finalDamage}");
-        enemy.TakeDamage((int)finalDamage); // Наносим урон
+        enemy.TakeDamage((int)finalDamage); // Наносим мгновенный урон
         hitEnemies.Add(enemy); // Добавляем врага в список пораженных
     }
 
-    private IEnumerator ApplyBurningEffect(Enemy enemy)
+    private IEnumerator ApplyPoisonEffect(Enemy enemy)
     {
-        Debug.Log($"Enemy {enemy.name} is burning for {burnDuration} seconds with {burnDamagePerSecond} damage per second!");
+        Debug.Log($"Enemy {enemy.name} is poisoned for {poisonDuration} seconds with {poisonDamagePerSecond} damage per second!");
 
         float elapsedTime = 0f;
 
-        while (elapsedTime < burnDuration)
+        while (elapsedTime < poisonDuration)
         {
-            enemy.TakeDamage((int)burnDamagePerSecond); // Наносим урон от горения
-            Debug.Log($"Applying burn damage: {burnDamagePerSecond} to {enemy.name}. Total elapsed time: {elapsedTime} seconds.");
+            enemy.TakeDamage((int)poisonDamagePerSecond); // Наносим урон от яда
+            Debug.Log($"Applying poison damage: {poisonDamagePerSecond} to {enemy.name}. Total elapsed time: {elapsedTime} seconds.");
 
             elapsedTime += 1f; // Ждем 1 секунду перед следующей порцией урона
             yield return new WaitForSeconds(1f);
         }
 
-        Debug.Log($"Burn effect on {enemy.name} has ended after {burnDuration} seconds.");
+        Debug.Log($"Poison effect on {enemy.name} has ended after {poisonDuration} seconds.");
     }
 }

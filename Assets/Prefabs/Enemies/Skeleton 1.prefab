@@ -4829,7 +4829,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 16.16, y: -13.26, z: 0}
-  m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
+  m_LocalScale: {x: 0.005, y: 0.005, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 652575115244528387}
@@ -4960,6 +4960,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 300
+  currentHealth: 0
   enemyMoveSpeed: 0.7
   damage: 100
   attackRange: 0.1
@@ -4981,7 +4982,6 @@ MonoBehaviour:
   - {fileID: 5469531237655120259, guid: d419f38c017de994c8dbd724a047d3a8, type: 3}
   - {fileID: 336186041612917338, guid: e2f4af4bccfe53e4da3fc6d8a00ed082, type: 3}
   - {fileID: 6103947597723192743, guid: 94f6f4aa0af17814b89dc9ce7414bd63, type: 3}
-  bloodManager: {fileID: 5948699707618501534, guid: 95612192a9703a94e9df078e4fef2222, type: 3}
 --- !u!1 &8585466620404447349
 GameObject:
   m_ObjectHideFlags: 0

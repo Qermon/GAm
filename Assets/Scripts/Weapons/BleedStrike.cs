@@ -2,21 +2,22 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class FireStrike : Weapon
+public class BleedStrike : Weapon
 {
     public GameObject projectilePrefab; // Префаб снаряда
-    public int maxTargets = 5; // Максимальное количество целей, по которым может пройти снаряд
-    public float burnDuration = 3f; // Продолжительность горения
+    public int maxTargets = 5; // Максимальное количество целей
+    public float bleedDuration = 5f; // Продолжительность кровотечения
+    public float slowEffect = 0.5f; // Степень замедления врага
     public float projectileLifetime = 5f; // Время жизни снаряда
-    public float activationRange = 10f; // Радиус, в котором снаряды начинают спавниться
+    public float activationRange = 10f; // Радиус активации снарядов
 
     protected override void Start()
     {
         base.Start();
-        StartCoroutine(LaunchFireStrike()); // Запуск корутины атаки
+        StartCoroutine(LaunchBleedStrike()); // Запуск корутины атаки
     }
 
-    private IEnumerator LaunchFireStrike()
+    private IEnumerator LaunchBleedStrike()
     {
         while (true) // Бесконечный цикл для постоянного запуска снарядов
         {
@@ -38,7 +39,7 @@ public class FireStrike : Weapon
     {
         GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
         projectile.tag = "Weapon"; // Устанавливаем тег
-        projectile.AddComponent<FireProjectile>().Initialize(this, maxTargets, burnDuration, damage * 0.5f); // Устанавливаем урон от горения
+        projectile.AddComponent<BleedProjectile>().Initialize(this, maxTargets, bleedDuration, slowEffect, damage * 0.5f); // Устанавливаем урон от кровотечения и замедление
     }
 
     private void OnDrawGizmosSelected()
@@ -48,24 +49,26 @@ public class FireStrike : Weapon
     }
 }
 
-public class FireProjectile : MonoBehaviour
+public class BleedProjectile : MonoBehaviour
 {
-    private FireStrike weapon; // Ссылка на оружие
+    private BleedStrike weapon; // Ссылка на оружие
     private Enemy target; // Текущая цель
     private int targetsHit = 0; // Счетчик пораженных целей
     private int maxTargets; // Максимальное количество целей
-    private float burnDuration; // Продолжительность горения
-    private float burnDamagePerSecond; // Урон от горения в секунду
+    private float bleedDuration; // Продолжительность кровотечения
+    private float bleedDamagePerSecond; // Урон от кровотечения в секунду
+    private float slowEffect; // Замедление
     private List<Enemy> hitEnemies = new List<Enemy>(); // Список пораженных врагов
     private float projectileSpeed; // Скорость снаряда
     private float projectileLifetime; // Время жизни снаряда
 
-    public void Initialize(FireStrike weapon, int maxTargets, float burnDuration, float burnDamagePerSecond)
+    public void Initialize(BleedStrike weapon, int maxTargets, float bleedDuration, float slowEffect, float bleedDamagePerSecond)
     {
         this.weapon = weapon;
         this.maxTargets = maxTargets;
-        this.burnDuration = burnDuration; // Присваиваем значение продолжительности горения
-        this.burnDamagePerSecond = burnDamagePerSecond; // Присваиваем значение урона от горения в секунду
+        this.bleedDuration = bleedDuration; // Присваиваем значение продолжительности кровотечения
+        this.slowEffect = slowEffect; // Присваиваем значение замедления
+        this.bleedDamagePerSecond = bleedDamagePerSecond; // Присваиваем значение урона от кровотечения
         this.projectileSpeed = weapon.projectileSpeed;
         this.projectileLifetime = weapon.projectileLifetime;
 
@@ -146,8 +149,8 @@ public class FireProjectile : MonoBehaviour
             Enemy enemy = other.GetComponent<Enemy>();
             if (enemy != null && CanHitEnemy(enemy)) // Проверяем, можно ли ударить врага
             {
-                DealDamage(enemy); // Наносим урон
-                StartCoroutine(ApplyBurningEffect(enemy)); // Применяем эффект горения
+                DealDamage(enemy); // Наносим мгновенный урон
+                StartCoroutine(ApplyBleedEffect(enemy)); // Применяем эффект кровотечения
                 targetsHit++; // Увеличиваем счетчик пораженных целей
 
                 if (targetsHit >= maxTargets)
@@ -165,27 +168,33 @@ public class FireProjectile : MonoBehaviour
 
     private void DealDamage(Enemy enemy)
     {
-        float finalDamage = weapon.CalculateDamage(); // Рассчитываем урон
+        float finalDamage = weapon.CalculateDamage(); // Рассчитываем мгновенный урон
         Debug.Log($"Direct damage dealt to {enemy.name}: {finalDamage}");
-        enemy.TakeDamage((int)finalDamage); // Наносим урон
+        enemy.TakeDamage((int)finalDamage); // Наносим мгновенный урон
         hitEnemies.Add(enemy); // Добавляем врага в список пораженных
     }
 
-    private IEnumerator ApplyBurningEffect(Enemy enemy)
+    private IEnumerator ApplyBleedEffect(Enemy enemy)
     {
-        Debug.Log($"Enemy {enemy.name} is burning for {burnDuration} seconds with {burnDamagePerSecond} damage per second!");
+        Debug.Log($"Enemy {enemy.name} is bleeding for {bleedDuration} seconds with {bleedDamagePerSecond} damage per second and slowed by {slowEffect * 100}%.");
+
+        // Замедляем врага
+        enemy.ModifySpeed(slowEffect, bleedDuration); // Добавляем длительность замедления
 
         float elapsedTime = 0f;
 
-        while (elapsedTime < burnDuration)
+        while (elapsedTime < bleedDuration)
         {
-            enemy.TakeDamage((int)burnDamagePerSecond); // Наносим урон от горения
-            Debug.Log($"Applying burn damage: {burnDamagePerSecond} to {enemy.name}. Total elapsed time: {elapsedTime} seconds.");
+            enemy.TakeDamage((int)bleedDamagePerSecond); // Наносим урон от кровотечения
+            Debug.Log($"Applying bleed damage: {bleedDamagePerSecond} to {enemy.name}. Total elapsed time: {elapsedTime} seconds.");
 
             elapsedTime += 1f; // Ждем 1 секунду перед следующей порцией урона
             yield return new WaitForSeconds(1f);
         }
 
-        Debug.Log($"Burn effect on {enemy.name} has ended after {burnDuration} seconds.");
+        // Возвращаем нормальную скорость врагу
+        enemy.ModifySpeed(1f / slowEffect, bleedDuration); // Возвращаем оригинальную скорость врагу
+
+        Debug.Log($"Bleed effect on {enemy.name} has ended after {bleedDuration} seconds.");
     }
 }

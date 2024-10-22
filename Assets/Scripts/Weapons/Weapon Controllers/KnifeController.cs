@@ -8,6 +8,7 @@ public class KnifeController : Weapon
     public float attackInterval = 1.0f; // Интервал между атаками
     public float speed = 10f; // Скорость кенжала
     public float maxDistance = 5f; // Максимальное расстояние полета
+    public float activationRange = 3.5f; // Радиус активации (переменная, как у FireStrike)
 
     private new void Start()
     {
@@ -19,7 +20,10 @@ public class KnifeController : Weapon
         while (true)
         {
             yield return new WaitForSeconds(attackInterval); // Ждем перед следующим броском
-            ShootKnife();
+            if (IsEnemyInRange()) // Проверяем, есть ли враги в радиусе атаки
+            {
+                ShootKnife();
+            }
         }
     }
 
@@ -37,7 +41,7 @@ public class KnifeController : Weapon
 
     private GameObject FindEnemyWithMostHealth()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 10f, LayerMask.GetMask("Mobs", "MobsFly")); // Находим всех врагов в радиусе 10f
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, activationRange, LayerMask.GetMask("Mobs", "MobsFly")); // Находим всех врагов в радиусе активации
         GameObject strongestEnemy = null;
         float highestHealth = -1;
 
@@ -51,6 +55,18 @@ public class KnifeController : Weapon
             }
         }
         return strongestEnemy; // Возвращаем врага с наибольшим здоровьем
+    }
+
+    private bool IsEnemyInRange()
+    {
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, activationRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        return enemies.Length > 0; // Если есть хотя бы один враг в радиусе активации, возвращаем true
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, activationRange); // Рисуем радиус активации в редакторе
     }
 }
 
@@ -81,8 +97,11 @@ public class KnifeBehaviour : MonoBehaviour
         // Поворачиваем кенжал в сторону движения
         if (direction != Vector3.zero) // Проверяем, не нулевая ли вектор
         {
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg; // Получаем угол
-            transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle)); // Поворачиваем кенжал
+            float dirx = direction.x;
+            float diry = direction.y;
+
+            Vector3 scale = transform.localScale;
+            Vector3 rotation = transform.rotation.eulerAngles;
         }
 
         // Проверяем на столкновение с врагом

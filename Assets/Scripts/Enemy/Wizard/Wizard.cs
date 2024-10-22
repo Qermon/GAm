@@ -8,14 +8,22 @@ public class Wizard : Enemy
     public Transform firePoint; // Точка, откуда выпускается снаряд
 
     public float safeDistance = 5f; // Дистанция, на которой маг держится от игрока
-
+    public float moveDuration = 2f; // Время движения в одном направлении
     private float lastAttackTime = 0f; // Время последней атаки
     private bool isAttacking = false; // Флаг для проверки состояния атаки
+    private Vector2 randomDirection; // Направление для случайного движения
+    private float changeDirectionTime; // Таймер для смены направления
+    private Rigidbody2D rb; // Rigidbody для управления движением
+    private float originalMass; // Исходная масса моба
 
     protected override void Start()
     {
         base.Start();
         animator = GetComponent<Animator>(); // Получаем компонент Animator
+        rb = GetComponent<Rigidbody2D>(); // Инициализируем Rigidbody2D
+        originalMass = rb.mass; // Сохраняем оригинальную массу
+        randomDirection = GetRandomDirection(); // Генерация случайного направления
+        changeDirectionTime = Time.time + moveDuration; // Устанавливаем начальное время для смены направления
     }
 
     protected override void Update()
@@ -27,14 +35,16 @@ public class Wizard : Enemy
         // Проверяем дистанцию до игрока
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
-        if (distanceToPlayer > safeDistance)
+        // Если игрок далеко, двигаемся в случайном направлении
+        if (distanceToPlayer > safeDistance && !isAttacking)
         {
-            MoveAwayFromPlayer();
-            animator.SetFloat("moveSpeed", enemyMoveSpeed); // Запуск анимации бега
+            MoveInRandomDirection();
+            animator.SetFloat("moveSpeed", enemyMoveSpeed); // Анимация движения
         }
         else
         {
-            animator.SetFloat("moveSpeed", 0f); // Остановка анимации движения
+            // Останавливаем движение и атакуем
+            animator.SetFloat("moveSpeed", 0f); // Останавливаем анимацию движения
 
             // Условие для атаки
             if (Time.time >= lastAttackTime + attackCooldown && !isAttacking)
@@ -49,6 +59,10 @@ public class Wizard : Enemy
         lastAttackTime = Time.time; // Обновляем время последней атаки
         isAttacking = true; // Устанавливаем флаг атаки
         animator.SetBool("isAttacking", true); // Запуск анимации атаки
+
+        // Поворачиваем мага к игроку перед атакой
+        Vector2 directionToPlayer = (player.position - transform.position).normalized;
+        FlipSprite(directionToPlayer); // Поворот мага по направлению к игроку
     }
 
     // Метод, вызываемый событием анимации для выпуска снаряда
@@ -67,21 +81,41 @@ public class Wizard : Enemy
         animator.SetBool("isAttacking", false); // Остановка анимации атаки
     }
 
-    // Остановка движения
-    private void StopMoving()
+    private void MoveInRandomDirection()
     {
-        enemyMoveSpeed = 0f; // Полная остановка мага
-        animator.SetFloat("moveSpeed", 0f); // Остановка анимации движения
+        rb.velocity = randomDirection * enemyMoveSpeed;
+
+        // Поворачиваем моба в сторону движения
+        if (rb.velocity.magnitude > 0.1f) // Проверяем, движется ли моб
+        {
+            FlipSprite(randomDirection);
+        }
+
+        // Проверяем, пришло ли время смены направления
+        if (Time.time >= changeDirectionTime)
+        {
+            randomDirection = GetRandomDirection();
+            changeDirectionTime = Time.time + moveDuration; // Устанавливаем новое время для смены направления
+        }
     }
 
-    // Метод для движения в сторону от игрока
-    protected void MoveAwayFromPlayer()
+    private Vector2 GetRandomDirection()
     {
-        if (player != null)
+        return new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized;
+    }
+
+    // Метод для поворота спрайта в сторону движения
+    protected override void FlipSprite(Vector2 direction)
+    {
+        if (direction.x > 0)
         {
-            Vector2 direction = (transform.position - player.position).normalized; // Вычисляем направление
-            transform.position = Vector2.MoveTowards(transform.position, transform.position + (Vector3)direction, enemyMoveSpeed * Time.deltaTime);
-            FlipSprite(direction); // Метод для поворота спрайта
+            // Поворачиваем вправо
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+        else if (direction.x < 0)
+        {
+            // Поворачиваем влево
+            transform.localScale = new Vector3(-1, 1, 1);
         }
     }
 }

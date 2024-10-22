@@ -9,6 +9,7 @@ public class BoomerangController : Weapon
     public float speed = 10f; // Скорость бумеранга
     public float returnSpeed = 5f; // Скорость возвращения бумеранга
     public float maxDistance = 5f; // Максимальное расстояние полета
+    public float activationRange = 10f; // Радиус активации для поиска врагов
 
     private new void Start()
     {
@@ -38,7 +39,7 @@ public class BoomerangController : Weapon
 
     private GameObject FindClosestEnemy()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 10f, LayerMask.GetMask("Mobs", "MobsFly")); // Находим всех врагов в радиусе 10f
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, activationRange, LayerMask.GetMask("Mobs", "MobsFly")); // Находим всех врагов в радиусе activationRange
         GameObject closestEnemy = null;
         float closestDistance = float.MaxValue;
 

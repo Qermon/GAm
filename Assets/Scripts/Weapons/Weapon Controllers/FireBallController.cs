@@ -6,6 +6,7 @@ public class FireBallController : Weapon
     public GameObject fireBallPrefab; // Префаб огненного шара
     public float spawnCooldown = 4f; // Время между спавном снарядов
     public float projectileLifetime = 5f; // Время жизни снаряда
+    public float activationRange = 10f; // Радиус активации для поиска врагов
     private float spawnTimer; // Таймер спавна снарядов
 
     protected override void Start()
@@ -43,17 +44,18 @@ public class FireBallController : Weapon
 
     private GameObject FindNearestEnemy()
     {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy"); // Находим всех врагов
+        // Находим всех врагов в радиусе activationRange
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, activationRange, LayerMask.GetMask("Enemy"));
         GameObject nearestEnemy = null;
         float nearestDistance = Mathf.Infinity;
 
-        foreach (GameObject enemy in enemies)
+        foreach (Collider2D enemy in enemies)
         {
             float distance = Vector3.Distance(transform.position, enemy.transform.position);
             if (distance < nearestDistance)
             {
                 nearestDistance = distance;
-                nearestEnemy = enemy; // Обновляем ближайшего врага
+                nearestEnemy = enemy.gameObject; // Обновляем ближайшего врага
             }
         }
 
