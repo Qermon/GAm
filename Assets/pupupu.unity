@@ -1066,10 +1066,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3971101673612549975, guid: c95074369259787489b4511f1c6ac741, type: 3}
-      propertyPath: waveManager
-      value: 
-      objectReference: {fileID: 1596789771}
-    - target: {fileID: 3971101673612549975, guid: c95074369259787489b4511f1c6ac741, type: 3}
       propertyPath: waveNumberText
       value: 
       objectReference: {fileID: 4888609383594220292}
@@ -1255,6 +1251,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 233083481958635557, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 521676084009491254, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 528685079314247260, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: m_LocalPosition.x
       value: 18.39
@@ -1295,17 +1299,37 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4847191281234216912, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+    - target: {fileID: 2354807572737606747, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3870533089780423409, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4009727459069964674, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4251100660639213187, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4725728448337572973, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4847191281234216912, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
-      propertyPath: activationRange
-      value: 2
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5249100412223257423, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5883712729551448394, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5883712729551448394, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: levelUpPanel
@@ -1335,18 +1359,50 @@ PrefabInstance:
       propertyPath: upgradeButtons.Array.data[2]
       value: 
       objectReference: {fileID: 198430570}
+    - target: {fileID: 6361790111507897298, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6455875493453964861, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: healthBar
       value: 
       objectReference: {fileID: 989268677}
+    - target: {fileID: 6455875493453964861, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6498770511958726082, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: m_Name
       value: Player 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6932876325213558038, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6947289330989021062, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7590603156796616809, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: levelText
       value: 
       objectReference: {fileID: 1879401086}
+    - target: {fileID: 7590603156796616809, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7957083078924591980, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8079618099919998205, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8872669925841041822, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1711,7 +1767,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 2845253896345505415}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b00765dc2090a3a4b83df2407438451f, type: 3}
   m_Name: 
