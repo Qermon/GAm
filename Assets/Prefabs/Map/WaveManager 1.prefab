@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &31517926775434235
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4026621540215769861}
+  - component: {fileID: 730726804244577508}
+  - component: {fileID: 1653069027172988733}
+  m_Layer: 0
+  m_Name: WaveManager 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4026621540215769861
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 31517926775434235}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 566.874, y: 542.73126, z: -3.2317388}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &730726804244577508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 31517926775434235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff160410ae86764458d04e0ea0cd76a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timeVisible: 7
+  fadeDuration: 3
+--- !u!114 &1653069027172988733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 31517926775434235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc4a310951a0e204cacb077108d19f22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deathMobPrefabs:
+  - {fileID: 6055379466590609192, guid: a9f17e74e4754ab46b949b34d64eb493, type: 3}
+  deathPrefabs:
+  - {fileID: 8249516095023961441, guid: 2761fa6359eb65142b6c259969c7ad3d, type: 3}
+  batPrefabs:
+  - {fileID: 6491074889364176911, guid: f34099c42f41a3e428c5f785b78c8c85, type: 3}
+  wizardPrefabs:
+  - {fileID: 7880852780070057105, guid: fb4e8f2154b7b6d489e23c0cef0f2e54, type: 3}
+  skeletonPrefabs:
+  - {fileID: 8482489208137954459, guid: b8e9a24ec1bd60f41a5ccfe02d113fc1, type: 3}
+  archerPrefabs:
+  - {fileID: 7534944802843032404, guid: 16d80fe4bea570d4bbf735178fa17361, type: 3}
+  boomPrefabs:
+  - {fileID: 8008754204467399372, guid: fe85f7023ab92aa499704af605980c72, type: 3}
+  healerPrefabs:
+  - {fileID: 4137316831515415101, guid: 75823824dd2bf7345bfd0208d6f1238b, type: 3}
+  buffMobPrefabs:
+  - {fileID: 4371936659898146474, guid: c9cb661a6533d6a44aadf2441bb317d9, type: 3}
+  spawnPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  timeBetweenWaves: 1
+  maxWaves: 1000
+  bloodManager: {fileID: 5948699707618501534, guid: 95612192a9703a94e9df078e4fef2222, type: 3}

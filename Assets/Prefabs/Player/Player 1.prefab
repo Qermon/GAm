@@ -1,54 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &687295792307439973
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4184138925148210278}
-  - component: {fileID: 6019443288282833138}
-  m_Layer: 6
-  m_Name: GarlicController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4184138925148210278
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 687295792307439973}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 240884432101954689}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6019443288282833138
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 687295792307439973}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c250d2489b9b574f93f69db6cb55b68, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  prefab: {fileID: 7461320029442592917, guid: d5a099f254156764e84e2f33012791b6, type: 3}
-  damage: 0
-  speed: 0
-  cooldownDuration: 3
-  pierce: 0
 --- !u!1 &8414269498672096015
 GameObject:
   m_ObjectHideFlags: 0
@@ -60,6 +11,7 @@ GameObject:
   - component: {fileID: 240884432101954689}
   - component: {fileID: 12863909324993017}
   - component: {fileID: 8362926056045357356}
+  - component: {fileID: 1153652812957145865}
   - component: {fileID: 1777906839166299340}
   - component: {fileID: 3754462428425809993}
   - component: {fileID: 3688394390515633474}
@@ -91,8 +43,7 @@ Transform:
   m_LocalPosition: {x: 18.43, y: -12.76, z: 0}
   m_LocalScale: {x: 0.1546239, y: 0.14359303, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 4184138925148210278}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &12863909324993017
@@ -174,6 +125,41 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!58 &1153652812957145865
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8414269498672096015}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 3.8697836
 --- !u!61 &1777906839166299340
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -283,7 +269,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 50000
   currentHealth: 50000
-  regenRate: 5
   healthBar: {fileID: 0}
   animator: {fileID: 0}
   defense: 0
@@ -318,6 +303,7 @@ MonoBehaviour:
   currentLevel: 1
   currentExperience: 0
   experienceToNextLevel: 5
+  levelText: {fileID: 0}
 --- !u!114 &2048253938612577345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -331,12 +317,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelUpPanel: {fileID: 0}
-  weaponsToBuff: []
-  abilityOne: {fileID: 3611967714719107957}
-  abilityTwo: {fileID: 9060793153973678179}
-  abilityThree: {fileID: 7249420801959706525}
-  abilityFour: {fileID: 3744448308673604689}
-  abilityFive: {fileID: 780303128103744184}
+  upgradeIcons: []
+  upgradeButtons: []
+  upgradeOptions: []
 --- !u!114 &7249420801959706525
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -349,9 +332,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 195a935a21f2e11469dfa5da7a7a7656, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damage: 10
+  criticalDamage: 20
+  criticalChance: 0.1
+  attackSpeed: 1
+  rotationSpeed: 0
+  projectileSpeed: 0
+  hitCooldown: 1
   lightningPrefab: {fileID: 6543505024054140773, guid: a409bd14c3113bb48970e7e4888fe83c, type: 3}
   attackInterval: 1
-  lightningDamage: 10
   lightningCount: 5
   spawnRadius: 2
 --- !u!114 &780303128103744184
@@ -366,10 +355,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f717ede821df2e44bbe47cb963408292, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damage: 10
+  criticalDamage: 20
+  criticalChance: 0.1
+  attackSpeed: 1
+  rotationSpeed: 0
+  projectileSpeed: 0
+  hitCooldown: 1
   fireBallPrefab: {fileID: 1214236203580795921, guid: 3552c2bf2a5630c46be6b92f892d25bf, type: 3}
-  speed: 3
-  attackInterval: 1
-  fireBallDamage: 10
+  spawnCooldown: 4
+  projectileLifetime: 5
+  activationRange: 10
 --- !u!114 &3744448308673604689
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -382,12 +378,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51c30d2b6aab01044b7168c82df5e46c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damage: 10
+  criticalDamage: 20
+  criticalChance: 0.1
+  attackSpeed: 1
+  rotationSpeed: 0
+  projectileSpeed: 0
+  hitCooldown: 1
   boomerangPrefab: {fileID: 1227262318394589700, guid: 9f6a07123cb6ba04681b7983e10c4fb8, type: 3}
-  speed: 3
   attackInterval: 1
-  boomerangDamage: 10
+  speed: 3
   returnSpeed: 5
   maxDistance: 5
+  activationRange: 10
 --- !u!114 &9060793153973678179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -400,8 +403,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef2c5f62c6a0be44bae089e52b6a18bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 8095072480143955536, guid: a9d0a14499e78484ebbef4474dae29f2, type: 3}
   damage: 30
+  criticalDamage: 20
+  criticalChance: 0.1
+  attackSpeed: 1
+  rotationSpeed: 0
+  projectileSpeed: 0
+  hitCooldown: 1
+  knifePrefab: {fileID: 0}
+  attackInterval: 1
   speed: 5
-  cooldownDuration: 2
-  pierce: 1
+  maxDistance: 5
+  activationRange: 3.5

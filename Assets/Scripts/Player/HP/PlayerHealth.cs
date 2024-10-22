@@ -18,6 +18,11 @@ public class PlayerHealth : MonoBehaviour
     {
         currentHealth = maxHealth;
 
+        // Добавление радиуса сбора опыта
+        CircleCollider2D collectionRadius = gameObject.AddComponent<CircleCollider2D>();
+        collectionRadius.isTrigger = true; // Чтобы это был триггер
+        collectionRadius.radius = 1f; // Радиус сбора опыта
+
         if (healthBar != null)
         {
             healthBar.SetMaxHealth(maxHealth); // Установить максимальное здоровье на полоску
