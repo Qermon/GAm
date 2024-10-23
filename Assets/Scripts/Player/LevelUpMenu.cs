@@ -38,21 +38,27 @@ public class UpgradeOption
 
 public class LevelUpMenu : MonoBehaviour
 {
+
     public GameObject levelUpPanel;
     public Image[] upgradeIcons;
     public Button[] upgradeButtons;
     public TMP_Text[] upgradeTexts; // Тексты, которые будут отображать описание улучшений
     public List<UpgradeOption> upgradeOptions;
 
+    public WaveManager waveManager;
+
     private PlayerMovement playerMovement;
     private PlayerHealth playerHealth;
     private List<Weapon> playerWeapons; // Список оружий
+    private int waveNumber; // Переменная для хранения текущей волны
 
     private void Start()
     {
         playerMovement = FindObjectOfType<PlayerMovement>();
         playerHealth = FindObjectOfType<PlayerHealth>();
         playerWeapons = new List<Weapon>(FindObjectsOfType<Weapon>()); // Получаем все оружия в игре
+        waveManager = FindObjectOfType<WaveManager>(); // Ищем WaveManager в сцене
+
 
         levelUpPanel.SetActive(false);
         foreach (Image icon in upgradeIcons)
@@ -63,6 +69,8 @@ public class LevelUpMenu : MonoBehaviour
 
     public void OpenLevelUpMenu()
     {
+        waveNumber = waveManager.GetWaveNumber(); // Обновляем значение waveNumber
+
         if (upgradeOptions.Count < 3)
         {
             Debug.LogError("Недостаточно доступных улучшений.");
@@ -101,22 +109,36 @@ public class LevelUpMenu : MonoBehaviour
     // Метод для получения случайного улучшения с учетом редкости
     private UpgradeOption GetRandomUpgradeByRarity(List<UpgradeOption> availableOptions)
     {
-        // Вероятности: 80% - Common, 19% - Uncommon, 1% - Rare
+        // Устанавливаем шансы в зависимости от текущей волны
+        int commonChance = Mathf.Clamp(80 - (waveNumber - 1), 0, 100); // Снижаем шанс обычного улучшения
+        int uncommonChance = Mathf.Clamp(19 + (waveNumber - 1), 0, 100 - commonChance); // Увеличиваем шанс необычного улучшения
+        int rareChance = 100 - commonChance - uncommonChance; // Вычисляем шанс редкого улучшения
+
+        // Выводим шансы на дроп в консоль
+        Debug.Log($"Текущая волна: {waveNumber}");
+        Debug.Log($"Шанс на обычное улучшение: {commonChance}%");
+        Debug.Log($"Шанс на необычное улучшение: {uncommonChance}%");
+        Debug.Log($"Шанс на редкое улучшение: {rareChance}%");
+
+        // Генерация случайного значения
         float randomValue = Random.Range(0f, 100f);
 
         UpgradeRarity selectedRarity;
-        if (randomValue < 80f) // 80% шанс на обычную редкость
+        if (randomValue < commonChance) // Шанс на обычное улучшение
         {
             selectedRarity = UpgradeRarity.Common;
         }
-        else if (randomValue < 99f) // 19% шанс на необычную редкость
+        else if (randomValue < commonChance + uncommonChance) // Шанс на необычное улучшение
         {
             selectedRarity = UpgradeRarity.Uncommon;
         }
-        else // 1% шанс на редкую редкость
+        else // Шанс на редкое улучшение
         {
             selectedRarity = UpgradeRarity.Rare;
         }
+
+        // Выводим выбранную редкость
+        Debug.Log($"Выбранная редкость: {selectedRarity}");
 
         // Фильтруем список доступных опций по выбранной редкости
         List<UpgradeOption> optionsOfSelectedRarity = availableOptions.FindAll(option => option.upgradeRarity == selectedRarity);
@@ -130,6 +152,7 @@ public class LevelUpMenu : MonoBehaviour
         // Возвращаем случайную опцию из отфильтрованного списка
         return optionsOfSelectedRarity[Random.Range(0, optionsOfSelectedRarity.Count)];
     }
+
 
 
 
