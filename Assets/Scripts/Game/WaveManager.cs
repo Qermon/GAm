@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class WaveManager : MonoBehaviour
 {
+
     public GameObject[] deathMobPrefabs;  // Префабы мобов Смерти
     public GameObject[] deathPrefabs;
     public GameObject[] batPrefabs;       // Префабы мобов Летучих мышей
