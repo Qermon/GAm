@@ -155,9 +155,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 981738096}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 486, y: 254}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -114, y: -52}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &47487262
@@ -1548,6 +1548,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1727974254 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+  m_PrefabInstance: {fileID: 620290653}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a97a046465dbda04980c4505ea8b9ab7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1879401086 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1279249581580224677, guid: 6e46641b52ef9a04e8c610e947da3190, type: 3}
@@ -1671,10 +1682,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 981738096}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -406, y: -26}
-  m_SizeDelta: {x: 237.4731, y: 463.3397}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 186, y: -28}
+  m_SizeDelta: {x: 237.47308, y: 463.3397}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2041103312
 MonoBehaviour:
@@ -1723,8 +1734,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1838,15 +1849,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -1900,11 +1911,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 601340572}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 125, y: 564}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 125.5, y: -48.5}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &246763309683246038
@@ -2077,6 +2088,10 @@ PrefabInstance:
       propertyPath: healthBar
       value: 
       objectReference: {fileID: 989268677}
+    - target: {fileID: 6455875493453964861, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
+      propertyPath: investment
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 6455875493453964861, guid: ef888bc48f3e5674b975907a96bf9cf4, type: 3}
       propertyPath: currentHealth
       value: 10
@@ -2463,6 +2478,10 @@ PrefabInstance:
       value: WaveManager
       objectReference: {fileID: 0}
     - target: {fileID: 1653069027172988733, guid: ff00c9a9371125a4ab10ee5567d8b395, type: 3}
+      propertyPath: shop
+      value: 
+      objectReference: {fileID: 1727974254}
+    - target: {fileID: 1653069027172988733, guid: ff00c9a9371125a4ab10ee5567d8b395, type: 3}
       propertyPath: spawnPoints.Array.data[0]
       value: 
       objectReference: {fileID: 1086339301}
@@ -2710,6 +2729,9 @@ PrefabInstance:
     - {fileID: 4191140939171980154, guid: 6e46641b52ef9a04e8c610e947da3190, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 3510757581371230474, guid: 6e46641b52ef9a04e8c610e947da3190, type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 2135288781}
+    - targetCorrespondingSourceObject: {fileID: 3510757581371230474, guid: 6e46641b52ef9a04e8c610e947da3190, type: 3}
       insertIndex: -1
       addedObject: {fileID: 981738096}
     - targetCorrespondingSourceObject: {fileID: 5656275585539047939, guid: 6e46641b52ef9a04e8c610e947da3190, type: 3}
@@ -2737,4 +2759,3 @@ SceneRoots:
   - {fileID: 2845253896345505415}
   - {fileID: 4353988202455201899}
   - {fileID: 620290653}
-  - {fileID: 2135288781}

@@ -10,6 +10,7 @@ public class Shop : MonoBehaviour
 
     private PlayerHealth playerHealth; // Ссылка на скрипт PlayerHealth игрока
     private PlayerMovement playerMovement; // Ссылка на скрипт PlayerMovement игрока
+    private PlayerGold playerGold; // Ссылка на скрипт PlayerGold
 
     private void Start()
     {
@@ -22,9 +23,10 @@ public class Shop : MonoBehaviour
             closeButton.onClick.AddListener(CloseShop);
         }
 
-        // Найдем игрока на сцене и получим ссылки на PlayerHealth и PlayerMovement
+        // Найдем игрока на сцене и получим ссылки на PlayerHealth, PlayerMovement и PlayerGold
         playerHealth = FindObjectOfType<PlayerHealth>();
         playerMovement = FindObjectOfType<PlayerMovement>();
+        playerGold = FindObjectOfType<PlayerGold>();
 
         if (playerHealth == null)
         {
@@ -33,6 +35,10 @@ public class Shop : MonoBehaviour
         if (playerMovement == null)
         {
             Debug.LogError("PlayerMovement not found in the scene!");
+        }
+        if (playerGold == null)
+        {
+            Debug.LogError("PlayerGold not found in the scene!");
         }
     }
 
@@ -49,7 +55,10 @@ public class Shop : MonoBehaviour
         // Закрываем магазин
         shopPanel.SetActive(false);
         Time.timeScale = 1f;  // Возобновляем игру
+        // Начисляем бонус золота
+        playerGold.OnShopClosed();
     }
+
 
     private void UpdatePlayerStats()
     {

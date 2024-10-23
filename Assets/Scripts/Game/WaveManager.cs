@@ -53,6 +53,9 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator StartNextWave()
     {
+        PlayerGold playerGold = FindObjectOfType<PlayerGold>();
+        playerGold.OnNewWaveStarted(); // Сбрасываем флаг
+
         yield return new WaitForSeconds(timeBetweenWaves);
         StartWave();
     }

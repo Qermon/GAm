@@ -128,6 +128,22 @@ public class PlayerHealth : MonoBehaviour
         UpdateHealthUI();
     }
 
+    public float CalculateInvestmentBonus(float currentGold)
+    {
+        // Фиксированное количество золота за каждые 10 инвестиций
+        float fixedGoldBonus = Mathf.Floor(investment / 10) * 10; // Например, 10 золота за каждые 10 инвестиций
+
+        // Процент получения золота в зависимости от уровня инвестиций
+        float investmentPercentage = (Mathf.Floor(investment / 10) * 0.02f); // 2% за каждые 10 инвестиций
+        float percentageGoldBonus = currentGold * investmentPercentage; // Рассчитываем процентное бонусное золото
+
+        // Итоговое бонусное золото
+        float totalBonusGold = fixedGoldBonus + percentageGoldBonus;
+
+        return totalBonusGold;
+    }
+
+
     public void TakeDamage(int damage)
     {
         // Рассчитываем уменьшение урона на основе уровня защиты
