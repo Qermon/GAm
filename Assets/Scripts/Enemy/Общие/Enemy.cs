@@ -4,6 +4,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     // Основные характеристики мобов
+    public int goldAmount = 10;
     public int maxHealth = 100;
     public float currentHealth; // Сделать public
     public float enemyMoveSpeed = 0f;
@@ -128,6 +129,13 @@ public class Enemy : MonoBehaviour
         if (playerHealth != null)
         {
             playerHealth.HealOnKill(maxHealth); // Восстанавливаем здоровье игроку
+        }
+
+        // Начисляем золото игроку
+        PlayerGold playerGold = player.GetComponent<PlayerGold>();
+        if (playerGold != null)
+        {
+            playerGold.AddGold(goldAmount);
         }
 
         SpawnExperience();
