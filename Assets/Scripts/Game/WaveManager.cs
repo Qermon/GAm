@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class WaveManager : MonoBehaviour
 {
-<<<<<<< HEAD
-    public Shop shop;
-=======
 
->>>>>>> 77c5984a2f57d11988a19a3f546f5c87f9068b23
+    public Shop shop;
+
+
+
     public GameObject[] deathMobPrefabs;  // Префабы мобов Смерти
     public GameObject[] deathPrefabs;
     public GameObject[] batPrefabs;       // Префабы мобов Летучих мышей
