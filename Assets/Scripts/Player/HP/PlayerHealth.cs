@@ -5,7 +5,7 @@ public class PlayerHealth : MonoBehaviour
 {
     public int maxHealth = 1000; // Максимальное здоровье
     public int currentHealth; // Текущее здоровье
-    public float regenRate = 5; // Количество здоровья, восстанавливаемого каждую секунду
+    public float regen = 0.01f; // Количество здоровья, восстанавливаемого каждую секунду
     private bool isRegenerating = false; // Флаг для отслеживания регенерации
     public HealthBar healthBar; // Ссылка на компонент полоски здоровья
     public Animator animator; // Ссылка на компонент Animator
@@ -45,9 +45,9 @@ public class PlayerHealth : MonoBehaviour
     // Метод для увеличения регенерации здоровья
     public void IncreaseHealthRegen(float percentage)
     {
-        float increaseAmount = regenRate * percentage;
-        regenRate += increaseAmount; // Увеличиваем скорость регенерации здоровья
-        Debug.Log($"Скорость регенерации здоровья увеличена на {percentage}. Новая скорость регенерации: {regenRate}");
+        float increaseAmount = regen * percentage;
+        regen += increaseAmount; // Увеличиваем скорость регенерации здоровья
+        Debug.Log($"Скорость регенерации здоровья увеличена на {percentage}. Новая скорость регенерации: {regen}");
     }
 
     public void IncreaseArmor(int amount)
@@ -60,9 +60,11 @@ public class PlayerHealth : MonoBehaviour
         int increaseAmount = Mathf.FloorToInt(maxHealth * percentage); // Рассчитываем увеличение на основе процента от текущего maxHealth
         maxHealth += increaseAmount; // Увеличиваем максимальное здоровье
         currentHealth += increaseAmount; // Увеличиваем текущее здоровье на то же количество, чтобы игрок не терял здоровье
-        UpdateHealthUI(); // Обновляем UI
+        healthBar.SetMaxHealth(maxHealth); // Обновляем максимальное здоровье на UI
+        UpdateHealthUI(); // Обновляем текущую полоску здоровья на UI
         Debug.Log($"Максимальное здоровье увеличено на {increaseAmount}. Новое максимальное здоровье: {maxHealth}. Текущее здоровье: {currentHealth}");
     }
+
 
 
     // Метод для увеличения вампиризма
@@ -144,7 +146,15 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log("Игрок получил урон: " + reducedDamage + ", защита уменьшила урон на: " + (damage - reducedDamage));
 
         UpdateHealthUI(); // Обновляем UI здоровья
+
+        // Запуск регенерации после получения урона только если здоровье не на максимуме
+        if (currentHealth < maxHealth)
+        {
+            StartHealthRegen();
+        }
     }
+
+
 
 
     private IEnumerator Die()
@@ -166,17 +176,15 @@ public class PlayerHealth : MonoBehaviour
     public void StartHealthRegen()
     {
         Debug.Log("Попытка запустить регенерацию.");
+        // Проверяем, не идет ли уже регенерация и меньше ли текущее здоровье максимального
         if (!isRegenerating && currentHealth < maxHealth)
         {
             Debug.Log("Запуск регенерации.");
             isRegenerating = true;
             StartCoroutine(RegenerateHealth());
         }
-        else
-        {
-            Debug.Log("Регенерация уже активна или здоровье на максимуме.");
-        }
     }
+
 
     // Пассивная регенерация здоровья
     private IEnumerator RegenerateHealth()
@@ -185,20 +193,26 @@ public class PlayerHealth : MonoBehaviour
         {
             if (currentHealth < maxHealth)
             {
-                int previousHealth = currentHealth; // Сохраняем предыдущее здоровье
-                currentHealth += Mathf.FloorToInt(regenRate);
+                int previousHealth = currentHealth; // Сохраняем текущее здоровье
+
+                // Рассчитываем восстановленное здоровье как процент от maxHealth
+                int healAmount = Mathf.FloorToInt(maxHealth * regen);
+                currentHealth += healAmount;
+
+                // Убедимся, что текущее здоровье не превышает максимума
                 if (currentHealth > maxHealth)
                 {
                     currentHealth = maxHealth;
                 }
 
-                Debug.Log($"Регенерация: текущее здоровье: {previousHealth} -> {currentHealth} из {maxHealth}");
-                UpdateHealthUI();
+                Debug.Log($"Регенерация: текущее здоровье: {previousHealth} -> {currentHealth} из {maxHealth} (восстановлено {healAmount})");
+                UpdateHealthUI(); // Обновляем UI здоровья
             }
             else
             {
                 Debug.Log("Здоровье полностью восстановлено. Остановка регенерации.");
                 StopHealthRegen();
+                yield break; // Останавливаем корутину
             }
 
             yield return new WaitForSeconds(1f); // Регенерация каждую секунду

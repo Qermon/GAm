@@ -79,16 +79,24 @@ public class LevelUpMenu : MonoBehaviour
     {
         List<UpgradeOption> availableOptions = new List<UpgradeOption>(upgradeOptions);
         List<UpgradeOption> selectedUpgrades = new List<UpgradeOption>();
+        HashSet<UpgradeType> selectedTypes = new HashSet<UpgradeType>(); // Для отслеживания выбранных типов улучшений
 
-        for (int i = 0; i < count; i++)
+        while (selectedUpgrades.Count < count && availableOptions.Count > 0)
         {
             UpgradeOption selectedUpgrade = GetRandomUpgradeByRarity(availableOptions);
-            selectedUpgrades.Add(selectedUpgrade);
-            availableOptions.Remove(selectedUpgrade);
+
+            // Проверяем, не был ли уже выбран тип этого улучшения
+            if (!selectedTypes.Contains(selectedUpgrade.upgradeType))
+            {
+                selectedUpgrades.Add(selectedUpgrade);
+                selectedTypes.Add(selectedUpgrade.upgradeType); // Добавляем тип в список выбранных типов
+                availableOptions.Remove(selectedUpgrade); // Удаляем улучшение из доступных
+            }
         }
 
         return selectedUpgrades;
     }
+
 
     // Метод для получения случайного улучшения с учетом редкости
     private UpgradeOption GetRandomUpgradeByRarity(List<UpgradeOption> availableOptions)
@@ -101,7 +109,7 @@ public class LevelUpMenu : MonoBehaviour
         {
             selectedRarity = UpgradeRarity.Common;
         }
-        else if (randomValue < 19f) // 19% шанс на необычную редкость
+        else if (randomValue < 99f) // 19% шанс на необычную редкость
         {
             selectedRarity = UpgradeRarity.Uncommon;
         }
@@ -122,6 +130,7 @@ public class LevelUpMenu : MonoBehaviour
         // Возвращаем случайную опцию из отфильтрованного списка
         return optionsOfSelectedRarity[Random.Range(0, optionsOfSelectedRarity.Count)];
     }
+
 
 
     private void DisplayUpgradeOptions(List<UpgradeOption> upgrades)
