@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class WaveManager : MonoBehaviour
 {
+    public Shop shop;
     public GameObject[] deathMobPrefabs;  // Префабы мобов Смерти
     public GameObject[] deathPrefabs;
     public GameObject[] batPrefabs;       // Префабы мобов Летучих мышей
@@ -126,6 +127,8 @@ public class WaveManager : MonoBehaviour
 
             // Уничтожаем оставшихся мобов после завершения волны
             RemoveRemainingEnemies();
+
+            shop.OpenShop();
         }
 
         else
