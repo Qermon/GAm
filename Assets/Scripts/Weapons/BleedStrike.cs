@@ -9,7 +9,6 @@ public class BleedStrike : Weapon
     public float bleedDuration = 5f; // Продолжительность кровотечения
     public float slowEffect = 0.5f; // Степень замедления врага
     public float projectileLifetime = 5f; // Время жизни снаряда
-    public float activationRange = 3f; // Радиус активации снарядов
 
     protected override void Start()
     {
@@ -21,7 +20,7 @@ public class BleedStrike : Weapon
     {
         while (true) // Бесконечный цикл для постоянного запуска снарядов
         {
-            if (IsEnemyInRange()) // Проверяем, есть ли враг в радиусе активации
+            if (IsEnemyInRange()) // Проверяем, есть ли враг в радиусе атаки
             {
                 LaunchProjectile(); // Запускаем снаряд
             }
@@ -31,8 +30,8 @@ public class BleedStrike : Weapon
 
     private bool IsEnemyInRange()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, activationRange, LayerMask.GetMask("Mobs", "MobsFly"));
-        return enemies.Length > 0; // Если есть хотя бы один враг в радиусе активации, возвращаем true
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        return enemies.Length > 0; // Если есть хотя бы один враг в радиусе атаки, возвращаем true
     }
 
     private void LaunchProjectile()
@@ -46,7 +45,7 @@ public class BleedStrike : Weapon
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, activationRange); // Рисуем радиус активации
+        Gizmos.DrawWireSphere(transform.position, attackRange); // Рисуем радиус атаки
     }
 }
 

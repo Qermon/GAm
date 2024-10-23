@@ -5,9 +5,7 @@ using UnityEngine;
 public class LightningWeapon : Weapon
 {
     public GameObject lightningPrefab; // Префаб молнии
-    public float attackInterval = 1.0f; // Интервал между спавном молний
     public int lightningCount = 5; // Количество молний за раз
-    public float spawnRadius = 2f; // Радиус спавна молний
 
     protected override void Start()
     {
@@ -19,7 +17,7 @@ public class LightningWeapon : Weapon
     {
         while (true)
         {
-            yield return new WaitForSeconds(attackInterval); // Ждем перед следующим спавном
+            yield return new WaitForSeconds(1f / attackSpeed); // Ждем перед следующим спавном
             if (attackTimer <= 0f) // Проверяем, можно ли атаковать
             {
                 for (int i = 0; i < lightningCount; i++)
@@ -38,7 +36,7 @@ public class LightningWeapon : Weapon
         // Ищем подходящую позицию, пока не найдем ее
         do
         {
-            randomPosition = (Vector2)transform.position + Random.insideUnitCircle * spawnRadius;
+            randomPosition = (Vector2)transform.position + Random.insideUnitCircle * attackRange; // Заменяем spawnRadius на attackRange
         } while (IsPositionBlocked(randomPosition)); // Проверяем, заблокирована ли позиция
 
         GameObject spawnedLightning = Instantiate(lightningPrefab, randomPosition, Quaternion.identity);
@@ -67,7 +65,7 @@ public class LightningBehaviour : MonoBehaviour
 
     private void Start()
     {
-        Destroy(gameObject, 3f); // Уничтожаем молнию через 2 секунды
+        Destroy(gameObject, 3f); // Уничтожаем молнию через 3 секунды
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

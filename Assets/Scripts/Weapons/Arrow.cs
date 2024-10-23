@@ -38,6 +38,7 @@ public class Arrow : MonoBehaviour
         if (collision.CompareTag("Wall") || collision.CompareTag("Weapon"))
         {
             Destroy(gameObject); // Уничтожаем стрелу
+            return;
         }
 
         // Проверяем столкновение с игроком
@@ -45,7 +46,14 @@ public class Arrow : MonoBehaviour
         {
             PlayerHealth playerHealth = collision.GetComponent<PlayerHealth>();
 
-            // Наносим урон игроку
+            // Проверяем, что это не CircleCollider2D (радиус сбора)
+            if (collision is CircleCollider2D)
+            {
+                // Игнорируем коллайдер радиуса сбора
+                return;
+            }
+
+            // Наносим урон игроку только если это не CircleCollider2D
             if (playerHealth != null)
             {
                 playerHealth.TakeDamage(damage);
@@ -54,4 +62,5 @@ public class Arrow : MonoBehaviour
             Destroy(gameObject); // Уничтожаем стрелу после удара
         }
     }
+
 }

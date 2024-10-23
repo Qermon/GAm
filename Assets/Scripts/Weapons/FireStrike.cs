@@ -8,7 +8,6 @@ public class FireStrike : Weapon
     public int maxTargets = 5; // Максимальное количество целей, по которым может пройти снаряд
     public float burnDuration = 3f; // Продолжительность горения
     public float projectileLifetime = 5f; // Время жизни снаряда
-    public float activationRange = 10f; // Радиус, в котором снаряды начинают спавниться
 
     protected override void Start()
     {
@@ -30,7 +29,7 @@ public class FireStrike : Weapon
 
     private bool IsEnemyInRange()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, activationRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
         return enemies.Length > 0; // Если есть хотя бы один враг в радиусе активации, возвращаем true
     }
 
@@ -44,9 +43,10 @@ public class FireStrike : Weapon
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, activationRange); // Рисуем радиус активации
+        Gizmos.DrawWireSphere(transform.position, attackRange); // Рисуем радиус активации
     }
 }
+
 
 public class FireProjectile : MonoBehaviour
 {

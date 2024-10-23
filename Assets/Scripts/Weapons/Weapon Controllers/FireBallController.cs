@@ -4,28 +4,26 @@ using UnityEngine;
 public class FireBallController : Weapon
 {
     public GameObject fireBallPrefab; // Префаб огненного шара
-    public float spawnCooldown = 4f; // Время между спавном снарядов
     public float projectileLifetime = 5f; // Время жизни снаряда
-    public float activationRange = 10f; // Радиус активации для поиска врагов
-    private float spawnTimer; // Таймер спавна снарядов
+    private new float attackTimer; // Таймер для атаки
 
     protected override void Start()
     {
         base.Start();
-        spawnTimer = spawnCooldown; // Инициализируем таймер спавна
+        attackTimer = 1f / attackSpeed; // Инициализируем таймер спавна
     }
 
     protected override void Update()
     {
         base.Update();
 
-        // Обновляем таймер спавна
-        spawnTimer -= Time.deltaTime;
+        // Обновляем таймер атаки
+        attackTimer -= Time.deltaTime;
 
-        if (spawnTimer <= 0f) // Если время для спавна истекло
+        if (attackTimer <= 0f) // Если время для атаки истекло
         {
             SpawnFireBall();
-            spawnTimer = spawnCooldown; // Сбрасываем таймер
+            attackTimer = 1f / attackSpeed; // Сбрасываем таймер
         }
     }
 
@@ -44,9 +42,9 @@ public class FireBallController : Weapon
 
     private GameObject FindNearestEnemy()
     {
-        // Находим всех врагов в радиусе activationRange на слоях Mobs и MobsFly
+        // Находим всех врагов в радиусе attackRange на слоях Mobs и MobsFly
         int enemyLayerMask = LayerMask.GetMask("Mobs", "MobsFly");
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, activationRange, enemyLayerMask);
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, enemyLayerMask);
 
         GameObject nearestEnemy = null;
         float nearestDistance = Mathf.Infinity;
@@ -63,7 +61,6 @@ public class FireBallController : Weapon
 
         return nearestEnemy; // Возвращаем ближайшего врага
     }
-
 }
 
 public class FireBall : MonoBehaviour

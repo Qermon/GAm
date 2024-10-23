@@ -8,7 +8,6 @@ public class KnifeController : Weapon
     public float attackInterval = 1.0f; // Интервал между атаками
     public float speed = 10f; // Скорость кенжала
     public float maxDistance = 5f; // Максимальное расстояние полета
-    public float activationRange = 3.5f; // Радиус активации (переменная, как у FireStrike)
 
     private new void Start()
     {
@@ -41,7 +40,7 @@ public class KnifeController : Weapon
 
     private GameObject FindEnemyWithMostHealth()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, activationRange, LayerMask.GetMask("Mobs", "MobsFly")); // Находим всех врагов в радиусе активации
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly")); // Находим всех врагов в радиусе атаки
         GameObject strongestEnemy = null;
         float highestHealth = -1;
 
@@ -59,14 +58,14 @@ public class KnifeController : Weapon
 
     private bool IsEnemyInRange()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, activationRange, LayerMask.GetMask("Mobs", "MobsFly"));
-        return enemies.Length > 0; // Если есть хотя бы один враг в радиусе активации, возвращаем true
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        return enemies.Length > 0; // Если есть хотя бы один враг в радиусе атаки, возвращаем true
     }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, activationRange); // Рисуем радиус активации в редакторе
+        Gizmos.DrawWireSphere(transform.position, attackRange); // Рисуем радиус атаки в редакторе
     }
 }
 

@@ -31,7 +31,15 @@ public class WaveManager : MonoBehaviour
 
     void Start()
     {
-        InitializeWaves();
+        InitializeWaves(); // Убедимся, что инициализация происходит до начала игры
+
+        if (waveConfigs == null || waveConfigs.Count == 0)
+        {
+            Debug.LogError("Ошибка инициализации волн: waveConfigs не инициализирован или пустой.");
+            return;
+        }
+
+        StartWave();
     }
 
     void Update()
@@ -50,6 +58,12 @@ public class WaveManager : MonoBehaviour
 
     public void StartWave()
     {
+        if (waveConfigs == null || waveConfigs.Count == 0)
+        {
+            Debug.LogError("WaveConfig не инициализирован или пустой.");
+            return;
+        }
+
         if (!spawningWave)
         {
             StartCoroutine(SpawnWave());
@@ -61,7 +75,7 @@ public class WaveManager : MonoBehaviour
         spawningWave = true;
         waveNumber++;
 
-        if (waveConfigs.ContainsKey(waveNumber))
+        if (waveConfigs != null && waveConfigs.ContainsKey(waveNumber))
         {
             WaveConfig currentWave = waveConfigs[waveNumber];
             waveDuration = currentWave.waveDuration;  // Время волны
@@ -113,6 +127,12 @@ public class WaveManager : MonoBehaviour
             // Уничтожаем оставшихся мобов после завершения волны
             RemoveRemainingEnemies();
         }
+
+        else
+        {
+            Debug.LogError("WaveConfig для waveNumber " + waveNumber + " не найден или waveConfigs не инициализировано.");
+        }
+
 
         spawningWave = false;
 

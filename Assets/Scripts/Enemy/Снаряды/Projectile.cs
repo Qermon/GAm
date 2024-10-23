@@ -6,7 +6,7 @@ public class Projectile : MonoBehaviour
     public float lifetime = 5f; // Время жизни снаряда
     private Rigidbody2D rb; // Ссылка на Rigidbody2D
     private Vector2 direction; // Направление движения снаряда
-
+    public float damage = 30f; 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -44,11 +44,19 @@ public class Projectile : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             Debug.Log("Снаряд попал в игрока!");
+
+            // Проверяем, что это не CircleCollider2D (радиус сбора)
+            if (collision is CircleCollider2D)
+            {
+                // Игнорируем коллайдер радиуса сбора
+                return;
+            }
+
             PlayerHealth playerHealth = collision.GetComponent<PlayerHealth>();
 
             if (playerHealth != null)
             {
-                playerHealth.TakeDamage(100); // Наносим урон
+                playerHealth.TakeDamage((int)damage); // Наносим урон
                 Debug.Log("Снаряд нанес урон игроку! Текущее здоровье: " + playerHealth.currentHealth);
             }
             else
@@ -63,4 +71,5 @@ public class Projectile : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
 }
