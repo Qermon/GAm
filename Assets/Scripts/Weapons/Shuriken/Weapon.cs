@@ -8,18 +8,15 @@ public abstract class Weapon : MonoBehaviour
     public float criticalDamage = 20f; // Урон при критическом ударе
     public float criticalChance = 0.1f; // Шанс критического удара (10%)
     public float attackSpeed = 1f; // Скорость атаки
+    public float attackRange; // Дальность атаки
     public float rotationSpeed; // Скорость вращения снарядов
     public float projectileSpeed; // Скорость снарядов
-
-    // Время между ударами по одному врагу
-    private Dictionary<GameObject, float> lastHitTimes = new Dictionary<GameObject, float>();
-    public float hitCooldown = 1f; // Время в секундах между ударами по одному врагу
 
     protected float attackTimer; // Внутренний таймер для контроля атаки
 
     protected virtual void Start()
     {
-        attackTimer = 1f; // Устанавливаем таймер атаки
+        attackTimer = 0f; // Устанавливаем таймер атаки
     }
 
     public virtual void Attack()
@@ -43,28 +40,48 @@ public abstract class Weapon : MonoBehaviour
         Debug.Log(damageMessage);
     }
 
-    protected void OnTriggerEnter2D(Collider2D other)
+    public void IncreaseDamage(float percentage)
     {
-        if (other.CompareTag("Enemy"))
+        float increaseAmount = damage * percentage; // Вычисляем увеличение урона на основе процента
+        damage += increaseAmount; // Увеличиваем текущий урон
+        Debug.Log($"Урон увеличен на {percentage * 100}%. Новый урон: {damage}");
+    }
+
+    public void IncreaseCritDamage(float percentage)
+    {
+        // Увеличиваем критический урон на заданный процент от базового значения
+        criticalDamage += percentage; // Здесь percentage - это само значение, которое добавляется к критическому урону
+        Debug.Log($"Критический урон увеличен на {percentage}%. Новый критический урон: {criticalDamage}%");
+    }
+
+    public void IncreaseCritChance(float percentage)
+    {
+        criticalChance += percentage; // Увеличиваем шанс критического удара
+        Debug.Log($"Шанс критического удара увеличен на {percentage}%. Новый шанс критического удара: {criticalChance}%");
+    }
+
+    public void IncreaseAttackSpeed(float percentage)
+    {
+        float increaseAmount = attackSpeed * percentage; // Вычисляем увеличение скорости атаки на основе процента
+        attackSpeed += increaseAmount; // Увеличиваем скорость атаки
+        Debug.Log($"Скорость атаки увеличена на {percentage * 100}%. Новая скорость атаки: {attackSpeed}");
+    }
+
+    public void IncreaseAttackRange(float percentage)
+    {
+        float increaseAmount = attackRange * percentage; // Вычисляем увеличение дальности атаки на основе процента
+        attackRange += increaseAmount; // Увеличиваем дальность атаки
+        Debug.Log($"Дальность атаки увеличена на {percentage * 100}%. Новая дальность атаки: {attackRange}");
+    }
+
+    protected virtual void Update()
+    {
+        if (attackTimer > 0f)
         {
-            Enemy enemy = other.GetComponent<Enemy>();
-            if (enemy != null && CanHitEnemy(enemy.gameObject))
-            {
-                float finalDamage = CalculateDamage();
-                enemy.TakeDamage((int)finalDamage);
-                lastHitTimes[enemy.gameObject] = Time.time;
-            }
+            attackTimer -= Time.deltaTime; // Уменьшаем таймер
         }
     }
 
-    private bool CanHitEnemy(GameObject enemy)
-    {
-        if (lastHitTimes.TryGetValue(enemy, out float lastHitTime))
-        {
-            return (Time.time - lastHitTime) >= hitCooldown;
-        }
-        return true;
-    }
     public float CalculateDamage()
     {
         // Генерируем случайное значение
@@ -81,14 +98,5 @@ public abstract class Weapon : MonoBehaviour
 
         Debug.Log($"Обычный удар. Урон: {damage}");
         return damage; // Обычный урон
-    }
-
-
-    protected virtual void Update()
-    {
-        if (attackTimer > 0f)
-        {
-            attackTimer -= Time.deltaTime;
-        }
     }
 }

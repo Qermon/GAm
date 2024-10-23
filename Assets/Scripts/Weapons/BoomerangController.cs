@@ -5,11 +5,9 @@ using UnityEngine;
 public class BoomerangController : Weapon
 {
     public GameObject boomerangPrefab; // Префаб бумеранга
-    public float attackInterval = 1.0f; // Интервал между атаками
     public float speed = 10f; // Скорость бумеранга
     public float returnSpeed = 5f; // Скорость возвращения бумеранга
     public float maxDistance = 5f; // Максимальное расстояние полета
-    public float activationRange = 10f; // Радиус активации для поиска врагов
 
     private new void Start()
     {
@@ -20,7 +18,7 @@ public class BoomerangController : Weapon
     {
         while (true)
         {
-            yield return new WaitForSeconds(attackInterval); // Ждем перед следующим броском
+            yield return new WaitForSeconds(1f / attackSpeed); // Ждем перед следующим броском, используя скорость атаки
             ShootBoomerang();
         }
     }
@@ -39,7 +37,7 @@ public class BoomerangController : Weapon
 
     private GameObject FindClosestEnemy()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, activationRange, LayerMask.GetMask("Mobs", "MobsFly")); // Находим всех врагов в радиусе activationRange
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly")); // Находим всех врагов в радиусе attackRange
         GameObject closestEnemy = null;
         float closestDistance = float.MaxValue;
 
@@ -71,7 +69,7 @@ public class BoomerangBehaviour : MonoBehaviour
 
     // Словарь для отслеживания времени последней атаки по каждому врагу
     private static Dictionary<GameObject, float> lastAttackTimes = new Dictionary<GameObject, float>();
-    private float attackCooldown = 0.3f; // Время между атаками по одному и тому же врагу (1 секунда)
+    private float attackCooldown = 0.3f; // Время между атаками по одному и тому же врагу (0.3 секунды)
 
     private void Start()
     {

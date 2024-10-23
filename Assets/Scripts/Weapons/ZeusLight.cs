@@ -7,30 +7,19 @@ public class ZeusLight : Weapon
     public GameObject projectilePrefab; // Префаб снаряда
     public int maxBounces = 5; // Количество отскоков
     public float bounceDamageReduction = 0.1f; // Процент уменьшения урона на каждом отскоке
-    public float activationRange = 3.5f; // Радиус активации (переменная, как у FireStrike)
-    public float spawnCooldown = 2f; // Кулдаун между спавном снарядов
-
-    private bool canSpawnProjectile = true; // Флаг, можно ли спавнить новый снаряд
 
     protected override void Start()
     {
         base.Start();
-        StartCoroutine(LaunchProjectileWithCooldown()); // Запускаем корутину для стрельбы с кулдауном
+        StartCoroutine(LaunchProjectileCoroutine()); // Запускаем корутину для стрельбы
     }
 
-    private IEnumerator LaunchProjectileWithCooldown()
+    private IEnumerator LaunchProjectileCoroutine()
     {
         while (true) // Бесконечный цикл для постоянного спавна снарядов
         {
-            if (canSpawnProjectile)
-            {
-                LaunchProjectile(); // Спавним снаряд
-                canSpawnProjectile = false; // Ставим флаг, что спавн временно недоступен
-                yield return new WaitForSeconds(spawnCooldown); // Ждем кулдаун
-                canSpawnProjectile = true; // Разрешаем спавн следующего снаряда
-            }
-
-            yield return null; // Ждем до следующего кадра
+            LaunchProjectile(); // Спавним снаряд
+            yield return new WaitForSeconds(1f / attackSpeed); // Ждем интервал, определяемый attackSpeed
         }
     }
 
@@ -43,16 +32,17 @@ public class ZeusLight : Weapon
 
     private bool IsEnemyInRange()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, activationRange, LayerMask.GetMask("Mobs", "MobsFly"));
-        return enemies.Length > 0; // Если есть хотя бы один враг в радиусе активации, возвращаем true
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        return enemies.Length > 0; // Если есть хотя бы один враг в радиусе атаки, возвращаем true
     }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, activationRange); // Рисуем радиус активации
+        Gizmos.DrawWireSphere(transform.position, attackRange); // Рисуем радиус атаки
     }
 }
+
 
 public class ZeusProjectile : MonoBehaviour
 {
@@ -81,7 +71,6 @@ public class ZeusProjectile : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("No available enemies; destroying projectile.");
             Destroy(gameObject); // Уничтожаем снаряд, если целей нет
         }
     }
@@ -149,7 +138,6 @@ public class ZeusProjectile : MonoBehaviour
         }
         else if (target == null)
         {
-            Debug.LogWarning("No target; destroying projectile.");
             Destroy(gameObject); // Уничтожаем снаряд, если нет цели
         }
     }
@@ -210,4 +198,3 @@ public class ZeusProjectile : MonoBehaviour
         Destroy(gameObject);
     }
 }
-

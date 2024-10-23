@@ -8,7 +8,6 @@ public class FreezeStrike : Weapon
     public int maxTargets = 3; // Максимальное количество целей
     public float freezeDuration = 4f; // Продолжительность заморозки
     public float projectileLifetime = 5f; // Время жизни снаряда
-    public float activationRange = 10f; // Радиус активации
 
     protected override void Start()
     {
@@ -30,7 +29,7 @@ public class FreezeStrike : Weapon
 
     private bool IsEnemyInRange()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, activationRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
         return enemies.Length > 0;
     }
 
@@ -44,9 +43,10 @@ public class FreezeStrike : Weapon
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, activationRange); // Радиус активации
+        Gizmos.DrawWireSphere(transform.position, attackRange); // Радиус активации
     }
 }
+
 
 public class FreezeProjectile : MonoBehaviour
 {

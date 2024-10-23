@@ -62,6 +62,13 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // Метод для увеличения скорости движения
+    public void IncreaseMoveSpeed(float amount)
+    {
+        moveSpeed += amount; // Увеличиваем скорость движения
+        Debug.Log($"Скорость движения увеличена на {amount}. Новая скорость: {moveSpeed}");
+    }
+
     void Move()
     {
         rb.velocity = new Vector2(moveDir.x * moveSpeed, moveDir.y * moveSpeed);    // Применяем скорость

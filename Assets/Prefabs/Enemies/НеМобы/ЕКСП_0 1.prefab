@@ -184,6 +184,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   experienceAmount: 5
-  baseMoveSpeed: 3
+  baseMoveSpeed: 5
   maxMoveSpeed: 10
   acceleration: 2

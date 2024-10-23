@@ -6,7 +6,6 @@ public class Shuriken : Weapon
 {
     public GameObject shurikenPrefab; // Префаб сюрикена
     public int shurikenCount = 5; // Количество сюрикенов
-    public float rotationRadius = 5f; // Радиус вращения вокруг игрока
 
     private GameObject[] shurikens; // Массив сюрикенов
 
@@ -30,8 +29,8 @@ public class Shuriken : Weapon
                 return; // Остановить выполнение, если создание не удалось
             }
             shurikens[i].transform.parent = transform; // Сделать игрока родителем
-            shurikens[i].transform.localPosition = new Vector3(Mathf.Cos((360f / shurikenCount) * i * Mathf.Deg2Rad) * rotationRadius,
-                                                                Mathf.Sin((360f / shurikenCount) * i * Mathf.Deg2Rad) * rotationRadius, 0);
+            shurikens[i].transform.localPosition = new Vector3(Mathf.Cos((360f / shurikenCount) * i * Mathf.Deg2Rad) * attackRange,
+                                                                Mathf.Sin((360f / shurikenCount) * i * Mathf.Deg2Rad) * attackRange, 0);
             Collider2D collider = shurikens[i].AddComponent<BoxCollider2D>();
             collider.isTrigger = true; // Сделать коллайдер триггером
             collider.tag = "Weapon"; // Установить тег для триггера
@@ -55,9 +54,10 @@ public class Shuriken : Weapon
                 continue;
             }
 
-            float angle = Time.time * rotationSpeed + (360f / shurikenCount) * i;
-            float x = Mathf.Cos(angle * Mathf.Deg2Rad) * rotationRadius;
-            float y = Mathf.Sin(angle * Mathf.Deg2Rad) * rotationRadius;
+            // Используем attackSpeed для расчета угла вращения
+            float angle = Time.time * attackSpeed * 100 + (360f / shurikenCount) * i; // Умножаем на 100 для получения rotationSpeed
+            float x = Mathf.Cos(angle * Mathf.Deg2Rad) * attackRange; // Заменено на attackRange
+            float y = Mathf.Sin(angle * Mathf.Deg2Rad) * attackRange; // Заменено на attackRange
 
             shurikens[i].transform.localPosition = new Vector3(x, y, 0);
         }
