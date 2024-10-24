@@ -80,7 +80,7 @@ public class PlayerGold : MonoBehaviour
         // Обновляем текст золота в UI только если ссылка на текст существует
         if (goldText != null)
         {
-            goldText.text = "Золото: " + currentGold;
+            goldText.text ="" + currentGold;
         }
         else
         {
