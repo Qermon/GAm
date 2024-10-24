@@ -109,10 +109,45 @@ public class LevelUpMenu : MonoBehaviour
     // Метод для получения случайного улучшения с учетом редкости
     private UpgradeOption GetRandomUpgradeByRarity(List<UpgradeOption> availableOptions)
     {
-        // Устанавливаем шансы в зависимости от текущей волны
-        int commonChance = Mathf.Clamp(80 - (waveNumber - 1), 0, 100); // Снижаем шанс обычного улучшения
-        int uncommonChance = Mathf.Clamp(19 + (waveNumber - 1), 0, 100 - commonChance); // Увеличиваем шанс необычного улучшения
-        int rareChance = 100 - commonChance - uncommonChance; // Вычисляем шанс редкого улучшения
+        int commonChance;
+        int uncommonChance;
+        int rareChance;
+
+        if (waveNumber < 11)
+        {
+            // Шансы для волн до 11-й
+            commonChance = Mathf.Clamp(80 - (waveNumber - 1), 0, 100); // Снижаем шанс обычного улучшения
+            uncommonChance = Mathf.Clamp(19 + (waveNumber - 1), 0, 100 - commonChance); // Увеличиваем шанс необычного улучшения
+            rareChance = 100 - commonChance - uncommonChance; // Вычисляем шанс редкого улучшения
+        }
+        else if (waveNumber <= 21)
+        {
+            // Шансы для волн с 11-й по 21-ю
+            commonChance = Mathf.Clamp(68 - (waveNumber - 11) * 2, 0, 100); // Обычные бафы: 68% -2% за волну
+            uncommonChance = Mathf.Clamp(27 + (waveNumber - 11), 0, 100 - commonChance); // Необычные бафы: 27% +1% за волну
+            rareChance = 100 - commonChance - uncommonChance; // Редкие бафы: 5% +1% за волну
+        }
+        else
+        {
+            // Шансы для волн после 21-й
+            if (48 - (waveNumber - 21) * 2 > 10)
+            {
+                commonChance = 48 - (waveNumber - 21) * 2; // Уменьшаем common на 2% за волну
+                uncommonChance = 37 + (waveNumber - 21); // Увеличиваем uncommon на 1% за волну
+                rareChance = 15 + (waveNumber - 21); // Увеличиваем rare на 1% за волну
+            }
+            else
+            {
+                // Когда commonChance достиг 10%, фиксируем его на 10%
+                commonChance = 10;
+
+                // Оставшиеся 90% распределяются на ancommon и rare
+                uncommonChance = 37 + 19; // uncommon получает 37% + 19%
+                rareChance = 15 + 19; // rare получает 15% + 19%
+            }
+        }
+
+
 
         // Выводим шансы на дроп в консоль
         Debug.Log($"Текущая волна: {waveNumber}");

@@ -134,7 +134,7 @@ public class PlayerHealth : MonoBehaviour
         float fixedGoldBonus = Mathf.Floor(investment / 10) * 10; // Например, 10 золота за каждые 10 инвестиций
 
         // Процент получения золота в зависимости от уровня инвестиций
-        float investmentPercentage = (Mathf.Floor(investment / 10) * 0.02f); // 2% за каждые 10 инвестиций
+        float investmentPercentage = (Mathf.Floor(investment / 10) * 0.01f); // 1% за каждые 10 инвестиций
         float percentageGoldBonus = currentGold * investmentPercentage; // Рассчитываем процентное бонусное золото
 
         // Итоговое бонусное золото

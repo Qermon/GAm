@@ -78,11 +78,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3543666114977585718, guid: b8e9a24ec1bd60f41a5ccfe02d113fc1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 16.16
+      value: 20.605066
       objectReference: {fileID: 0}
     - target: {fileID: 3543666114977585718, guid: b8e9a24ec1bd60f41a5ccfe02d113fc1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -13.26
+      value: -12.254205
       objectReference: {fileID: 0}
     - target: {fileID: 3543666114977585718, guid: b8e9a24ec1bd60f41a5ccfe02d113fc1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -183,8 +183,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goldAmount: 500
-  maxHealth: 500
-  currentHealth: 500
+  maxHealth: 100
+  currentHealth: 0
   bossMoveSpeed: 1
   meleeDamage: 20
   meleeAttackRange: 1

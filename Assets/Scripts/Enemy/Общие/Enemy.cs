@@ -5,10 +5,10 @@ public class Enemy : MonoBehaviour
 {
     // Основные характеристики мобов
     public int goldAmount = 10;
-    public int maxHealth = 100;
+    public float maxHealth = 100f; // Изменено на float
     public float currentHealth; // Сделать public
     public float enemyMoveSpeed = 0f;
-    public int damage = 0;
+    public float damage = 0f; // Изменено на float
     public float attackRange = 0.1f;
     public float attackCooldown = 1f;
     protected bool isDead = false;
@@ -22,7 +22,7 @@ public class Enemy : MonoBehaviour
     // Публичные поля для крови и опыта
     public GameObject experienceItemPrefab;
     public int experienceAmount = 20;
-    public GameObject[] bloodPrefabs; // Массив текстур крови
+
 
     public bool IsDead
     {
@@ -108,18 +108,20 @@ public class Enemy : MonoBehaviour
         PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
         if (playerHealth != null)
         {
-            playerHealth.TakeDamage(damage);
+            playerHealth.TakeDamage((int)damage);
         }
     }
 
     public virtual void TakeDamage(int damage)
     {
         currentHealth -= damage;
+        currentHealth = Mathf.Max(currentHealth, 0); // Обеспечиваем, что здоровье не ниже 0
         if (currentHealth <= 0 && !isDead)
         {
             Die();
         }
     }
+
 
     protected virtual void Die()
     {
@@ -128,7 +130,7 @@ public class Enemy : MonoBehaviour
         PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
         if (playerHealth != null)
         {
-            playerHealth.HealOnKill(maxHealth); // Восстанавливаем здоровье игроку
+            playerHealth.HealOnKill((int)maxHealth); // Восстанавливаем здоровье игроку
         }
 
         // Начисляем золото игроку
@@ -139,9 +141,12 @@ public class Enemy : MonoBehaviour
         }
 
         SpawnExperience();
-        SpawnBlood();
+        
         Destroy(gameObject);
     }
+
+
+
 
     protected virtual void SpawnExperience()
     {
@@ -151,15 +156,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    protected virtual void SpawnBlood()
-    {
-        if (bloodPrefabs.Length > 0)
-        {
-            int randomIndex = Random.Range(0, bloodPrefabs.Length);
-            GameObject blood = Instantiate(bloodPrefabs[randomIndex], transform.position, Quaternion.identity);
-            blood.tag = "Blood";
-        }
-    }
+    
 
     public void Heal(float amount)
     {
