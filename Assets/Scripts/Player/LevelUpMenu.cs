@@ -110,86 +110,80 @@ public class LevelUpMenu : MonoBehaviour
 
 
     // Метод для получения случайного улучшения с учетом редкости
+    // Метод для получения случайного улучшения с учетом редкости
     private UpgradeOption GetRandomUpgradeByRarity(List<UpgradeOption> availableOptions)
     {
-        int commonChance;
-        int uncommonChance;
-        int rareChance;
+        // Начальные шансы
+        float commonChance = 80;
+        float uncommonChance = 19;
+        float rareChance = 1;
 
-        if (waveNumber < 11)
+        // Получаем значение удачи из PlayerHealth
+        float luckValue = playerHealth.luck; // Значение удачи игрока
+
+        // Расчет шансов на основе удачи
+        int luckBonusCount = Mathf.FloorToInt(luckValue / 10); // Количество десятков удачи
+
+        for (int i = 0; i < luckBonusCount; i++)
         {
-            // Шансы для волн до 11-й
-            commonChance = Mathf.Clamp(80 - (waveNumber - 1), 0, 100); // Снижаем шанс обычного улучшения
-            uncommonChance = Mathf.Clamp(19 + (waveNumber - 1), 0, 100 - commonChance); // Увеличиваем шанс необычного улучшения
-            rareChance = 100 - commonChance - uncommonChance; // Вычисляем шанс редкого улучшения
-        }
-        else if (waveNumber <= 21)
-        {
-            // Шансы для волн с 11-й по 21-ю
-            commonChance = Mathf.Clamp(68 - (waveNumber - 11) * 2, 0, 100); // Обычные бафы: 68% -2% за волну
-            uncommonChance = Mathf.Clamp(27 + (waveNumber - 11), 0, 100 - commonChance); // Необычные бафы: 27% +1% за волну
-            rareChance = 100 - commonChance - uncommonChance; // Редкие бафы: 5% +1% за волну
-        }
-        else
-        {
-            // Шансы для волн после 21-й
-            if (48 - (waveNumber - 21) * 2 > 10)
+            // Уменьшаем commonChance
+            if (commonChance > 10)
             {
-                commonChance = 48 - (waveNumber - 21) * 2; // Уменьшаем common на 2% за волну
-                uncommonChance = 37 + (waveNumber - 21); // Увеличиваем uncommon на 1% за волну
-                rareChance = 15 + (waveNumber - 21); // Увеличиваем rare на 1% за волну
+                commonChance -= 1; // Уменьшаем на 1%
+                uncommonChance += 0.5f; // Увеличиваем на 0.5%
+                rareChance += 0.5f; // Увеличиваем на 0.5%
             }
-            else
+            else if (uncommonChance > 20)
             {
-                // Когда commonChance достиг 10%, фиксируем его на 10%
-                commonChance = 10;
-
-                // Оставшиеся 90% распределяются на ancommon и rare
-                uncommonChance = 37 + 19; // uncommon получает 37% + 19%
-                rareChance = 15 + 19; // rare получает 15% + 19%
+                uncommonChance -= 1; // Уменьшаем на 1%
+                rareChance += 1; // Увеличиваем на 1%
             }
         }
 
+        // Обеспечиваем, что сумма шансов равна 100%
+        commonChance = Mathf.Max(commonChance, 0); // Не даем commonChance стать отрицательным
+        uncommonChance = Mathf.Max(uncommonChance, 0); // Не даем uncommonChance стать отрицательным
 
+        // Обновление rareChance, чтобы сумма была 100%
+        rareChance = 100 - commonChance - uncommonChance;
 
-        // Выводим шансы на дроп в консоль
-        Debug.Log($"Текущая волна: {waveNumber}");
-        Debug.Log($"Шанс на обычное улучшение: {commonChance}%");
-        Debug.Log($"Шанс на необычное улучшение: {uncommonChance}%");
-        Debug.Log($"Шанс на редкое улучшение: {rareChance}%");
+        // Убедитесь, что rareChance не становится отрицательным
+        rareChance = Mathf.Max(rareChance, 0);
+
+        // Выводим шансы на дроп с учетом удачи
+        Debug.Log($"Шанс на обычное улучшение: {commonChance}% (Luck: {luckValue})");
+        Debug.Log($"Шанс на необычное улучшение: {uncommonChance}% (Luck: {luckValue})");
+        Debug.Log($"Шанс на редкое улучшение: {rareChance}% (Luck: {luckValue})");
 
         // Генерация случайного значения
         float randomValue = Random.Range(0f, 100f);
-
         UpgradeRarity selectedRarity;
-        if (randomValue < commonChance) // Шанс на обычное улучшение
+
+        if (randomValue < commonChance)
         {
             selectedRarity = UpgradeRarity.Common;
         }
-        else if (randomValue < commonChance + uncommonChance) // Шанс на необычное улучшение
+        else if (randomValue < commonChance + uncommonChance)
         {
             selectedRarity = UpgradeRarity.Uncommon;
         }
-        else // Шанс на редкое улучшение
+        else
         {
             selectedRarity = UpgradeRarity.Rare;
         }
 
-        // Выводим выбранную редкость
-        Debug.Log($"Выбранная редкость: {selectedRarity}");
-
-        // Фильтруем список доступных опций по выбранной редкости
+        // Выбираем улучшение по редкости
         List<UpgradeOption> optionsOfSelectedRarity = availableOptions.FindAll(option => option.upgradeRarity == selectedRarity);
-
-        // Если не нашлось опций нужной редкости, возвращаем случайное улучшение
         if (optionsOfSelectedRarity.Count == 0)
         {
             return availableOptions[Random.Range(0, availableOptions.Count)];
         }
-
-        // Возвращаем случайную опцию из отфильтрованного списка
         return optionsOfSelectedRarity[Random.Range(0, optionsOfSelectedRarity.Count)];
     }
+
+
+
+
 
 
 

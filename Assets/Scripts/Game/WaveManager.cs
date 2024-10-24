@@ -63,7 +63,7 @@ public class WaveManager : MonoBehaviour
     {
         if (waveConfigs == null || waveConfigs.Count == 0)
         {
-            Debug.LogError("WaveConfig не инициализирован или пустой.");
+            
             return;
         }
 

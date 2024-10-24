@@ -36,10 +36,7 @@ public class PlayerHealth : MonoBehaviour
             Debug.LogError("HealthBar reference is missing on PlayerHealth!");
         }
 
-        if (animator == null)
-        {
-            Debug.LogError("Animator reference is missing on PlayerHealth!");
-        }
+       
     }
 
     // Метод для увеличения регенерации здоровья
