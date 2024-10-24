@@ -5,24 +5,26 @@ public class Enemy : MonoBehaviour
 {
     // Основные характеристики мобов
     public int goldAmount = 10;
-    public float maxHealth = 100f; // Изменено на float
-    public float currentHealth; // Сделать public
+    public float maxHealth = 100f;
+    public float currentHealth;
     public float enemyMoveSpeed = 0f;
-    public float damage = 0f; // Изменено на float
+    public float damage = 0f;
     public float attackRange = 0.1f;
     public float attackCooldown = 1f;
     protected bool isDead = false;
 
-    protected Transform player; // Ссылка на игрока
-    private float attackTimer = 0f; // Внутренний таймер для контроля атак
+    protected Transform player;
+    private float attackTimer = 0f;
 
-    private float originalMass; // Исходная масса
-    private Rigidbody2D rb; // Rigidbody для изменения массы
+    private float originalMass;
+    private Rigidbody2D rb;
 
     // Публичные поля для крови и опыта
     public GameObject experienceItemPrefab;
     public int experienceAmount = 20;
 
+    // Поле для префаба крови
+    public GameObject bloodEffectPrefab; // Добавьте это поле
 
     public bool IsDead
     {
@@ -32,7 +34,7 @@ public class Enemy : MonoBehaviour
     protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        originalMass = rb.mass; // Сохраняем исходную массу
+        originalMass = rb.mass;
 
         currentHealth = maxHealth;
 
@@ -59,11 +61,11 @@ public class Enemy : MonoBehaviour
 
         if (enemyMoveSpeed <= 0)
         {
-            rb.mass = originalMass + 100; // Увеличиваем массу
+            rb.mass = originalMass + 100;
         }
         else
         {
-            rb.mass = originalMass; // Возвращаем исходную массу
+            rb.mass = originalMass;
         }
 
         MoveTowardsPlayer();
@@ -74,7 +76,6 @@ public class Enemy : MonoBehaviour
         return currentHealth;
     }
 
-    // Метод для изменения скорости
     public void ModifySpeed(float speedMultiplier, float duration)
     {
         StartCoroutine(ApplySpeedChange(speedMultiplier, duration));
@@ -83,22 +84,20 @@ public class Enemy : MonoBehaviour
     private IEnumerator ApplySpeedChange(float speedMultiplier, float duration)
     {
         float originalSpeed = enemyMoveSpeed;
-        enemyMoveSpeed *= speedMultiplier; // Применяем изменение скорости
+        enemyMoveSpeed *= speedMultiplier;
 
-        yield return new WaitForSeconds(duration); // Ожидание конца действия
+        yield return new WaitForSeconds(duration);
 
-        enemyMoveSpeed = originalSpeed; // Восстанавливаем исходную скорость
+        enemyMoveSpeed = originalSpeed;
     }
 
-
-    // Метод для движения к игроку
     protected virtual void MoveTowardsPlayer()
     {
         if (player != null)
         {
             Vector2 direction = (player.position - transform.position).normalized;
             transform.position = Vector2.MoveTowards(transform.position, player.position, enemyMoveSpeed * Time.deltaTime);
-            FlipSprite(direction); // Метод для поворота спрайта
+            FlipSprite(direction);
         }
     }
 
@@ -115,17 +114,41 @@ public class Enemy : MonoBehaviour
     public virtual void TakeDamage(int damage)
     {
         currentHealth -= damage;
-        currentHealth = Mathf.Max(currentHealth, 0); // Обеспечиваем, что здоровье не ниже 0
+        currentHealth = Mathf.Max(currentHealth, 0);
+
         if (currentHealth <= 0 && !isDead)
         {
             Die();
         }
+        else
+        {
+            // Спавн крови с шансом 20%
+            if (Random.Range(0f, 1f) <= 0.2f) // 20% шанс
+            {
+                GameObject bloodEffectInstance = Instantiate(bloodEffectPrefab, transform.position, Quaternion.identity);
+                BloodEffect bloodEffect = bloodEffectInstance.GetComponent<BloodEffect>();
+                if (bloodEffect != null)
+                {
+                    bloodEffect.SpawnBlood(transform.position);
+                }
+            }
+        }
     }
-
 
     protected virtual void Die()
     {
         isDead = true;
+
+        // Спавн крови при смерти моба
+        if (bloodEffectPrefab != null) // Убедитесь, что переменная bloodEffectPrefab добавлена в класс
+        {
+            GameObject bloodEffectInstance = Instantiate(bloodEffectPrefab, transform.position, Quaternion.identity);
+            BloodEffect bloodEffect = bloodEffectInstance.GetComponent<BloodEffect>();
+            if (bloodEffect != null)
+            {
+                bloodEffect.SpawnBlood(transform.position);
+            }
+        }
 
         PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
         if (playerHealth != null)
@@ -141,11 +164,9 @@ public class Enemy : MonoBehaviour
         }
 
         SpawnExperience();
-        
+
         Destroy(gameObject);
     }
-
-
 
 
     protected virtual void SpawnExperience()
@@ -155,8 +176,6 @@ public class Enemy : MonoBehaviour
             Instantiate(experienceItemPrefab, transform.position, Quaternion.identity);
         }
     }
-
-    
 
     public void Heal(float amount)
     {

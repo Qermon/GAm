@@ -22,10 +22,11 @@ public enum UpgradeType
 
 public enum UpgradeRarity
 {
-    Common,     // Обычная
-    Uncommon,   // Необычная
-    Rare        // Редкая
+    Common = 0,    // 1 звезда
+    Uncommon = 1,  // 2 звезды
+    Rare = 2       // 3 звезды
 }
+
 
 [System.Serializable]
 public class UpgradeOption
@@ -43,6 +44,8 @@ public class LevelUpMenu : MonoBehaviour
     public Image[] upgradeIcons;
     public Button[] upgradeButtons;
     public TMP_Text[] upgradeTexts; // Тексты, которые будут отображать описание улучшений
+    public Sprite[] raritySprites; // Массив спрайтов для редкостей
+    public Image[] rarityImages; // Массив для отображения звездочек
     public List<UpgradeOption> upgradeOptions;
 
     public WaveManager waveManager;
@@ -198,7 +201,7 @@ public class LevelUpMenu : MonoBehaviour
 
         for (int i = 0; i < upgrades.Count; i++)
         {
-            // Отображаем иконки и текст
+            // Отображаем иконки и текст для каждого улучшения
             upgradeIcons[i].sprite = upgrades[i].upgradeSprite;
             upgradeIcons[i].gameObject.SetActive(true);
 
@@ -206,11 +209,20 @@ public class LevelUpMenu : MonoBehaviour
             upgradeTexts[i].text = description;
             upgradeTexts[i].gameObject.SetActive(true);
 
+            // Отображаем звездочки редкости для каждого улучшения
+            int rarityIndex = (int)upgrades[i].upgradeRarity; // Преобразуем редкость в индекс
+            rarityImages[i].sprite = raritySprites[rarityIndex]; // Устанавливаем спрайт звезды на основе редкости
+            rarityImages[i].gameObject.SetActive(true); // Активируем объект, если он скрыт
+
+            // Устанавливаем действие при нажатии на кнопку
             int index = i;
             upgradeButtons[i].onClick.RemoveAllListeners();
             upgradeButtons[i].onClick.AddListener(() => ChooseUpgrade(upgrades[index]));
         }
     }
+
+
+
 
     private string GetUpgradeDescription(UpgradeOption upgrade)
     {
