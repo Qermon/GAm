@@ -22,6 +22,8 @@ public class Shop : MonoBehaviour
     // Массив для хранения пустых иконок
     [SerializeField] private Image[] emptyIcons;
 
+    
+
     public enum UpgradeType
     {
         ShieldPerWave,    // Барьер за волну
@@ -63,6 +65,7 @@ public class Shop : MonoBehaviour
         Time.timeScale = 0f;
         UpdatePlayerStats();
         UpdateUpgradeUI();
+       
     }
 
     public void CloseShop()
@@ -70,6 +73,8 @@ public class Shop : MonoBehaviour
         shopPanel.SetActive(false);
         Time.timeScale = 1f;
         playerGold.OnShopClosed();
+      
+
     }
 
     private void UpdatePlayerStats()

@@ -64,6 +64,8 @@ public class WaveManager : MonoBehaviour
         StartWave();
 
         playerHealth.UpdateShield();
+        playerHealth.UpdateBarrierUI();
+
     }
 
     public void StartWave()
@@ -197,7 +199,7 @@ public class WaveManager : MonoBehaviour
         waveConfigs = new Dictionary<int, WaveConfig>();
 
         // Волна 1
-        waveConfigs.Add(1, new WaveConfig(20f, new List<EnemySpawn>
+        waveConfigs.Add(1, new WaveConfig(5f, new List<EnemySpawn>
     {
         new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(50 + 1 * 1.5f)) // 50 Смертей
     }));
@@ -206,7 +208,8 @@ public class WaveManager : MonoBehaviour
         waveConfigs.Add(2, new WaveConfig(25f, new List<EnemySpawn>
     {
         new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(50 + 2 * 1.5f)), // 50 Смертей
-        new EnemySpawn(batPrefabs[0], 10) // 10 Летучих мышей
+        new EnemySpawn(batPrefabs[0], 10), // 10 Летучих мышей
+        new EnemySpawn(samuraiPrefabs[0], 1) // 10 Скелетов
     }));
 
         // Волна 3
