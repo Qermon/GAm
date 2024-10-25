@@ -24,6 +24,8 @@ public class WaveManager : MonoBehaviour
     private float timeStartedWave;
     private float waveDuration;
 
+    private PlayerHealth playerHealth; // Добавьте ссылку на PlayerHealth
+
     private List<GameObject> activeEnemies = new List<GameObject>();
 
 
@@ -31,6 +33,9 @@ public class WaveManager : MonoBehaviour
 
     void Start()
     {
+
+        playerHealth = FindObjectOfType<PlayerHealth>(); // Инициализируйте ссылку
+
         InitializeWaves(); // Убедимся, что инициализация происходит до начала игры
 
         if (waveConfigs == null || waveConfigs.Count == 0)
@@ -57,6 +62,8 @@ public class WaveManager : MonoBehaviour
 
         yield return new WaitForSeconds(timeBetweenWaves);
         StartWave();
+
+        playerHealth.UpdateShield();
     }
 
     public void StartWave()

@@ -17,8 +17,9 @@ public enum UpgradeType
     Investment,      // Инвестиции
     PickupRadius,    // Радиус сбора
     MoveSpeed,       // Скорость бега
-    Luck             // Удача
+    Luck,            // Удача
 }
+
 
 public enum UpgradeRarity
 {
