@@ -27,6 +27,7 @@ public class Shop : MonoBehaviour
     public enum UpgradeType
     {
         ShieldPerWave,    // Барьер за волну
+        ShieldOnKill,
     }
 
     [System.Serializable]
@@ -155,6 +156,10 @@ public class Shop : MonoBehaviour
                 playerHealth.AddShieldBuff(); // Увеличиваем количество активированных баффов
                 playerHealth.ActivateShield(); // Активируем щит
                 Debug.Log("Бафф ShieldPerWave применен: щит активирован.");
+                break;
+
+            case UpgradeType.ShieldOnKill:
+                playerHealth.ActivateShieldOnKillBuff();
                 break;
         }
     }

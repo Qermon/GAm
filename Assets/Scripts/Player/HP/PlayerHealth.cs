@@ -26,6 +26,10 @@ public class PlayerHealth : MonoBehaviour
     private int shieldBuffCount = 0; // Для хранения количества активированных баффов
     public float maxShieldAmount = 0; // Для отслеживания предыдущего значения щита
 
+    private bool shieldOnKillBuffActive = false; // Флаг активности баффа
+    private const float shieldChance = 0.05f; // 5% шанс
+    private const float shieldPercentage = 0.1f; // 10% от макс. здоровья
+
 
 
 
@@ -136,6 +140,8 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = Mathf.Clamp(currentHealth + healAmount, 0, maxHealth);
         Debug.Log("Восстановлено " + healAmount + " здоровья за убийство врага. Текущее здоровье: " + currentHealth);
         UpdateHealthUI();
+
+        TryApplyShieldOnKill(); // Пытаемся добавить щит с 5% шансом
     }
 
     public float CalculateInvestmentBonus(float currentGold)
@@ -194,6 +200,7 @@ public class PlayerHealth : MonoBehaviour
             else if (shieldAmount <= 0)
             {
                 barrierImage.fillAmount = 0f; // Если щита нет, полоска не отображается
+                
             }
             else
             {
@@ -391,8 +398,26 @@ public class PlayerHealth : MonoBehaviour
         float shieldPercent = 0.25f; // 25%
         float shieldFromHealth = maxHealth * shieldPercent * shieldBuffCount; // Новый щит на основе активированных баффов
         shieldAmount += Mathf.FloorToInt(shieldFromHealth);
+        maxShieldAmount = shieldAmount;
 
         Debug.Log($"Щит обновлён: текущий щит = {shieldAmount} (из них {Mathf.FloorToInt(shieldFromHealth)} от максимального здоровья на основе {shieldBuffCount} баффов)");
+    }
+
+    public void ActivateShieldOnKillBuff()
+    {
+        shieldOnKillBuffActive = true;
+        Debug.Log("Бафф 'Щит при убийстве' активирован!");
+    }
+
+    // Метод для применения щита при убийстве
+    public void TryApplyShieldOnKill()
+    {
+        if (shieldOnKillBuffActive && Random.value <= shieldChance)
+        {
+            int shieldToAdd = Mathf.FloorToInt(maxHealth * shieldPercentage);
+            AddShield(shieldToAdd);
+            Debug.Log($"Добавлен щит {shieldToAdd} (10% от макс. здоровья) при убийстве врага.");
+        }
     }
 
 
