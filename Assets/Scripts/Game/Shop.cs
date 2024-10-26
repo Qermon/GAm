@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 public class Shop : MonoBehaviour
 {
@@ -28,6 +29,8 @@ public class Shop : MonoBehaviour
     {
         ShieldPerWave,    // Барьер за волну
         ShieldOnKill,
+        BarrierOnLowHealth,
+        HealthRegenPerWave
     }
 
     [System.Serializable]
@@ -160,6 +163,16 @@ public class Shop : MonoBehaviour
 
             case UpgradeType.ShieldOnKill:
                 playerHealth.ActivateShieldOnKillBuff();
+                break;
+
+            case UpgradeType.BarrierOnLowHealth:
+                playerHealth.ActivateBarrierOnLowHealthBuff();
+                break;
+
+            case UpgradeType.HealthRegenPerWave:
+                playerHealth.ActivateHealthRegenPerWaveBuff();
+                playerHealth.regen += playerHealth.maxHealth * 0.0002f;
+
                 break;
         }
     }

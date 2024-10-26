@@ -65,6 +65,9 @@ public class WaveManager : MonoBehaviour
 
         playerHealth.UpdateShield();
         playerHealth.UpdateBarrierUI();
+        playerHealth.ApplyHealthRegenAtWaveStart();
+        playerHealth.ResetBarrierOnLowHealthBuff(); // Сброс состояния барьера на новую волну
+        
 
     }
 
@@ -80,6 +83,8 @@ public class WaveManager : MonoBehaviour
         {
             StartCoroutine(SpawnWave());
         }
+
+
     }
 
     IEnumerator SpawnWave()
@@ -154,6 +159,7 @@ public class WaveManager : MonoBehaviour
         spawningWave = false;
 
         StartCoroutine(StartNextWave());
+        playerHealth.barrierActivatedThisWave = false; // Разрешаем активацию на новой волне
     }
 
 
@@ -216,7 +222,8 @@ public class WaveManager : MonoBehaviour
         waveConfigs.Add(3, new WaveConfig(30f, new List<EnemySpawn>
     {
         new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(55 + 3 * 1.5f)), // 55 Смертей
-        new EnemySpawn(batPrefabs[0], 20) // 20 Летучих мышей
+        new EnemySpawn(batPrefabs[0], 20), // 20 Летучих мышей
+        new EnemySpawn(samuraiPrefabs[0], 1) // 10 Скелетов
     }));
 
         // Волна 4
@@ -224,7 +231,8 @@ public class WaveManager : MonoBehaviour
     {
         new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(55 + 4 * 1.5f)), // 55 Смертей
         new EnemySpawn(batPrefabs[0], 20), // 20 Летучих мышей
-        new EnemySpawn(wizardPrefabs[0], 5) // 5 Магов
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(samuraiPrefabs[0], 1) // 10 Скелетов
     }));
 
         // Волна 5

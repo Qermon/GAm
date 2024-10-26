@@ -6,8 +6,8 @@ using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
-    public int maxHealth = 1000; // Максимальное здоровье
-    public int currentHealth; // Текущее здоровье
+    public float maxHealth; // Максимальное здоровье
+    public float currentHealth; // Текущее здоровье
     public float regen = 0.01f; // Количество здоровья, восстанавливаемого каждую секунду
     private bool isRegenerating = false; // Флаг для отслеживания регенерации
     public HealthBar healthBar; // Ссылка на компонент полоски здоровья
@@ -30,6 +30,13 @@ public class PlayerHealth : MonoBehaviour
     private const float shieldChance = 0.05f; // 5% шанс
     private const float shieldPercentage = 0.1f; // 10% от макс. здоровья
 
+    private bool barrierOnLowHealthBuffActive = false; // Флаг активности баффа
+    public bool barrierActivatedThisWave = false;
+
+    private bool healthRegenPerWaveActive = false;
+
+    
+
 
 
 
@@ -40,8 +47,8 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = maxHealth;
         shieldAmount = 0;
         shieldPercent = 0.25f; // 25% от максимального здоровья
-        healthBar.SetMaxHealth(maxHealth);
-        healthBar.SetHealth(currentHealth);
+        healthBar.SetMaxHealth((int)maxHealth);
+        healthBar.SetHealth((int)currentHealth);
 
         collectionRadius = gameObject.AddComponent<CircleCollider2D>();
         collectionRadius.isTrigger = true;
@@ -73,7 +80,7 @@ public class PlayerHealth : MonoBehaviour
         int increaseAmount = Mathf.FloorToInt(maxHealth * percentage); // Рассчитываем увеличение на основе процента от текущего maxHealth
         maxHealth += increaseAmount; // Увеличиваем максимальное здоровье
         currentHealth += increaseAmount; // Увеличиваем текущее здоровье на то же количество, чтобы игрок не терял здоровье
-        healthBar.SetMaxHealth(maxHealth); // Обновляем максимальное здоровье на UI
+        healthBar.SetMaxHealth((int)maxHealth); // Обновляем максимальное здоровье на UI
         UpdateHealthUI(); // Обновляем текущую полоску здоровья на UI
         Debug.Log($"Максимальное здоровье увеличено на {increaseAmount}. Новое максимальное здоровье: {maxHealth}. Текущее здоровье: {currentHealth}");
     }
@@ -244,6 +251,21 @@ public class PlayerHealth : MonoBehaviour
         int reducedDamage = Mathf.RoundToInt(damageToTake * (1 - damageReduction));
         currentHealth -= reducedDamage;
 
+        // Проверка на запуск регенерации после получения урона
+        if (currentHealth < maxHealth)
+        {
+            StartHealthRegen(); // Запускаем регенерацию, если здоровье меньше максимального
+        }
+
+        // Активация барьера при низком здоровье один раз за волну
+        if (barrierOnLowHealthBuffActive && !barrierActivatedThisWave && currentHealth <= maxHealth * 0.5f)
+        {
+            int barrierAmount = Mathf.FloorToInt(maxHealth * 0.2f);
+            AddShield(barrierAmount);
+            barrierActivatedThisWave = true; // Фиксируем, что барьер активирован
+            Debug.Log($"Барьер активирован при низком здоровье: +{barrierAmount}");
+        }
+
         // Проверка, не упал ли игрок до 0 здоровья
         if (currentHealth <= 0)
         {
@@ -251,16 +273,10 @@ public class PlayerHealth : MonoBehaviour
             StartCoroutine(Die());
         }
 
-        // Проверяем, нужно ли установить максимальное здоровье в 0
-        if (shieldAmount <= 0) // Проверка, открыт ли магазин
-        {
-            maxShieldAmount = 0;
-        }
-
         healthBar.SetHealth(currentHealth);
         Debug.Log($"Получен урон: {damageToTake}, Уменьшенный урон: {reducedDamage}, Оставшийся щит: {shieldAmount}");
-    
     }
+
 
     public void AddShield(int additionalShield)
     {
@@ -273,6 +289,7 @@ public class PlayerHealth : MonoBehaviour
 
     private void CheckHealth()
     {
+        
         // Проверяем, если текущее здоровье меньше или равно 29% от максимального
         if (currentHealth <= maxHealth * 0.29f)
         {
@@ -281,36 +298,23 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-
-  
-
-
     public void AddShieldBuff()
     {
         shieldBuffCount++; // Увеличиваем количество активированных баффов
         Debug.Log($"Добавлен бафф щита. Количество баффов: {shieldBuffCount}");
     }
-
     public void DecreaseShield(int amount)
     {
         shieldAmount -= amount;
         shieldAmount = Mathf.Max(shieldAmount, 0); // Убедитесь, что shieldAmount не меньше 0
         
     }
-
-
-
-    
-
-
-
     private IEnumerator Die()
     {
         Debug.Log("Player died!");
         gameObject.SetActive(false);
         yield return null;
     }
-
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
@@ -332,18 +336,16 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-
-    // Пассивная регенерация здоровья
     private IEnumerator RegenerateHealth()
     {
         while (isRegenerating)
         {
             if (currentHealth < maxHealth)
             {
-                int previousHealth = currentHealth; // Сохраняем текущее здоровье
+                float previousHealth = currentHealth; // Сохраняем текущее здоровье
 
                 // Рассчитываем восстановленное здоровье как процент от maxHealth
-                int healAmount = Mathf.FloorToInt(maxHealth * regen);
+                float healAmount = Mathf.FloorToInt(maxHealth * regen);
                 currentHealth += healAmount;
 
                 // Убедимся, что текущее здоровье не превышает максимума
@@ -417,6 +419,54 @@ public class PlayerHealth : MonoBehaviour
             int shieldToAdd = Mathf.FloorToInt(maxHealth * shieldPercentage);
             AddShield(shieldToAdd);
             Debug.Log($"Добавлен щит {shieldToAdd} (10% от макс. здоровья) при убийстве врага.");
+        }
+    }
+    public void ActivateBarrierOnLowHealthBuff()
+    {
+        barrierOnLowHealthBuffActive = true;
+        barrierActivatedThisWave = false; // Обнуляем состояние на новой волне
+        Debug.Log("Бафф 'Барьер при низком здоровье' активирован!");
+    }
+    public void ActivateHealthRegenPerWaveBuff()
+    {
+        healthRegenPerWaveActive = true;
+        Debug.Log("Бафф HealthRegenPerWave активирован: +2% восстановления здоровья каждую волну, но начало волны с 30% здоровья.");
+    }
+
+    public void ResetBarrierOnLowHealthBuff()
+    {
+        if (barrierOnLowHealthBuffActive) // Только если бафф куплен
+        {
+            barrierActivatedThisWave = false; // Сбрасываем, чтобы барьер мог сработать на новой волне
+            Debug.Log("Бафф 'Барьер при низком здоровье' перезаряжен для новой волны!");
+        }
+    }
+
+    public void ApplyHealthRegenAtWaveStart()
+    {
+        if (healthRegenPerWaveActive)
+        {
+            // Устанавливаем здоровье на 30% от максимума
+            currentHealth = Mathf.FloorToInt(maxHealth * 0.3f);
+            healthBar.SetHealth(currentHealth);
+
+            // Запускаем регенерацию, если текущее здоровье меньше максимального
+            StartHealthRegen();
+
+            Debug.Log($"Начало волны: здоровье сброшено до 30% от максимума. Запуск регенерации.");
+
+            // Активация барьера при низком здоровье один раз за волну
+            if (barrierOnLowHealthBuffActive && !barrierActivatedThisWave)
+            {
+                // Проверка на активацию барьера
+                if (currentHealth <= maxHealth * 0.5f || currentHealth == Mathf.FloorToInt(maxHealth * 0.3f))
+                {
+                    int barrierAmount = Mathf.FloorToInt(maxHealth * 0.2f);
+                    AddShield(barrierAmount);
+                    barrierActivatedThisWave = true; // Фиксируем, что барьер активирован
+                    Debug.Log($"Барьер активирован при низком здоровье: +{barrierAmount}");
+                }
+            }
         }
     }
 

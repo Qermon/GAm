@@ -13,7 +13,7 @@ public class HealthBar : MonoBehaviour
         healthBarImage.fillAmount = 1f; // Заполняем бар на 100%
     }
 
-    public void SetHealth(int health)
+    public void SetHealth(float health)
     {
         healthBarImage.fillAmount = (float)health / maxHealth; // Заполняем бар в зависимости от текущего здоровья
     }
