@@ -35,11 +35,6 @@ public class PlayerHealth : MonoBehaviour
 
     private bool healthRegenPerWaveActive = false;
 
-    
-
-
-
-
     private CircleCollider2D collectionRadius; // Ссылка на триггер-коллайдер для сбора предметов
     void Start()
     {
@@ -137,7 +132,6 @@ public class PlayerHealth : MonoBehaviour
     public void AddLifesteal(int amount)
     {
         lifesteal += amount;
-        Debug.Log("Вампиризм увеличен на " + amount + "%. Текущий уровень вампиризма: " + lifesteal + "%");
     }
 
     // Метод для восстановления здоровья при убийстве врага
@@ -145,7 +139,6 @@ public class PlayerHealth : MonoBehaviour
     {
         int healAmount = Mathf.FloorToInt(enemyHealth * (lifesteal / 100f));
         currentHealth = Mathf.Clamp(currentHealth + healAmount, 0, maxHealth);
-        Debug.Log("Восстановлено " + healAmount + " здоровья за убийство врага. Текущее здоровье: " + currentHealth);
         UpdateHealthUI();
 
         TryApplyShieldOnKill(); // Пытаемся добавить щит с 5% шансом
@@ -345,7 +338,7 @@ public class PlayerHealth : MonoBehaviour
                 float previousHealth = currentHealth; // Сохраняем текущее здоровье
 
                 // Рассчитываем восстановленное здоровье как процент от maxHealth
-                float healAmount = Mathf.FloorToInt(maxHealth * regen);
+                float healAmount = maxHealth * regen; // Оставляем healAmount как float
                 currentHealth += healAmount;
 
                 // Убедимся, что текущее здоровье не превышает максимума
@@ -367,6 +360,7 @@ public class PlayerHealth : MonoBehaviour
             yield return new WaitForSeconds(1f); // Регенерация каждую секунду
         }
     }
+
 
     // Остановить регенерацию
     public void StopHealthRegen()

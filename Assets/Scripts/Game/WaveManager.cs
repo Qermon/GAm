@@ -24,6 +24,8 @@ public class WaveManager : MonoBehaviour
     private float timeStartedWave;
     private float waveDuration;
 
+    private bool isWaveInProgress = false;
+
     private PlayerHealth playerHealth; // Добавьте ссылку на PlayerHealth
 
     private List<GameObject> activeEnemies = new List<GameObject>();
@@ -57,6 +59,10 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator StartNextWave()
     {
+        if (isWaveInProgress) yield break; // Если волна уже в процессе, выходим
+
+        isWaveInProgress = true; // Устанавливаем флаг
+
         PlayerGold playerGold = FindObjectOfType<PlayerGold>();
         playerGold.OnNewWaveStarted(); // Сбрасываем флаг
 
@@ -67,29 +73,36 @@ public class WaveManager : MonoBehaviour
         playerHealth.UpdateBarrierUI();
         playerHealth.ApplyHealthRegenAtWaveStart();
         playerHealth.ResetBarrierOnLowHealthBuff(); // Сброс состояния барьера на новую волну
-        
 
+        isWaveInProgress = false; // Сбрасываем флаг после завершения
     }
+
 
     public void StartWave()
     {
         if (waveConfigs == null || waveConfigs.Count == 0)
         {
-            
             return;
         }
 
         if (!spawningWave)
         {
+            // Проверяем, был ли куплен бафф критического шанса
+            foreach (var weapon in FindObjectsOfType<Weapon>())
+            {
+                if (weapon != null) // Убедитесь, что оружие существует
+                {
+                    weapon.ActivateCritChanceBuff(); // Активируем бафф на всех оружиях
+                }
+            }
+
             StartCoroutine(SpawnWave());
         }
-
-
     }
+
 
     IEnumerator SpawnWave()
     {
-
         spawningWave = true;
         waveNumber++;
 
@@ -122,8 +135,6 @@ public class WaveManager : MonoBehaviour
 
                     GameObject enemy = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
 
-                  
-
                     AddEnemy(enemy);
 
                     // Уменьшаем количество оставшихся мобов этого типа
@@ -148,6 +159,9 @@ public class WaveManager : MonoBehaviour
             // Уничтожаем оставшихся мобов после завершения волны
             RemoveRemainingEnemies();
 
+            // Завершение волны и сброс баффов
+            EndWave();
+
             // Открываем магазин после волны
             shop.OpenShop();
         }
@@ -160,6 +174,15 @@ public class WaveManager : MonoBehaviour
 
         StartCoroutine(StartNextWave());
         playerHealth.barrierActivatedThisWave = false; // Разрешаем активацию на новой волне
+    }
+
+    public void EndWave()
+    {
+        // Сбрасываем все активные баффы у оружий
+        foreach (var weapon in FindObjectsOfType<Weapon>())
+        {
+            weapon.EndWave(); // Сбрасываем баффы на всех оружиях
+        }
     }
 
 

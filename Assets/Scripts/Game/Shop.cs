@@ -30,7 +30,8 @@ public class Shop : MonoBehaviour
         ShieldPerWave,    // Барьер за волну
         ShieldOnKill,
         BarrierOnLowHealth,
-        HealthRegenPerWave
+        HealthRegenPerWave,
+        CritChanceBuff,
     }
 
     [System.Serializable]
@@ -172,8 +173,15 @@ public class Shop : MonoBehaviour
             case UpgradeType.HealthRegenPerWave:
                 playerHealth.ActivateHealthRegenPerWaveBuff();
                 playerHealth.regen += playerHealth.maxHealth * 0.0002f;
-
                 break;
+
+            case UpgradeType.CritChanceBuff: // Новый тип апгрейда для крит шанса
+                foreach (var weapon in FindObjectsOfType<Weapon>())
+                {
+                    weapon.PurchaseCritChanceBuff(); // Покупаем и активируем бафф для всех оружий
+                }
+                break;
+
         }
     }
 

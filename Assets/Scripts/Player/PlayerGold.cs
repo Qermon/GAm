@@ -20,7 +20,6 @@ public class PlayerGold : MonoBehaviour
     public void AddGold(int amount)
     {
         currentGold += amount; // Увеличиваем золото
-        Debug.Log("Получено золота: " + amount);
         UpdateGoldDisplay(); // Обновляем отображение золота
     }
 

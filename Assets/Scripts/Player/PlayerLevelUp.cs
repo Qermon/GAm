@@ -17,7 +17,6 @@ public class PlayerLevelUp : MonoBehaviour
     public void GainExperience(int amount)
     {
         currentExperience += amount; // Увеличиваем опыт
-        Debug.Log("Получено опыта: " + amount);
 
         while (currentExperience >= experienceToNextLevel)
         {
@@ -39,7 +38,6 @@ public class PlayerLevelUp : MonoBehaviour
     private void UpdateLevel()
     {
         experienceToNextLevel = 5 + (currentLevel - 1) * 10; // Обновляем опыт для следующего уровня
-        Debug.Log("Необходимо опыта для следующего уровня: " + experienceToNextLevel);
 
         // Обновляем текст уровня в UI
         if (levelText != null)
