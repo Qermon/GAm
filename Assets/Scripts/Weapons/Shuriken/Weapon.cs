@@ -19,6 +19,11 @@ public abstract class Weapon : MonoBehaviour
     private bool isCritChanceBuffActive = false; // Флаг, указывающий активен ли бафф
     private int critChanceBuffCount = 0; // Количество увеличений шанса критического удара
 
+    private bool isCritDamageBuffPurchased = false; // Флаг, указывающий был ли куплен бафф
+    private bool isCritDamageBuffActive = false; // Флаг, указывающий активен ли бафф
+    private float critDamageBuffCount = 0f; // Сколько процентов увеличивается критический урон
+
+
 
     protected virtual void Start()
     {
@@ -129,16 +134,56 @@ public abstract class Weapon : MonoBehaviour
         }
     }
 
-    public void EndWave()
+    public void DecreaseCritChance(float percentage)
+    {
+        criticalChance -= percentage; // Уменьшаем шанс критического удара
+        Debug.Log($"Шанс критического удара уменьшен на {percentage * 100}%. Новый шанс критического удара: {criticalChance * 100}%");
+    }
+    public void CritChanceWave()
     {
         // Уменьшаем шанс критического удара на количество увеличений
         DecreaseCritChance(critChanceBuffCount * 0.005f); // Уменьшаем на общее количество увеличений
         isCritChanceBuffActive = false; // Деактивируем бафф
     }
 
-    public void DecreaseCritChance(float percentage)
+    public void PurchaseCritDamageBuff()
     {
-        criticalChance -= percentage; // Уменьшаем шанс критического удара
-        Debug.Log($"Шанс критического удара уменьшен на {percentage * 100}%. Новый шанс критического удара: {criticalChance * 100}%");
+        isCritDamageBuffPurchased = true; // Устанавливаем флаг, что бафф куплен
+        ActivateCritDamageBuff(); // Активируем бафф
     }
+
+    public void ActivateCritDamageBuff()
+    {
+        if (isCritDamageBuffPurchased && !isCritDamageBuffActive)
+        {
+            isCritDamageBuffActive = true;
+            critDamageBuffCount = 0; // Сбросить счетчик увеличений
+            StartCoroutine(CritDamageBuffRoutine());
+        }
+    }
+
+    private IEnumerator CritDamageBuffRoutine()
+    {
+        // Увеличиваем шанс критического удара каждую секунду
+        while (isCritDamageBuffActive)
+        {
+            IncreaseCritDamage(1f); // Увеличиваем шанс на 1
+            critDamageBuffCount++; // Увеличиваем счетчик увеличений
+            yield return new WaitForSeconds(1f); // Ждем 1 секунду
+        }
+    }
+
+    public void DecreaseCritDamage(float amount)
+    {
+        criticalDamage -= amount; // Уменьшаем шанс критического удара
+        Debug.Log($" Критический урон уменьшен на {amount}%. Новый критический удар: {criticalDamage}%");
+    }
+
+    public void CritDamageWave()
+    {
+        DecreaseCritDamage(critDamageBuffCount); // Уменьшаем на общее количество увеличений
+        isCritDamageBuffActive = false; // Деактивируем бафф
+        critDamageBuffCount = 0f;
+    }
+
 }

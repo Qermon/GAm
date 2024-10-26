@@ -32,6 +32,7 @@ public class Shop : MonoBehaviour
         BarrierOnLowHealth,
         HealthRegenPerWave,
         CritChanceBuff,
+        CritDamageBuff,
     }
 
     [System.Serializable]
@@ -179,6 +180,13 @@ public class Shop : MonoBehaviour
                 foreach (var weapon in FindObjectsOfType<Weapon>())
                 {
                     weapon.PurchaseCritChanceBuff(); // Покупаем и активируем бафф для всех оружий
+                }
+                break;
+
+            case UpgradeType.CritDamageBuff: // Новый тип апгрейда для крит шанса
+                foreach (var weapon in FindObjectsOfType<Weapon>())
+                {
+                    weapon.PurchaseCritDamageBuff(); // Покупаем и активируем бафф для всех оружий
                 }
                 break;
 

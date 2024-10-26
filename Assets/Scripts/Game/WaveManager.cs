@@ -93,6 +93,7 @@ public class WaveManager : MonoBehaviour
                 if (weapon != null) // Убедитесь, что оружие существует
                 {
                     weapon.ActivateCritChanceBuff(); // Активируем бафф на всех оружиях
+                    weapon.ActivateCritDamageBuff(); // Перезапускаем бафф для критического урона
                 }
             }
 
@@ -178,10 +179,16 @@ public class WaveManager : MonoBehaviour
 
     public void EndWave()
     {
-        // Сбрасываем все активные баффы у оружий
         foreach (var weapon in FindObjectsOfType<Weapon>())
         {
-            weapon.EndWave(); // Сбрасываем баффы на всех оружиях
+
+            weapon.CritChanceWave(); // Останавливаем другие баффы
+        }
+
+        foreach (var weapon in FindObjectsOfType<Weapon>())
+        {
+
+            weapon.CritDamageWave(); // Останавливаем другие баффы
         }
     }
 

@@ -279,7 +279,7 @@ public class LevelUpMenu : MonoBehaviour
                 return commonValue;
         }
     }
-
+        
     private int GetUpgradeValue(UpgradeRarity rarity, int commonValue, int uncommonValue, int rareValue)
     {
         switch (rarity)
