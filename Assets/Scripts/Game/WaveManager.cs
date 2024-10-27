@@ -10,7 +10,7 @@ public class WaveManager : MonoBehaviour
     public GameObject[] deathPrefabs;
     public GameObject[] batPrefabs;       // Префабы мобов Летучих мышей
     public GameObject[] wizardPrefabs;    // Префабы мобов магов
-    public GameObject[] skeletonPrefabs;  // Префабы скелетов
+    public GameObject[] samuraiPrefabs;  // Префабы скелетов
     public GameObject[] archerPrefabs;    // Префабы лучников
     public GameObject[] boomPrefabs;      // Префабы бомбардировщиков
     public GameObject[] healerPrefabs;    // Префабы лекарей
@@ -19,19 +19,25 @@ public class WaveManager : MonoBehaviour
     public float timeBetweenWaves = 5f;
 
     private int waveNumber = 0;
-    public int maxWaves = 10;
+    public int maxWaves = 30;
     private bool spawningWave = false;
     private float timeStartedWave;
     private float waveDuration;
 
+    private bool isWaveInProgress = false;
+
+    private PlayerHealth playerHealth; // Добавьте ссылку на PlayerHealth
+
     private List<GameObject> activeEnemies = new List<GameObject>();
 
-    public BloodManager bloodManager;
 
     private Dictionary<int, WaveConfig> waveConfigs;
 
     void Start()
     {
+
+        playerHealth = FindObjectOfType<PlayerHealth>(); // Инициализируйте ссылку
+
         InitializeWaves(); // Убедимся, что инициализация происходит до начала игры
 
         if (waveConfigs == null || waveConfigs.Count == 0)
@@ -53,23 +59,48 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator StartNextWave()
     {
+        if (isWaveInProgress) yield break; // Если волна уже в процессе, выходим
+
+        isWaveInProgress = true; // Устанавливаем флаг
+
+        PlayerGold playerGold = FindObjectOfType<PlayerGold>();
+        playerGold.OnNewWaveStarted(); // Сбрасываем флаг
+
         yield return new WaitForSeconds(timeBetweenWaves);
         StartWave();
+
+        playerHealth.UpdateShield();
+        playerHealth.UpdateBarrierUI();
+        playerHealth.ApplyHealthRegenAtWaveStart();
+        playerHealth.ResetBarrierOnLowHealthBuff(); // Сброс состояния барьера на новую волну
+
+        isWaveInProgress = false; // Сбрасываем флаг после завершения
     }
+
 
     public void StartWave()
     {
         if (waveConfigs == null || waveConfigs.Count == 0)
         {
-            Debug.LogError("WaveConfig не инициализирован или пустой.");
             return;
         }
 
         if (!spawningWave)
         {
+            // Проверяем, был ли куплен бафф критического шанса
+            foreach (var weapon in FindObjectsOfType<Weapon>())
+            {
+                if (weapon != null) // Убедитесь, что оружие существует
+                {
+                    weapon.ActivateCritChanceBuff(); // Активируем бафф на всех оружиях
+                    weapon.ActivateCritDamageBuff(); // Перезапускаем бафф для критического урона
+                }
+            }
+
             StartCoroutine(SpawnWave());
         }
     }
+
 
     IEnumerator SpawnWave()
     {
@@ -104,6 +135,7 @@ public class WaveManager : MonoBehaviour
                     GameObject enemyPrefab = randomEnemySpawn.enemyPrefab;
 
                     GameObject enemy = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+
                     AddEnemy(enemy);
 
                     // Уменьшаем количество оставшихся мобов этого типа
@@ -128,19 +160,38 @@ public class WaveManager : MonoBehaviour
             // Уничтожаем оставшихся мобов после завершения волны
             RemoveRemainingEnemies();
 
+            // Завершение волны и сброс баффов
+            EndWave();
+
+            // Открываем магазин после волны
             shop.OpenShop();
         }
-
         else
         {
             Debug.LogError("WaveConfig для waveNumber " + waveNumber + " не найден или waveConfigs не инициализировано.");
         }
 
-
         spawningWave = false;
 
         StartCoroutine(StartNextWave());
+        playerHealth.barrierActivatedThisWave = false; // Разрешаем активацию на новой волне
     }
+
+    public void EndWave()
+    {
+        foreach (var weapon in FindObjectsOfType<Weapon>())
+        {
+
+            weapon.CritChanceWave(); // Останавливаем другие баффы
+        }
+
+        foreach (var weapon in FindObjectsOfType<Weapon>())
+        {
+
+            weapon.CritDamageWave(); // Останавливаем другие баффы
+        }
+    }
+
 
     // Функция для случайного выбора моба
     private EnemySpawn GetRandomEnemySpawn(List<EnemySpawn> enemiesToSpawn)
@@ -184,7 +235,7 @@ public class WaveManager : MonoBehaviour
         waveConfigs = new Dictionary<int, WaveConfig>();
 
         // Волна 1
-        waveConfigs.Add(1, new WaveConfig(20f, new List<EnemySpawn>
+        waveConfigs.Add(1, new WaveConfig(5f, new List<EnemySpawn>
     {
         new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(50 + 1 * 1.5f)) // 50 Смертей
     }));
@@ -193,14 +244,16 @@ public class WaveManager : MonoBehaviour
         waveConfigs.Add(2, new WaveConfig(25f, new List<EnemySpawn>
     {
         new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(50 + 2 * 1.5f)), // 50 Смертей
-        new EnemySpawn(batPrefabs[0], 10) // 10 Летучих мышей
+        new EnemySpawn(batPrefabs[0], 10), // 10 Летучих мышей
+        new EnemySpawn(samuraiPrefabs[0], 1) // 10 Скелетов
     }));
 
         // Волна 3
         waveConfigs.Add(3, new WaveConfig(30f, new List<EnemySpawn>
     {
         new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(55 + 3 * 1.5f)), // 55 Смертей
-        new EnemySpawn(batPrefabs[0], 20) // 20 Летучих мышей
+        new EnemySpawn(batPrefabs[0], 20), // 20 Летучих мышей
+        new EnemySpawn(samuraiPrefabs[0], 1) // 10 Скелетов
     }));
 
         // Волна 4
@@ -208,7 +261,8 @@ public class WaveManager : MonoBehaviour
     {
         new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(55 + 4 * 1.5f)), // 55 Смертей
         new EnemySpawn(batPrefabs[0], 20), // 20 Летучих мышей
-        new EnemySpawn(wizardPrefabs[0], 5) // 5 Магов
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(samuraiPrefabs[0], 1) // 10 Скелетов
     }));
 
         // Волна 5
@@ -239,7 +293,7 @@ public class WaveManager : MonoBehaviour
         waveConfigs.Add(8, new WaveConfig(55f, new List<EnemySpawn>
     {
         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 8 * 1.5f)), // 20 Смертей
-        new EnemySpawn(skeletonPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
         new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
         new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
         new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
@@ -251,7 +305,7 @@ public class WaveManager : MonoBehaviour
         waveConfigs.Add(9, new WaveConfig(60f, new List<EnemySpawn>
     {
         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 9 * 1.5f)), // 20 Смертей
-        new EnemySpawn(skeletonPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
         new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
         new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
         new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
@@ -267,8 +321,257 @@ public class WaveManager : MonoBehaviour
         new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
         new EnemySpawn(boomPrefabs[0], 5) // 5 Бомбардировщиков
     }));
-    }
 
+        // Волна 11
+        waveConfigs.Add(11, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 11 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2) // 2 Лучника
+    }));
+
+        // Волна 12
+        waveConfigs.Add(12, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 12 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2), // 2 Лучника
+        new EnemySpawn(buffMobPrefabs[0], 2) // 2 Баффера
+    }));
+
+        // Волна 13
+        waveConfigs.Add(13, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 13 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2) // 2 Лучника
+    }));
+
+        // Волна 14
+        waveConfigs.Add(14, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 14 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2), // 2 Лучника
+        new EnemySpawn(buffMobPrefabs[0], 2) // 2 Баффера
+    }));
+
+        // Волна 15
+        waveConfigs.Add(15, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 15 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2) // 2 Лучника
+    }));
+
+        // Волна 16
+        waveConfigs.Add(16, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 16 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2), // 2 Лучника
+        new EnemySpawn(buffMobPrefabs[0], 2) // 2 Баффера
+    }));
+
+        // Волна 17
+        waveConfigs.Add(17, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 17 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2) // 2 Лучника
+    }));
+
+        // Волна 18
+        waveConfigs.Add(18, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 18 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2), // 2 Лучника
+        new EnemySpawn(buffMobPrefabs[0], 2) // 2 Баффера
+    }));
+
+        // Волна 19
+        waveConfigs.Add(19, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 19 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2) // 2 Лучника
+    }));
+
+        // Волна 20
+        waveConfigs.Add(20, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 20 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2), // 2 Лучника
+        new EnemySpawn(buffMobPrefabs[0], 2) // 2 Баффера
+    }));
+
+        // Волна 21
+        waveConfigs.Add(21, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 21 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2) // 2 Лучника
+    }));
+
+        // Волна 22
+        waveConfigs.Add(22, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 22 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2), // 2 Лучника
+        new EnemySpawn(buffMobPrefabs[0], 2) // 2 Баффера
+    }));
+
+        // Волна 23
+        waveConfigs.Add(23, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 23 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2) // 2 Лучника
+    }));
+
+        // Волна 24
+        waveConfigs.Add(24, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 24 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2), // 2 Лучника
+        new EnemySpawn(buffMobPrefabs[0], 2) // 2 Баффера
+    }));
+
+        // Волна 25
+        waveConfigs.Add(25, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 25 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2) // 2 Лучника
+    }));
+
+        // Волна 26
+        waveConfigs.Add(26, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 26 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2), // 2 Лучника
+        new EnemySpawn(buffMobPrefabs[0], 2) // 2 Баффера
+    }));
+
+        // Волна 27
+        waveConfigs.Add(27, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 27 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2) // 2 Лучника
+    }));
+
+        // Волна 28
+        waveConfigs.Add(28, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 28 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2), // 2 Лучника
+        new EnemySpawn(buffMobPrefabs[0], 2) // 2 Баффера
+    }));
+
+        // Волна 29
+        waveConfigs.Add(29, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 29 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2) // 2 Лучника
+    }));
+
+        // Волна 30
+        waveConfigs.Add(30, new WaveConfig(60f, new List<EnemySpawn>
+    {
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(20 + 30 * 1.5f)), // 20 Смертей
+        new EnemySpawn(samuraiPrefabs[0], 10), // 10 Скелетов
+        new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
+        new EnemySpawn(healerPrefabs[0], 2), // 2 Лекаря
+        new EnemySpawn(deathPrefabs[0], 15), // 5 Мобов Смерти
+        new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
+        new EnemySpawn(archerPrefabs[0], 2), // 2 Лучника
+        new EnemySpawn(buffMobPrefabs[0], 2) // 2 Баффера
+    }));
+    }
 
     public int GetWaveNumber()
     {

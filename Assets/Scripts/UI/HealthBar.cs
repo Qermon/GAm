@@ -3,19 +3,18 @@ using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour
 {
-    public Image healthBarImage; // Ссылка на компонент Image
+    public Image healthBarImage; // Ссылка на компонент Image для здоровья
     private int maxHealth; // Максимальное здоровье
 
-    // Метод для установки максимального здоровья
+
     public void SetMaxHealth(int health)
     {
-        maxHealth = health; // Сохраняем максимальное здоровье
-        healthBarImage.fillAmount = 1; // Полная полоска здоровья
+        maxHealth = health;
+        healthBarImage.fillAmount = 1f; // Заполняем бар на 100%
     }
 
-    // Метод для обновления текущего здоровья
-    public void SetHealth(int health)
+    public void SetHealth(float health)
     {
-        healthBarImage.fillAmount = (float)health / maxHealth; // Обновляем полоску здоровья
+        healthBarImage.fillAmount = (float)health / maxHealth; // Заполняем бар в зависимости от текущего здоровья
     }
 }

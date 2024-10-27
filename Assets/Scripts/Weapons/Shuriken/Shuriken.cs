@@ -87,7 +87,6 @@ public class ShurikenCollision : MonoBehaviour
             {
                 float finalDamage = weapon.CalculateDamage(); // Рассчитываем финальный урон
                 enemy.TakeDamage((int)finalDamage); // Наносим урон врагу
-                Debug.Log("Урон нанесён: " + finalDamage);
                 UpdateLastAttackTime(enemy.gameObject); // Обновляем время последней атаки
             }
         }

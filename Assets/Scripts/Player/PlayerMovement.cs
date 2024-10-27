@@ -63,10 +63,11 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // Метод для увеличения скорости движения
-    public void IncreaseMoveSpeed(float amount)
+    public void IncreaseMoveSpeed(float percentage)
     {
-        moveSpeed += amount; // Увеличиваем скорость движения
-        Debug.Log($"Скорость движения увеличена на {amount}. Новая скорость: {moveSpeed}");
+        float increaseAmount = moveSpeed * percentage;
+        moveSpeed += increaseAmount;// Увеличиваем скорость движения
+        Debug.Log($"Скорость движения увеличена на {increaseAmount}%. Новая скорость: {moveSpeed}");
     }
 
     void Move()

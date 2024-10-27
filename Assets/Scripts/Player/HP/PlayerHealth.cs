@@ -1,14 +1,18 @@
 using System.Collections;
+using System.Threading;
 using UnityEngine;
+using UnityEngine.UI;
+
 
 public class PlayerHealth : MonoBehaviour
 {
-    public int maxHealth = 1000; // Максимальное здоровье
-    public int currentHealth; // Текущее здоровье
+    public float maxHealth; // Максимальное здоровье
+    public float currentHealth; // Текущее здоровье
     public float regen = 0.01f; // Количество здоровья, восстанавливаемого каждую секунду
     private bool isRegenerating = false; // Флаг для отслеживания регенерации
     public HealthBar healthBar; // Ссылка на компонент полоски здоровья
-    public Animator animator; // Ссылка на компонент Animator
+    [SerializeField] private Image barrierImage; // Полоска барьера, добавленная в инспекторе
+
     public int defense = 10; // Уровень защиты игрока (0-200)
     private const int maxDefense = 200; // Максимальный уровень защиты
     private const float maxDamageReduction = 0.8f; // Максимальное уменьшение урона (80%)
@@ -17,29 +21,40 @@ public class PlayerHealth : MonoBehaviour
     public float pickupRadius = 1f; // Радиус сбора предметов
     public int luck = 0; // Уровень удачи
 
+    public int shieldAmount = 0; 
+    private float shieldPercent; // Процент от максимального здоровья для щита
+    private int shieldBuffCount = 0; // Для хранения количества активированных баффов
+    public float maxShieldAmount = 0; // Для отслеживания предыдущего значения щита
+
+    private bool shieldOnKillBuffActive = false; // Флаг активности баффа
+    private const float shieldChance = 0.05f; // 5% шанс
+    private const float shieldPercentage = 0.1f; // 10% от макс. здоровья
+
+    private bool barrierOnLowHealthBuffActive = false; // Флаг активности баффа
+    public bool barrierActivatedThisWave = false;
+
+    private bool healthRegenPerWaveActive = false;
+
     private CircleCollider2D collectionRadius; // Ссылка на триггер-коллайдер для сбора предметов
     void Start()
     {
+        // Инициализация текущего здоровья
         currentHealth = maxHealth;
+        shieldAmount = 0;
+        shieldPercent = 0.25f; // 25% от максимального здоровья
+        healthBar.SetMaxHealth((int)maxHealth);
+        healthBar.SetHealth((int)currentHealth);
 
-        // Добавление радиуса сбора опыта
         collectionRadius = gameObject.AddComponent<CircleCollider2D>();
-        collectionRadius.isTrigger = true; // Чтобы это был триггер
-        collectionRadius.radius = pickupRadius; // Установите начальный радиус сбора
+        collectionRadius.isTrigger = true;
+        collectionRadius.radius = pickupRadius;
 
-        if (healthBar != null)
-        {
-            healthBar.SetMaxHealth(maxHealth); // Установить максимальное здоровье на полоску
-        }
-        else
+        if (healthBar == null)
         {
             Debug.LogError("HealthBar reference is missing on PlayerHealth!");
         }
 
-        if (animator == null)
-        {
-            Debug.LogError("Animator reference is missing on PlayerHealth!");
-        }
+        UpdateBarrierUI(); // Инициализация отображения барьера
     }
 
     // Метод для увеличения регенерации здоровья
@@ -60,7 +75,7 @@ public class PlayerHealth : MonoBehaviour
         int increaseAmount = Mathf.FloorToInt(maxHealth * percentage); // Рассчитываем увеличение на основе процента от текущего maxHealth
         maxHealth += increaseAmount; // Увеличиваем максимальное здоровье
         currentHealth += increaseAmount; // Увеличиваем текущее здоровье на то же количество, чтобы игрок не терял здоровье
-        healthBar.SetMaxHealth(maxHealth); // Обновляем максимальное здоровье на UI
+        healthBar.SetMaxHealth((int)maxHealth); // Обновляем максимальное здоровье на UI
         UpdateHealthUI(); // Обновляем текущую полоску здоровья на UI
         Debug.Log($"Максимальное здоровье увеличено на {increaseAmount}. Новое максимальное здоровье: {maxHealth}. Текущее здоровье: {currentHealth}");
     }
@@ -111,12 +126,12 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log($"Радиус сбора увеличен на {increaseAmount}. Новый радиус сбора: {pickupRadius}");
     }
 
+   
 
 
     public void AddLifesteal(int amount)
     {
         lifesteal += amount;
-        Debug.Log("Вампиризм увеличен на " + amount + "%. Текущий уровень вампиризма: " + lifesteal + "%");
     }
 
     // Метод для восстановления здоровья при убийстве врага
@@ -124,46 +139,175 @@ public class PlayerHealth : MonoBehaviour
     {
         int healAmount = Mathf.FloorToInt(enemyHealth * (lifesteal / 100f));
         currentHealth = Mathf.Clamp(currentHealth + healAmount, 0, maxHealth);
-        Debug.Log("Восстановлено " + healAmount + " здоровья за убийство врага. Текущее здоровье: " + currentHealth);
         UpdateHealthUI();
+
+        TryApplyShieldOnKill(); // Пытаемся добавить щит с 5% шансом
+    }
+
+    public float CalculateInvestmentBonus(float currentGold)
+    {
+        // Фиксированное количество золота за каждые 10 инвестиций
+        float fixedGoldBonus = Mathf.Floor(investment / 10) * 10; // Например, 10 золота за каждые 10 инвестиций
+
+        // Процент получения золота в зависимости от уровня инвестиций
+        float investmentPercentage = (Mathf.Floor(investment / 10) * 0.01f); // 1% за каждые 10 инвестиций
+        float percentageGoldBonus = currentGold * investmentPercentage; // Рассчитываем процентное бонусное золото
+
+        // Итоговое бонусное золото
+        float totalBonusGold = fixedGoldBonus + percentageGoldBonus;
+
+        return totalBonusGold;
+    }
+
+
+   
+    // Метод для активации щита в начале каждой волны
+    public void ActivateShield()
+    {
+        // Рассчитываем щит в процентах от максимального здоровья
+        float shieldPercent = 0.25f; // 25%
+        float shieldFromHealth = maxHealth * shieldPercent;
+
+        // Добавляем щит на основе нового расчета
+        shieldAmount += Mathf.FloorToInt(shieldFromHealth);
+        maxShieldAmount = shieldAmount; // Сохраняем текущее значение щита
+
+        // Выводим информацию о текущем щите
+        Debug.Log($"Щит активирован: текущий щит = {shieldAmount} (из них {Mathf.FloorToInt(shieldFromHealth)} от максимального здоровья)");
+        UpdateBarrierUI(); // Обновляем визуальное отображение барьера
+    }
+
+    // Метод для активации барьера
+    public void ActivateBarrier()
+    {
+     
+        UpdateBarrierUI();
+        Debug.Log($"Барьера активировано: {shieldAmount}");
+    }
+
+    // Метод для обновления полоски барьера
+    
+    public void UpdateBarrierUI()
+    {
+        if (barrierImage != null)
+        {
+            // Если shieldAmount больше предыдущего значения, заполняем полоску полностью
+            if (shieldAmount > maxShieldAmount)
+            {
+                maxShieldAmount = shieldAmount;
+                barrierImage.fillAmount = 1f;
+            }
+            else if (shieldAmount <= 0)
+            {
+                barrierImage.fillAmount = 0f; // Если щита нет, полоска не отображается
+                
+            }
+            else
+            {
+                barrierImage.fillAmount = (float)shieldAmount / maxShieldAmount; 
+            }
+
+            
+        }
+        else
+        {
+            Debug.LogWarning("Полоска барьера не назначена!");
+        }
+
+        // Отладочная информация о максимальном значении барьера
+        Debug.Log($"Текущее значение барьера: {shieldAmount}, Максимальное значение барьера: {maxShieldAmount}");
     }
 
     public void TakeDamage(int damage)
     {
-        // Рассчитываем уменьшение урона на основе уровня защиты
-        float damageReduction = Mathf.Min(defense / 10 * 0.04f, maxDamageReduction);
-        int reducedDamage = Mathf.RoundToInt(damage * (1 - damageReduction));
+        int damageToTake = damage;
+        CheckHealth(); // Проверяем текущее здоровье
 
+        // Если щит активен, уменьшаем урон
+        if (shieldAmount > 0)
+        {
+            if (damage <= shieldAmount)
+            {
+                shieldAmount -= damage;
+                damageToTake = 0; // Урон полностью поглощён щитом
+            }
+            else
+            {
+                damageToTake -= (int)shieldAmount; // Урон, который проходит через щит
+                shieldAmount = 0; // Щит теперь активен
+            }
+            UpdateBarrierUI(); // Обновляем визуальное отображение барьера
+        }
+
+        // Расчет уменьшенного урона на основе защиты
+        float damageReduction = Mathf.Min(defense / 10 * 0.04f, 0.8f);
+        int reducedDamage = Mathf.RoundToInt(damageToTake * (1 - damageReduction));
         currentHealth -= reducedDamage;
 
-        // Ограничиваем текущее здоровье, чтобы оно не уходило ниже 0
+        // Проверка на запуск регенерации после получения урона
+        if (currentHealth < maxHealth)
+        {
+            StartHealthRegen(); // Запускаем регенерацию, если здоровье меньше максимального
+        }
+
+        // Активация барьера при низком здоровье один раз за волну
+        if (barrierOnLowHealthBuffActive && !barrierActivatedThisWave && currentHealth <= maxHealth * 0.5f)
+        {
+            int barrierAmount = Mathf.FloorToInt(maxHealth * 0.2f);
+            AddShield(barrierAmount);
+            barrierActivatedThisWave = true; // Фиксируем, что барьер активирован
+            Debug.Log($"Барьер активирован при низком здоровье: +{barrierAmount}");
+        }
+
+        // Проверка, не упал ли игрок до 0 здоровья
         if (currentHealth <= 0)
         {
             currentHealth = 0;
-            StartCoroutine(Die()); // Запускаем корутину для смерти
+            StartCoroutine(Die());
         }
 
-        Debug.Log("Игрок получил урон: " + reducedDamage + ", защита уменьшила урон на: " + (damage - reducedDamage));
-
-        UpdateHealthUI(); // Обновляем UI здоровья
-
-        // Запуск регенерации после получения урона только если здоровье не на максимуме
-        if (currentHealth < maxHealth)
-        {
-            StartHealthRegen();
-        }
+        healthBar.SetHealth(currentHealth);
+        Debug.Log($"Получен урон: {damageToTake}, Уменьшенный урон: {reducedDamage}, Оставшийся щит: {shieldAmount}");
     }
 
 
+    public void AddShield(int additionalShield)
+    {
+        shieldAmount += additionalShield;
 
+      
+        UpdateBarrierUI();
+        Debug.Log($"Барьера добавлено: +{additionalShield}, общий барьер: {shieldAmount}");
+    }
 
+    private void CheckHealth()
+    {
+        
+        // Проверяем, если текущее здоровье меньше или равно 29% от максимального
+        if (currentHealth <= maxHealth * 0.29f)
+        {
+            shieldBuffCount = 0; // Обнуляем количество баффов
+            Debug.Log("Shield buff count обнулен, текущее здоровье: " + maxHealth/currentHealth);
+        }
+    }
+
+    public void AddShieldBuff()
+    {
+        shieldBuffCount++; // Увеличиваем количество активированных баффов
+        Debug.Log($"Добавлен бафф щита. Количество баффов: {shieldBuffCount}");
+    }
+    public void DecreaseShield(int amount)
+    {
+        shieldAmount -= amount;
+        shieldAmount = Mathf.Max(shieldAmount, 0); // Убедитесь, что shieldAmount не меньше 0
+        
+    }
     private IEnumerator Die()
     {
         Debug.Log("Player died!");
         gameObject.SetActive(false);
         yield return null;
     }
-
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
@@ -185,18 +329,16 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-
-    // Пассивная регенерация здоровья
     private IEnumerator RegenerateHealth()
     {
         while (isRegenerating)
         {
             if (currentHealth < maxHealth)
             {
-                int previousHealth = currentHealth; // Сохраняем текущее здоровье
+                float previousHealth = currentHealth; // Сохраняем текущее здоровье
 
                 // Рассчитываем восстановленное здоровье как процент от maxHealth
-                int healAmount = Mathf.FloorToInt(maxHealth * regen);
+                float healAmount = maxHealth * regen; // Оставляем healAmount как float
                 currentHealth += healAmount;
 
                 // Убедимся, что текущее здоровье не превышает максимума
@@ -219,6 +361,7 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+
     // Остановить регенерацию
     public void StopHealthRegen()
     {
@@ -230,12 +373,96 @@ public class PlayerHealth : MonoBehaviour
         if (healthBar != null)
         {
             healthBar.SetHealth(currentHealth);
+           
         }
     }
+
+
 
     public void IncreaseDefense(int amount)
     {
         defense = Mathf.Clamp(defense + amount, 0, maxDefense);
         Debug.Log("Защита игрока увеличена до: " + defense);
     }
+
+    public void UpdateShield()
+    {
+        // Сбрасываем щит
+        shieldAmount = 0;
+
+        // Рассчитываем новый щит на основе количества активированных баффов
+        float shieldPercent = 0.25f; // 25%
+        float shieldFromHealth = maxHealth * shieldPercent * shieldBuffCount; // Новый щит на основе активированных баффов
+        shieldAmount += Mathf.FloorToInt(shieldFromHealth);
+        maxShieldAmount = shieldAmount;
+
+        Debug.Log($"Щит обновлён: текущий щит = {shieldAmount} (из них {Mathf.FloorToInt(shieldFromHealth)} от максимального здоровья на основе {shieldBuffCount} баффов)");
+    }
+
+    public void ActivateShieldOnKillBuff()
+    {
+        shieldOnKillBuffActive = true;
+        Debug.Log("Бафф 'Щит при убийстве' активирован!");
+    }
+
+    // Метод для применения щита при убийстве
+    public void TryApplyShieldOnKill()
+    {
+        if (shieldOnKillBuffActive && Random.value <= shieldChance)
+        {
+            int shieldToAdd = Mathf.FloorToInt(maxHealth * shieldPercentage);
+            AddShield(shieldToAdd);
+            Debug.Log($"Добавлен щит {shieldToAdd} (10% от макс. здоровья) при убийстве врага.");
+        }
+    }
+    public void ActivateBarrierOnLowHealthBuff()
+    {
+        barrierOnLowHealthBuffActive = true;
+        barrierActivatedThisWave = false; // Обнуляем состояние на новой волне
+        Debug.Log("Бафф 'Барьер при низком здоровье' активирован!");
+    }
+    public void ActivateHealthRegenPerWaveBuff()
+    {
+        healthRegenPerWaveActive = true;
+        Debug.Log("Бафф HealthRegenPerWave активирован: +2% восстановления здоровья каждую волну, но начало волны с 30% здоровья.");
+    }
+
+    public void ResetBarrierOnLowHealthBuff()
+    {
+        if (barrierOnLowHealthBuffActive) // Только если бафф куплен
+        {
+            barrierActivatedThisWave = false; // Сбрасываем, чтобы барьер мог сработать на новой волне
+            Debug.Log("Бафф 'Барьер при низком здоровье' перезаряжен для новой волны!");
+        }
+    }
+
+    public void ApplyHealthRegenAtWaveStart()
+    {
+        if (healthRegenPerWaveActive)
+        {
+            // Устанавливаем здоровье на 30% от максимума
+            currentHealth = Mathf.FloorToInt(maxHealth * 0.3f);
+            healthBar.SetHealth(currentHealth);
+
+            // Запускаем регенерацию, если текущее здоровье меньше максимального
+            StartHealthRegen();
+
+            Debug.Log($"Начало волны: здоровье сброшено до 30% от максимума. Запуск регенерации.");
+
+            // Активация барьера при низком здоровье один раз за волну
+            if (barrierOnLowHealthBuffActive && !barrierActivatedThisWave)
+            {
+                // Проверка на активацию барьера
+                if (currentHealth <= maxHealth * 0.5f || currentHealth == Mathf.FloorToInt(maxHealth * 0.3f))
+                {
+                    int barrierAmount = Mathf.FloorToInt(maxHealth * 0.2f);
+                    AddShield(barrierAmount);
+                    barrierActivatedThisWave = true; // Фиксируем, что барьер активирован
+                    Debug.Log($"Барьер активирован при низком здоровье: +{barrierAmount}");
+                }
+            }
+        }
+    }
+
+
 }

@@ -17,15 +17,17 @@ public enum UpgradeType
     Investment,      // Инвестиции
     PickupRadius,    // Радиус сбора
     MoveSpeed,       // Скорость бега
-    Luck             // Удача
+    Luck,            // Удача
 }
+
 
 public enum UpgradeRarity
 {
-    Common,     // Обычная
-    Uncommon,   // Необычная
-    Rare        // Редкая
+    Common = 0,    // 1 звезда
+    Uncommon = 1,  // 2 звезды
+    Rare = 2       // 3 звезды
 }
+
 
 [System.Serializable]
 public class UpgradeOption
@@ -43,6 +45,8 @@ public class LevelUpMenu : MonoBehaviour
     public Image[] upgradeIcons;
     public Button[] upgradeButtons;
     public TMP_Text[] upgradeTexts; // Тексты, которые будут отображать описание улучшений
+    public Sprite[] raritySprites; // Массив спрайтов для редкостей
+    public Image[] rarityImages; // Массив для отображения звездочек
     public List<UpgradeOption> upgradeOptions;
 
     public WaveManager waveManager;
@@ -107,51 +111,80 @@ public class LevelUpMenu : MonoBehaviour
 
 
     // Метод для получения случайного улучшения с учетом редкости
+    // Метод для получения случайного улучшения с учетом редкости
     private UpgradeOption GetRandomUpgradeByRarity(List<UpgradeOption> availableOptions)
     {
-        // Устанавливаем шансы в зависимости от текущей волны
-        int commonChance = Mathf.Clamp(80 - (waveNumber - 1), 0, 100); // Снижаем шанс обычного улучшения
-        int uncommonChance = Mathf.Clamp(19 + (waveNumber - 1), 0, 100 - commonChance); // Увеличиваем шанс необычного улучшения
-        int rareChance = 100 - commonChance - uncommonChance; // Вычисляем шанс редкого улучшения
+        // Начальные шансы
+        float commonChance = 80;
+        float uncommonChance = 19;
+        float rareChance = 1;
 
-        // Выводим шансы на дроп в консоль
-        Debug.Log($"Текущая волна: {waveNumber}");
-        Debug.Log($"Шанс на обычное улучшение: {commonChance}%");
-        Debug.Log($"Шанс на необычное улучшение: {uncommonChance}%");
-        Debug.Log($"Шанс на редкое улучшение: {rareChance}%");
+        // Получаем значение удачи из PlayerHealth
+        float luckValue = playerHealth.luck; // Значение удачи игрока
+
+        // Расчет шансов на основе удачи
+        int luckBonusCount = Mathf.FloorToInt(luckValue / 10); // Количество десятков удачи
+
+        for (int i = 0; i < luckBonusCount; i++)
+        {
+            // Уменьшаем commonChance
+            if (commonChance > 10)
+            {
+                commonChance -= 1; // Уменьшаем на 1%
+                uncommonChance += 0.5f; // Увеличиваем на 0.5%
+                rareChance += 0.5f; // Увеличиваем на 0.5%
+            }
+            else if (uncommonChance > 20)
+            {
+                uncommonChance -= 1; // Уменьшаем на 1%
+                rareChance += 1; // Увеличиваем на 1%
+            }
+        }
+
+        // Обеспечиваем, что сумма шансов равна 100%
+        commonChance = Mathf.Max(commonChance, 0); // Не даем commonChance стать отрицательным
+        uncommonChance = Mathf.Max(uncommonChance, 0); // Не даем uncommonChance стать отрицательным
+
+        // Обновление rareChance, чтобы сумма была 100%
+        rareChance = 100 - commonChance - uncommonChance;
+
+        // Убедитесь, что rareChance не становится отрицательным
+        rareChance = Mathf.Max(rareChance, 0);
+
+        // Выводим шансы на дроп с учетом удачи
+        Debug.Log($"Шанс на обычное улучшение: {commonChance}% (Luck: {luckValue})");
+        Debug.Log($"Шанс на необычное улучшение: {uncommonChance}% (Luck: {luckValue})");
+        Debug.Log($"Шанс на редкое улучшение: {rareChance}% (Luck: {luckValue})");
 
         // Генерация случайного значения
         float randomValue = Random.Range(0f, 100f);
-
         UpgradeRarity selectedRarity;
-        if (randomValue < commonChance) // Шанс на обычное улучшение
+
+        if (randomValue < commonChance)
         {
             selectedRarity = UpgradeRarity.Common;
         }
-        else if (randomValue < commonChance + uncommonChance) // Шанс на необычное улучшение
+        else if (randomValue < commonChance + uncommonChance)
         {
             selectedRarity = UpgradeRarity.Uncommon;
         }
-        else // Шанс на редкое улучшение
+        else
         {
             selectedRarity = UpgradeRarity.Rare;
         }
 
-        // Выводим выбранную редкость
-        Debug.Log($"Выбранная редкость: {selectedRarity}");
-
-        // Фильтруем список доступных опций по выбранной редкости
+        // Выбираем улучшение по редкости
         List<UpgradeOption> optionsOfSelectedRarity = availableOptions.FindAll(option => option.upgradeRarity == selectedRarity);
-
-        // Если не нашлось опций нужной редкости, возвращаем случайное улучшение
         if (optionsOfSelectedRarity.Count == 0)
         {
             return availableOptions[Random.Range(0, availableOptions.Count)];
         }
-
-        // Возвращаем случайную опцию из отфильтрованного списка
         return optionsOfSelectedRarity[Random.Range(0, optionsOfSelectedRarity.Count)];
     }
+
+
+
+
 
 
 
@@ -163,7 +196,7 @@ public class LevelUpMenu : MonoBehaviour
 
         for (int i = 0; i < upgrades.Count; i++)
         {
-            // Отображаем иконки и текст
+            // Отображаем иконки и текст для каждого улучшения
             upgradeIcons[i].sprite = upgrades[i].upgradeSprite;
             upgradeIcons[i].gameObject.SetActive(true);
 
@@ -171,11 +204,20 @@ public class LevelUpMenu : MonoBehaviour
             upgradeTexts[i].text = description;
             upgradeTexts[i].gameObject.SetActive(true);
 
+            // Отображаем звездочки редкости для каждого улучшения
+            int rarityIndex = (int)upgrades[i].upgradeRarity; // Преобразуем редкость в индекс
+            rarityImages[i].sprite = raritySprites[rarityIndex]; // Устанавливаем спрайт звезды на основе редкости
+            rarityImages[i].gameObject.SetActive(true); // Активируем объект, если он скрыт
+
+            // Устанавливаем действие при нажатии на кнопку
             int index = i;
             upgradeButtons[i].onClick.RemoveAllListeners();
             upgradeButtons[i].onClick.AddListener(() => ChooseUpgrade(upgrades[index]));
         }
     }
+
+
+
 
     private string GetUpgradeDescription(UpgradeOption upgrade)
     {
@@ -237,7 +279,7 @@ public class LevelUpMenu : MonoBehaviour
                 return commonValue;
         }
     }
-
+        
     private int GetUpgradeValue(UpgradeRarity rarity, int commonValue, int uncommonValue, int rareValue)
     {
         switch (rarity)
