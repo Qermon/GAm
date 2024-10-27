@@ -12,6 +12,7 @@ public class Shop : MonoBehaviour
 
     public Button[] buffButtons; // Массив кнопок для выбора баффов
     public TextMeshProUGUI[] buffCostTexts; // Тексты для отображения стоимости баффов
+    public TextMeshProUGUI[] buffDescriptionTexts; // Поля для вывода описания для каждого баффа
     private List<Upgrade> upgrades = new List<Upgrade>(); // Список доступных баффов
 
     private PlayerHealth playerHealth;
@@ -20,6 +21,9 @@ public class Shop : MonoBehaviour
     private List<Weapon> playerWeapons; // Список оружий
 
     public UpgradeOption[] upgradeOptions; // Массив доступных баффов
+    private HashSet<UpgradeType> existingBuffs = new HashSet<UpgradeType>(); // HashSet для отслеживания существующих баффов
+
+
 
     // Массив для хранения пустых иконок
     [SerializeField] private Image[] emptyIcons;
@@ -59,7 +63,20 @@ public class Shop : MonoBehaviour
         LifestealPickupRadius,
         CritDamageDamageArmor,
         AttackSpeedCritChancePickup,
-        DamageMaxHpArmor
+        DamageMaxHpArmor,
+        Damage,          // Урон
+        CritDamage,      // Критический урон
+        AttackSpeed,     // Скорость атаки
+        CritChance,      // Шанс критического удара
+        AttackRange,     // Дальность атаки
+        MaxHealth,       // Здоровье
+        Armor,           // Броня
+        HealthRegen,     // Регенерация здоровья
+        Lifesteal,       // Вампиризм
+        Investment,      // Инвестиции
+        PickupRadius,    // Радиус сбора
+        MoveSpeed,       // Скорость бега
+        Luck,
     }
 
 
@@ -70,6 +87,8 @@ public class Shop : MonoBehaviour
         public Sprite upgradeSprite;
         public UpgradeType upgradeType;
     }
+
+
 
     private void Start()
     {
@@ -108,9 +127,11 @@ public class Shop : MonoBehaviour
         shopPanel.SetActive(false);
         Time.timeScale = 1f;
         playerGold.OnShopClosed();
-      
 
+        // Обновляем баффы при закрытии магазина
+        GenerateUpgrades();
     }
+
 
     private void UpdatePlayerStats()
     {
@@ -128,27 +149,53 @@ public class Shop : MonoBehaviour
 
     private void GenerateUpgrades()
     {
-        upgrades.Clear();
-        for (int i = 0; i < buffButtons.Length; i++)
+        upgrades.Clear(); // Очистить список доступных баффов
+        HashSet<UpgradeType> usedTypes = new HashSet<UpgradeType>(); // Для отслеживания использованных типов
+
+        // Создайте список всех доступных опций
+        List<UpgradeOption> availableOptions = new List<UpgradeOption>(upgradeOptions);
+
+        while (upgrades.Count < buffButtons.Length)
         {
-            upgrades.Add(GenerateRandomUpgrade());
+            Upgrade newUpgrade = GenerateRandomUpgrade(availableOptions);
+
+            // Проверка, существует ли уже такой тип баффа
+            if (!usedTypes.Contains(newUpgrade.type))
+            {
+                upgrades.Add(newUpgrade);
+                usedTypes.Add(newUpgrade.type); // Добавить тип баффа в используемые
+            }
         }
+
+        // Обновление интерфейса после генерации уникальных баффов
+        UpdateUpgradeUI();
     }
 
-    private Upgrade GenerateRandomUpgrade()
+
+
+
+    private Upgrade GenerateRandomUpgrade(List<UpgradeOption> availableOptions)
     {
-        // Генерируем случайный индекс для выбора UpgradeOption
-        int randomIndex = Random.Range(0, upgradeOptions.Length);
-        UpgradeOption selectedOption = upgradeOptions[randomIndex];
+        // Проверка на пустой список доступных опций
+        if (availableOptions.Count == 0)
+        {
+            return null; // Или обработайте случай, когда нет доступных опций
+        }
+
+        // Генерация случайного индекса
+        int randomIndex = Random.Range(0, availableOptions.Count);
+        UpgradeOption selectedOption = availableOptions[randomIndex];
 
         // Генерация стоимости апгрейда
         int baseCost = 10;
-        int rarityMultiplier = 1; // Замените это на вашу логику редкости
-        int randomCost = baseCost * rarityMultiplier + Random.Range(5, 15);
+        int randomCost = baseCost + Random.Range(5, 15);
 
-        // Создаем новый Upgrade, используя выбранный UpgradeOption
+        // Удаляем выбранный вариант из доступных
+        availableOptions.RemoveAt(randomIndex);
+
         return new Upgrade(selectedOption.upgradeType, randomCost, selectedOption.upgradeSprite);
     }
+
 
     private void UpdateUpgradeUI()
     {
@@ -166,8 +213,15 @@ public class Shop : MonoBehaviour
             {
                 emptyIcons[i].sprite = null; // Сбрасываем иконку, если нет спрайта
             }
+
+            // Обновляем текст описания для соответствующего баффа
+            if (i < buffDescriptionTexts.Length) // Проверка, чтобы избежать выхода за границы массива
+            {
+                buffDescriptionTexts[i].text = GetUpgradeDescription(upgrades[i].type);
+            }
         }
     }
+
 
     private void PurchaseUpgrade(int index)
     {
@@ -177,10 +231,184 @@ public class Shop : MonoBehaviour
         {
             playerGold.currentGold -= selectedUpgrade.cost;
             ApplyUpgrade(selectedUpgrade);
-            upgrades[index] = GenerateRandomUpgrade();
+
+            // Обновляем список доступных опций, исключая текущие баффы
+            List<UpgradeOption> availableOptions = new List<UpgradeOption>(upgradeOptions);
+            foreach (var upgrade in upgrades)
+            {
+                availableOptions.RemoveAll(option => option.upgradeType == upgrade.type);
+            }
+
+            // Генерируем новый уникальный бафф, который отсутствует на других слотах
+            Upgrade newUpgrade = GenerateRandomUpgrade(availableOptions);
+            upgrades[index] = newUpgrade; // Обновляем бафф на кнопке
+
             UpdateUpgradeUI();
+            UpdatePlayerStats(); // Обновляем характеристики героя
+            playerGold.UpdateGoldDisplay();
         }
     }
+
+
+
+    public class Upgrade
+    {
+        public UpgradeType type;
+        public int cost;
+        public Sprite upgradeSprite;
+
+        public Upgrade(UpgradeType type, int cost, Sprite sprite)
+        {
+            this.type = type;
+            this.cost = cost;
+            this.upgradeSprite = sprite;
+        }
+    }
+
+    private string GetUpgradeDescription(UpgradeType upgradeType)
+    {
+        switch (upgradeType)
+        {
+            case UpgradeType.ShieldPerWave:
+                return "Добавляет щит в начале каждой волны, блокируя входящий урон.";
+
+            case UpgradeType.ShieldOnKill:
+                return "5% шанс получить щит, равный 10% от макс. здоровья, при убийстве врага.";
+
+            case UpgradeType.BarrierOnLowHealth:
+                return "При снижении здоровья ниже 50% раз в волну даёт барьер в 20% от макс. здоровья.";
+
+            case UpgradeType.HealthRegenPerWave:
+                return "Регенерация здоровья 2% от макс. здоровья, обнуляется в начале каждой волны.";
+
+            case UpgradeType.CritChanceBuff:
+                return "Увеличивает шанс критического удара всех видов оружия на 5%.";
+
+            case UpgradeType.CritDamageBuff:
+                return "Увеличивает урон от критического удара всех видов оружия.";
+
+            case UpgradeType.AttackSpeedDamage:
+                return "+20% скорости атаки, но -5% урона всех видов оружия.";
+
+            case UpgradeType.AttackSpeedDamageCritMove:
+                return "+15% скорости атаки и +5% урона, но снижает крит. урон на 5% и скорость передвижения на 10%.";
+
+            case UpgradeType.CritDamageCritChance:
+                return "+30% крит. урона, но -1% шанс крит. удара.";
+
+            case UpgradeType.MaxHpArmorMove:
+                return "+30% макс. здоровья и +20 брони, но -15% к скорости передвижения.";
+
+            case UpgradeType.AttackSpeedHp:
+                return "+20% скорости атаки, но -20% макс. здоровья.";
+
+            case UpgradeType.DamageMove:
+                return "+20% урона, но -10% к скорости передвижения.";
+
+            case UpgradeType.DamageRegen:
+                return "+15% урона, но -10% регенерации здоровья.";
+
+            case UpgradeType.CritChanceDamage:
+                return "+10% шанс крит. удара, но -5% урона.";
+
+            case UpgradeType.AttackSpeedCritArmor:
+                return "-5% к скорости атаки, но +5% крит. шанс и +10 к броне.";
+
+            case UpgradeType.AttackRangeMoveSpeed:
+                return "+15% дальности атаки, но -5% скорости передвижения.";
+
+            case UpgradeType.RegenLuck:
+                return "+20% регенерации здоровья, но -20 удачи.";
+
+            case UpgradeType.LifestealDamage:
+                return "+15% вампиризма, но -10% урона.";
+
+            case UpgradeType.InvestmentLuckMaxHp:
+                return "+75% инвестиции и +30 удачи, но -25% макс. здоровья.";
+
+            case UpgradeType.MoveSpeedDamage:
+                return "+15% к скорости передвижения, но -10% урона.";
+
+            case UpgradeType.ArmorAttackRange:
+                return "+20 брони, но -10% дальности атаки.";
+
+            case UpgradeType.CritDamageCritChance1:
+                return "+30% крит. урона, но -15% шанс крит. удара.";
+
+            case UpgradeType.LuckRegen:
+                return "+40 удачи, но -15% регенерации здоровья.";
+
+            case UpgradeType.PickupRadiusAttackSpeed:
+                return "+20% радиуса подбора, но -3% скорости атаки.";
+
+            case UpgradeType.RegenMoveSpeed:
+                return "+15% регенерации здоровья, но -5% скорости передвижения.";
+
+            case UpgradeType.InvestmentDamageArmor:
+                return "+50% инвестиции и +3% урона, но -15 брони.";
+
+            case UpgradeType.MaxHpCritChanceMove:
+                return "+10% макс. здоровья и +10% крит. шанс, но -10% скорости передвижения.";
+
+            case UpgradeType.AttackSpeedLuck:
+                return "+15% скорости атаки, но -30 удачи.";
+
+            case UpgradeType.LifestealPickupRadius:
+                return "+15% вампиризма, но -15% радиуса подбора.";
+
+            case UpgradeType.CritDamageDamageArmor:
+                return "+25% крит. урона и +10 брони, но -10% урона.";
+
+            case UpgradeType.AttackSpeedCritChancePickup:
+                return "+15% скорости атаки и +3% крит. шанс, но -10% радиуса подбора.";
+
+            case UpgradeType.DamageMaxHpArmor:
+                return "+25% урона, но -10% макс. здоровья и -5 брони.";
+
+            case UpgradeType.Damage:
+                return "+15% урона для всех видов оружия.";
+
+            case UpgradeType.CritDamage:
+                return "+20% крит. урона для всех видов оружия.";
+
+            case UpgradeType.AttackSpeed:
+                return "+20% скорости атаки для всех видов оружия.";
+
+            case UpgradeType.CritChance:
+                return "+10% крит. шанс для всех видов оружия.";
+
+            case UpgradeType.AttackRange:
+                return "+20% дальности атаки для всех видов оружия.";
+
+            case UpgradeType.MaxHealth:
+                return "+25% макс. здоровья.";
+
+            case UpgradeType.Armor:
+                return "+15 брони.";
+
+            case UpgradeType.HealthRegen:
+                return "+20% регенерации здоровья.";
+
+            case UpgradeType.Lifesteal:
+                return "+20% вампиризма.";
+
+            case UpgradeType.Investment:
+                return "+75% инвестиции на старт каждой волны.";
+
+            case UpgradeType.PickupRadius:
+                return "+40% радиуса подбора.";
+
+            case UpgradeType.MoveSpeed:
+                return "+15% к скорости передвижения.";
+
+            case UpgradeType.Luck:
+                return "+20 к удаче.";
+
+            default:
+                return "Неизвестный бафф.";
+        }
+    }
+
 
     private void ApplyUpgrade(Upgrade upgrade)
     {
@@ -510,20 +738,86 @@ public class Shop : MonoBehaviour
                 playerHealth.IncreaseArmor(armorDecrease2);
                 break;
 
+            case UpgradeType.Damage:
+                float damageIncrease9 =0.15f;
+                foreach (var weapon in playerWeapons) // Применяем к каждому оружию
+                {
+                    weapon.IncreaseDamage(damageIncrease9);
+                }
+                break;
+
+            case UpgradeType.CritDamage:
+                float critDamageIncrease9 = 20f;
+                foreach (var weapon in playerWeapons)
+                {
+                    weapon.IncreaseCritDamage(critDamageIncrease9);
+                }
+                break;
+
+            case UpgradeType.AttackSpeed:
+                float attackSpeedIncrease9 =0.20f;
+                foreach (var weapon in playerWeapons)
+                {
+                    weapon.IncreaseAttackSpeed(attackSpeedIncrease9);
+                }
+                break;
+
+            case UpgradeType.CritChance:
+                float critChanceIncrease9 = 0.10f;
+                foreach (var weapon in playerWeapons)
+                {
+                    weapon.IncreaseCritChance(critChanceIncrease9);
+                }
+                break;
+
+            case UpgradeType.AttackRange:
+                float attackRangeIncrease9 = 0.20f;
+                foreach (var weapon in playerWeapons)
+                {
+                    weapon.IncreaseAttackRange(attackRangeIncrease9);
+                }
+                break;
+
+            case UpgradeType.MaxHealth:
+                float maxHealthIncrease9 = 0.25f;
+                playerHealth.IncreaseMaxHealth(maxHealthIncrease9);
+                break;
+
+            case UpgradeType.Armor:
+                int armorIncrease9 = 15;
+                playerHealth.IncreaseArmor(armorIncrease9);
+                break;
+
+            case UpgradeType.HealthRegen:
+                float regenIncrease9 = 0.20f;
+                playerHealth.IncreaseHealthRegen(regenIncrease9);
+                break;
+
+            case UpgradeType.Lifesteal:
+                float lifestealIncrease9 = 0.20f;
+                playerHealth.IncreaseLifesteal(lifestealIncrease9);
+                break;
+
+            case UpgradeType.Investment:
+                int investmentIncrease9 = 75;
+                playerHealth.IncreaseInvestment(investmentIncrease9);
+                break;
+
+            case UpgradeType.PickupRadius:
+                float pickupRadiusIncrease9 = 0.40f;
+                playerHealth.IncreasePickupRadius(pickupRadiusIncrease9);
+                break;
+
+            case UpgradeType.MoveSpeed:
+                float moveSpeedIncrease9 = 0.15f;
+                playerMovement.IncreaseMoveSpeed(moveSpeedIncrease9);
+                break;
+
+            case UpgradeType.Luck:
+                float luckIncrease9 = 20;
+                playerHealth.IncreaseLuck((int)luckIncrease9);;
+                break;
         }
     }
 
-    public class Upgrade
-    {
-        public UpgradeType type;
-        public int cost;
-        public Sprite upgradeSprite;
-
-        public Upgrade(UpgradeType type, int cost, Sprite sprite)
-        {
-            this.type = type;
-            this.cost = cost;
-            this.upgradeSprite = sprite;
-        }
-    }
 }

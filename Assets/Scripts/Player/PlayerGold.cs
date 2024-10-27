@@ -74,7 +74,7 @@ public class PlayerGold : MonoBehaviour
         }
     }
 
-    private void UpdateGoldDisplay()
+    public void UpdateGoldDisplay()
     {
         // Обновляем текст золота в UI только если ссылка на текст существует
         if (goldText != null)
