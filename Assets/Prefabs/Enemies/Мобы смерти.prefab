@@ -127,7 +127,7 @@ MonoBehaviour:
   enemyMoveSpeed: 1.1
   damage: 7
   attackRange: 0.1
-  attackCooldown: 0.1
+  attackCooldown: 0.5
   experienceItemPrefab: {fileID: 7339687537489862264, guid: d17a2951307f7a44e9068307e205694a, type: 3}
   experienceAmount: 3
   bloodEffectPrefab: {fileID: 3705117576596526473, guid: e5a7816d5d4589e4d8e44c4d9123ae14, type: 3}

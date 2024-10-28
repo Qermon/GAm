@@ -8,8 +8,10 @@ public abstract class Weapon : MonoBehaviour
     public float damage = 10f; // Пример начального урона
     public float criticalDamage = 20f; // Урон при критическом ударе
     public float criticalChance = 0.1f; // Шанс критического удара (10%)
-    public float attackSpeed = 1f; // Скорость атаки
+    public float attackSpeed; // Скорость атаки
     public float attackRange; // Дальность атаки
+    public float baseAttackSpeed = 1f; // Установите здесь начальное значение
+    public float baseAttackRange = 3f;
     public float rotationSpeed; // Скорость вращения снарядов
     public float projectileSpeed; // Скорость снарядов
 
@@ -22,12 +24,19 @@ public abstract class Weapon : MonoBehaviour
     private bool isCritDamageBuffPurchased = false; // Флаг, указывающий был ли куплен бафф
     private bool isCritDamageBuffActive = false; // Флаг, указывающий активен ли бафф
     private float critDamageBuffCount = 0f; // Сколько процентов увеличивается критический урон
+    
+
+    // Базовые значения для баффов
 
 
 
     protected virtual void Start()
     {
         attackTimer = 0f; // Устанавливаем таймер атаки
+
+        // Сохраняем базовые значения скорости и дальности атаки
+        attackSpeed = baseAttackSpeed; // Установить начальную скорость при запуске
+        attackRange = baseAttackRange;
     }
 
     public virtual void Attack()
@@ -35,7 +44,7 @@ public abstract class Weapon : MonoBehaviour
         if (attackTimer <= 0f) // Проверяем, можно ли атаковать
         {
             PerformAttack();
-            attackTimer = 1f / attackSpeed; // Перезапускаем таймер атаки
+            attackTimer = 0.3f / attackSpeed; // Перезапускаем таймер атаки
         }
     }
 
@@ -55,34 +64,29 @@ public abstract class Weapon : MonoBehaviour
     {
         float increaseAmount = damage * percentage; // Вычисляем увеличение урона на основе процента
         damage += increaseAmount; // Увеличиваем текущий урон
-        Debug.Log($"Урон увеличен на {percentage * 100}%. Новый урон: {damage}");
     }
 
     public void IncreaseCritDamage(float percentage)
     {
         // Увеличиваем критический урон на заданный процент от базового значения
         criticalDamage += percentage; // Здесь percentage - это само значение, которое добавляется к критическому урону
-        Debug.Log($"Критический урон увеличен на {percentage}%. Новый критический урон: {criticalDamage}%");
     }
 
     public void IncreaseCritChance(float percentage)
     {
         criticalChance += percentage; // Увеличиваем шанс критического удара
-        Debug.Log($"Шанс критического удара увеличен на {percentage}%. Новый шанс критического удара: {criticalChance}%");
     }
 
     public void IncreaseAttackSpeed(float percentage)
     {
-        float increaseAmount = attackSpeed * percentage; // Вычисляем увеличение скорости атаки на основе процента
+        float increaseAmount = baseAttackSpeed * percentage; // Вычисляем увеличение скорости атаки на основе процента
         attackSpeed += increaseAmount; // Увеличиваем скорость атаки
-        Debug.Log($"Скорость атаки увеличена на {percentage * 100}%. Новая скорость атаки: {attackSpeed}");
     }
 
     public void IncreaseAttackRange(float percentage)
     {
-        float increaseAmount = attackRange * percentage; // Вычисляем увеличение дальности атаки на основе процента
+        float increaseAmount = baseAttackRange * percentage; // Вычисляем увеличение дальности атаки на основе процента
         attackRange += increaseAmount; // Увеличиваем дальность атаки
-        Debug.Log($"Дальность атаки увеличена на {percentage * 100}%. Новая дальность атаки: {attackRange}");
     }
 
     protected virtual void Update()
@@ -98,14 +102,15 @@ public abstract class Weapon : MonoBehaviour
         // Генерируем случайное значение
         float randomValue = Random.value;
 
-        // Логируем шанс критического удара и случайное значение
-
+        // Проверка на критический удар
         if (randomValue < criticalChance)
         {
-            return criticalDamage; // Критический урон
+            float critDamage = damage + damage * (criticalDamage / 100f);
+            return critDamage;
         }
-        return damage; // Обычный урон
+        return damage;
     }
+
 
     public void PurchaseCritChanceBuff()
     {
@@ -137,7 +142,6 @@ public abstract class Weapon : MonoBehaviour
     public void DecreaseCritChance(float percentage)
     {
         criticalChance -= percentage; // Уменьшаем шанс критического удара
-        Debug.Log($"Шанс критического удара уменьшен на {percentage * 100}%. Новый шанс критического удара: {criticalChance * 100}%");
     }
     public void CritChanceWave()
     {
@@ -176,7 +180,6 @@ public abstract class Weapon : MonoBehaviour
     public void DecreaseCritDamage(float amount)
     {
         criticalDamage -= amount; // Уменьшаем шанс критического удара
-        Debug.Log($" Критический урон уменьшен на {amount}%. Новый критический удар: {criticalDamage}%");
     }
 
     public void CritDamageWave()

@@ -9,6 +9,7 @@ public class PlayerHealth : MonoBehaviour
     public float maxHealth; // Максимальное здоровье
     public float currentHealth; // Текущее здоровье
     public float regen = 0.01f; // Количество здоровья, восстанавливаемого каждую секунду
+    public float baseRegen = 0.003f;
     private bool isRegenerating = false; // Флаг для отслеживания регенерации
     public HealthBar healthBar; // Ссылка на компонент полоски здоровья
     [SerializeField] private Image barrierImage; // Полоска барьера, добавленная в инспекторе
@@ -18,7 +19,9 @@ public class PlayerHealth : MonoBehaviour
     private const float maxDamageReduction = 0.8f; // Максимальное уменьшение урона (80%)
     public float investment = 0; // Значение инвестиций
     public float lifesteal = 0; // Значение вампиризма
-    public float pickupRadius = 1f; // Радиус сбора предметов
+    public float baseLifesteal = 0.001f;
+    public float basePickupRadius = 5f;
+    public float pickupRadius; // Радиус сбора предметов
     public int luck = 0; // Уровень удачи
 
     public int shieldAmount = 0; 
@@ -44,6 +47,7 @@ public class PlayerHealth : MonoBehaviour
         shieldPercent = 0.25f; // 25% от максимального здоровья
         healthBar.SetMaxHealth((int)maxHealth);
         healthBar.SetHealth((int)currentHealth);
+        pickupRadius = basePickupRadius;
 
         collectionRadius = gameObject.AddComponent<CircleCollider2D>();
         collectionRadius.isTrigger = true;
@@ -60,7 +64,7 @@ public class PlayerHealth : MonoBehaviour
     // Метод для увеличения регенерации здоровья
     public void IncreaseHealthRegen(float percentage)
     {
-        float increaseAmount = regen * percentage;
+        float increaseAmount = baseRegen * percentage;
         regen += increaseAmount; // Увеличиваем скорость регенерации здоровья
         Debug.Log($"Скорость регенерации здоровья увеличена на {percentage}. Новая скорость регенерации: {regen}");
     }
@@ -85,7 +89,7 @@ public class PlayerHealth : MonoBehaviour
     // Метод для увеличения вампиризма
     public void IncreaseLifesteal(float percentage)
     {
-        float increaseAmount = lifesteal * percentage;
+        float increaseAmount = baseLifesteal * percentage;
         lifesteal += increaseAmount; // Увеличиваем вампиризм
         Debug.Log($"Вампиризм увеличен на {increaseAmount}. Текущий вампиризм: {lifesteal}");
     }
@@ -109,24 +113,25 @@ public class PlayerHealth : MonoBehaviour
     // Метод для увеличения радиуса сбора предметов
     public void IncreasePickupRadius(float percentage)
     {
-        float increaseAmount = pickupRadius * percentage;
+        float increaseAmount = basePickupRadius * percentage;
         pickupRadius += increaseAmount; // Увеличиваем радиус сбора
 
-        // Удаляем старый коллайдер, если он существует
-        if (collectionRadius != null)
+        // Проверяем, существует ли коллайдер
+        if (collectionRadius == null)
         {
-            Destroy(collectionRadius);
+            // Создаем новый коллайдер, если его нет
+            collectionRadius = gameObject.AddComponent<CircleCollider2D>();
+            collectionRadius.isTrigger = true; // Чтобы это был триггер
         }
 
-        // Создаем новый коллайдер
-        collectionRadius = gameObject.AddComponent<CircleCollider2D>();
-        collectionRadius.isTrigger = true; // Чтобы это был триггер
-        collectionRadius.radius = pickupRadius; // Устанавливаем новый радиус
+        // Устанавливаем новый радиус коллайдера
+        collectionRadius.radius = pickupRadius;
 
         Debug.Log($"Радиус сбора увеличен на {increaseAmount}. Новый радиус сбора: {pickupRadius}");
     }
 
-   
+
+
 
 
     public void AddLifesteal(int amount)
@@ -135,14 +140,16 @@ public class PlayerHealth : MonoBehaviour
     }
 
     // Метод для восстановления здоровья при убийстве врага
+    // Метод для восстановления здоровья при убийстве врага
     public void HealOnKill(int enemyHealth)
     {
-        int healAmount = Mathf.FloorToInt(enemyHealth * (lifesteal / 100f));
-        currentHealth = Mathf.Clamp(currentHealth + healAmount, 0, maxHealth);
+        float healAmount = maxHealth * lifesteal;
+        currentHealth = Mathf.Clamp(currentHealth + healAmount, 0, maxHealth); // Восстанавливаем здоровье
         UpdateHealthUI();
 
         TryApplyShieldOnKill(); // Пытаемся добавить щит с 5% шансом
     }
+
 
     public float CalculateInvestmentBonus(float currentGold)
     {
@@ -338,17 +345,11 @@ public class PlayerHealth : MonoBehaviour
                 float previousHealth = currentHealth; // Сохраняем текущее здоровье
 
                 // Рассчитываем восстановленное здоровье как процент от maxHealth
-                float healAmount = maxHealth * regen; // Оставляем healAmount как float
-                currentHealth += healAmount;
-
-                // Убедимся, что текущее здоровье не превышает максимума
-                if (currentHealth > maxHealth)
-                {
-                    currentHealth = maxHealth;
-                }
+                float healAmount = maxHealth * regen; // regen должен быть в диапазоне [0, 1]
+                currentHealth = Mathf.Clamp(currentHealth + healAmount, 0, maxHealth); // Восстанавливаем здоровье
+                UpdateHealthUI(); // Обновляем UI
 
                 Debug.Log($"Регенерация: текущее здоровье: {previousHealth} -> {currentHealth} из {maxHealth} (восстановлено {healAmount})");
-                UpdateHealthUI(); // Обновляем UI здоровья
             }
             else
             {
@@ -360,6 +361,7 @@ public class PlayerHealth : MonoBehaviour
             yield return new WaitForSeconds(1f); // Регенерация каждую секунду
         }
     }
+
 
 
     // Остановить регенерацию
