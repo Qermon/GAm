@@ -119,7 +119,7 @@ public class Shop : MonoBehaviour
         Time.timeScale = 0f;
         UpdatePlayerStats();
         UpdateUpgradeUI();
-       
+
     }
 
     public void CloseShop()

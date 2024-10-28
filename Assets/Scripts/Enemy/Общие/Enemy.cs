@@ -14,7 +14,7 @@ public class Enemy : MonoBehaviour
     protected bool isDead = false;
 
     protected Transform player;
-    private float attackTimer = 0f;
+    protected float attackTimer = 0f;
 
     private float originalMass;
     private Rigidbody2D rb;

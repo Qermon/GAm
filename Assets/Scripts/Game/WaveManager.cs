@@ -235,7 +235,7 @@ public class WaveManager : MonoBehaviour
         waveConfigs = new Dictionary<int, WaveConfig>();
 
         // Волна 1
-        waveConfigs.Add(1, new WaveConfig(5f, new List<EnemySpawn>
+        waveConfigs.Add(1, new WaveConfig(20f, new List<EnemySpawn>
     {
         new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(50 + 1 * 1.5f)) // 50 Смертей
     }));

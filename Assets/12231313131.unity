@@ -1472,8 +1472,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1709959662}
   - {fileID: 806675625}
+  - {fileID: 1709959662}
   - {fileID: 533028780}
   m_Father: {fileID: 981738096}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1625,6 +1625,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 47487262}
     - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: lockedSprite
+      value: 
+      objectReference: {fileID: 1148386150, guid: b97f3b6b78230d4498d16406cee8a392, type: 3}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: unlockedSprite
+      value: 
+      objectReference: {fileID: -125201003, guid: b97f3b6b78230d4498d16406cee8a392, type: 3}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
       propertyPath: playerStatsText
       value: 
       objectReference: {fileID: 2041103312}
@@ -1637,6 +1645,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: lockIcons.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
       propertyPath: buffImages.Array.size
       value: 5
       objectReference: {fileID: 0}
@@ -1645,7 +1657,15 @@ PrefabInstance:
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: lockImages.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
       propertyPath: buffButtons.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: lockButtons.Array.size
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
@@ -1676,6 +1696,26 @@ PrefabInstance:
       propertyPath: buffIcons.Array.data[6]
       value: 
       objectReference: {fileID: 21300000, guid: aa2dd390c993b284eb815bb1d1d4e295, type: 3}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: lockIcons.Array.data[0]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: lockIcons.Array.data[1]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: lockIcons.Array.data[2]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: lockIcons.Array.data[3]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: lockIcons.Array.data[4]
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
       propertyPath: buffCostTexts.Array.size
       value: 5
@@ -1721,6 +1761,26 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 905507969}
     - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: lockImages.Array.data[0]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: lockImages.Array.data[1]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: lockImages.Array.data[2]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: lockImages.Array.data[3]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: lockImages.Array.data[4]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
       propertyPath: buffButtons.Array.data[0]
       value: 
       objectReference: {fileID: 609624234}
@@ -1740,6 +1800,26 @@ PrefabInstance:
       propertyPath: buffButtons.Array.data[4]
       value: 
       objectReference: {fileID: 831865668}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: lockButtons.Array.data[0]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: lockButtons.Array.data[1]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: lockButtons.Array.data[2]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: lockButtons.Array.data[3]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: lockButtons.Array.data[4]
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
       propertyPath: upgradeOptions.Array.size
       value: 45
@@ -6510,7 +6590,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5656275585539047939, guid: 6e46641b52ef9a04e8c610e947da3190, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -29.769043
+      value: -29.76886
       objectReference: {fileID: 0}
     - target: {fileID: 6788047682146363623, guid: 6e46641b52ef9a04e8c610e947da3190, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
