@@ -15,13 +15,19 @@ public class Shop : MonoBehaviour
     public TextMeshProUGUI[] buffCostTexts; // Тексты для отображения стоимости баффов
     public TextMeshProUGUI[] buffDescriptionTexts; // Поля для вывода описания для каждого баффа
     private List<Upgrade> upgrades = new List<Upgrade>(); // Список доступных баффов
+    
+    public Button refreshButton; // Кнопка обновления
+    private int currentRefreshCost = 7; // Начальная стоимость обновления
+    public TextMeshProUGUI refreshCostText;  // Текстовый объект для отображения стоимости обновления
+
+
 
     private PlayerHealth playerHealth;
     private PlayerMovement playerMovement;
     private PlayerGold playerGold;
     private LevelUpMenu levelUpMenu;
     private List<Weapon> playerWeapons; // Список оружий
-    public Weapon weapon;
+    private Weapon weapon;
 
 
     public UpgradeOption[] upgradeOptions; // Массив доступных баффов
@@ -110,6 +116,7 @@ public class Shop : MonoBehaviour
 
     private void Start()
     {
+        refreshButton.onClick.AddListener(TryRefreshBuffs);
         playerWeapons = new List<Weapon>(FindObjectsOfType<Weapon>()); // Получаем все оружия в игре
         shopPanel.SetActive(false);
 
@@ -117,6 +124,12 @@ public class Shop : MonoBehaviour
         {
             closeButton.onClick.AddListener(CloseShop);
         }
+
+        if (refreshButton != null)
+        {
+            refreshButton.onClick.AddListener(RefreshBuffs); // Добавляем обработчик для кнопки обновления
+        }
+
 
         playerHealth = FindObjectOfType<PlayerHealth>();
         playerMovement = FindObjectOfType<PlayerMovement>();
@@ -128,7 +141,24 @@ public class Shop : MonoBehaviour
             buffButtons[i].onClick.AddListener(() => PurchaseUpgrade(index));
         }
 
+        UpdateRefreshButton();
         GenerateUpgrades();
+    }
+
+    // Обновляет состояние кнопки и отображение стоимости
+    void UpdateRefreshButton()
+    {
+        refreshCostText.text = currentRefreshCost.ToString() + " Gold";
+
+        // Проверяем, хватает ли золота
+        if (playerGold.currentGold >= currentRefreshCost)
+        {
+            refreshButton.interactable = true;  // Активируем кнопку
+        }
+        else
+        {
+            refreshButton.interactable = false; // Деактивируем кнопку
+        }
     }
 
     public void OpenShop()
@@ -136,6 +166,8 @@ public class Shop : MonoBehaviour
         InitializeShop(); // Инициализация доступных баффов
         shopPanel.SetActive(true);
         Time.timeScale = 0f;
+        currentRefreshCost = 7; // Сбрасываем стоимость обновления до начального значения
+        UpdateRefreshButton();
         UpdatePlayerStats();
         UpdateUpgradeUI();
 
@@ -149,6 +181,33 @@ public class Shop : MonoBehaviour
 
         // Обновляем баффы при закрытии магазина
         GenerateUpgrades();
+    }
+
+    private void TryRefreshBuffs()
+    {
+        if (playerGold.currentGold >= currentRefreshCost)
+        {
+            playerGold.currentGold -= currentRefreshCost; // Вычитаем золото за обновление
+            RefreshBuffs();
+            IncreaseRefreshCost();
+            UpdateRefreshButton();
+            playerGold.UpdateGoldDisplay();
+        }
+        else
+        {
+            Debug.Log("Недостаточно золота для обновления магазина!");
+        }
+    }
+    private void IncreaseRefreshCost()
+    {
+        // Увеличиваем стоимость следующего обновления
+        currentRefreshCost = currentRefreshCost * 2 + Random.Range(0, 6);
+    }
+
+    private void RefreshBuffs()
+    {
+        GenerateUpgrades(); // Пересоздаём список баффов
+        UpdateUpgradeUI();   // Обновляем UI
     }
 
 
@@ -544,7 +603,7 @@ public class Shop : MonoBehaviour
                 return "Неизвестный бафф.";
         }
     }
-
+    
 
     private void ApplyUpgrade(Upgrade upgrade)
     {

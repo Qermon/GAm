@@ -60,6 +60,12 @@ public abstract class Weapon : MonoBehaviour
         Debug.Log(damageMessage);
     }
 
+    public virtual void UseWeapon()
+    {
+        Debug.Log("Используется оружие: " + this.GetType().Name);
+        // Логика использования оружия
+    }
+
     public void IncreaseDamage(float percentage)
     {
         float increaseAmount = damage * percentage; // Вычисляем увеличение урона на основе процента

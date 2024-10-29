@@ -121,7 +121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bc4bb179fc40764ab579be31512d208, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goldAmount: 10
+  goldAmount: 1
   maxHealth: 1000
   currentHealth: 0
   enemyMoveSpeed: 1

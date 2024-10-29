@@ -210,7 +210,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3b3dbca9c7c7c646a4314cf9a054ad8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentHealth: 25
+  currentHealth: 15
   player: {fileID: 0}
   moveSpeed: 5
   attackRange: 0.1
@@ -232,7 +232,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e6cbda08a2e29a4999ccd1ae71c3224, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goldAmount: 10
+  goldAmount: 1
   maxHealth: 25
   currentHealth: 0
   enemyMoveSpeed: 0

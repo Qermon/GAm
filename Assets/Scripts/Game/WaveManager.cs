@@ -16,18 +16,23 @@ public class WaveManager : MonoBehaviour
     public GameObject[] healerPrefabs;    // Префабы лекарей
     public GameObject[] buffMobPrefabs;   // Префабы бафферов
     public Transform[] spawnPoints;       // Точки спауна
+    public float spawnRadius = 2f; // Радиус для разброса спавна вокруг точки
     public float timeBetweenWaves = 5f;
 
-    private int waveNumber = 0;
+    public int waveNumber = 0;
     public int maxWaves = 30;
     private bool spawningWave = false;
     private float timeStartedWave;
     private float waveDuration;
 
+
+    public GameObject crossPrefab; // Префаб крестика для обозначения места появления мобов
+
+
     private bool isWaveInProgress = false;
 
     private PlayerHealth playerHealth; // Добавьте ссылку на PlayerHealth
-
+    public WeaponSelectionManager weaponSelectionManager; // Ссылка на ваш скрипт выбора оружия
     private List<GameObject> activeEnemies = new List<GameObject>();
 
 
@@ -35,7 +40,7 @@ public class WaveManager : MonoBehaviour
 
     void Start()
     {
-
+        weaponSelectionManager = FindObjectOfType<WeaponSelectionManager>(); // Присваиваем weaponSelectionManager
         playerHealth = FindObjectOfType<PlayerHealth>(); // Инициализируйте ссылку
 
         InitializeWaves(); // Убедимся, что инициализация происходит до начала игры
@@ -80,6 +85,19 @@ public class WaveManager : MonoBehaviour
 
     public void StartWave()
     {
+        Debug.Log("Начало волны, текущий номер: " + waveNumber);
+        if (weaponSelectionManager == null)
+        {
+            Debug.LogError("WeaponSelectionManager не инициализирован!");
+            return; // Остановите выполнение, если weaponSelectionManager не инициализирован
+        }
+
+        // Проверяем, нужно ли открывать панель выбора оружия
+        if (waveNumber == 0 || waveNumber == 1 || waveNumber == 6 || waveNumber == 9)
+        {
+            weaponSelectionManager.OpenWeaponSelection(); // Открываем панель выбора оружия
+        }
+
         if (waveConfigs == null || waveConfigs.Count == 0)
         {
             return;
@@ -110,23 +128,18 @@ public class WaveManager : MonoBehaviour
         if (waveConfigs != null && waveConfigs.ContainsKey(waveNumber))
         {
             WaveConfig currentWave = waveConfigs[waveNumber];
-            waveDuration = currentWave.waveDuration;  // Время волны
+            waveDuration = currentWave.waveDuration;
             timeStartedWave = Time.time;
 
-            // Создаем список всех мобов для спавна
             List<EnemySpawn> allEnemiesToSpawn = new List<EnemySpawn>(currentWave.enemiesToSpawn);
-
-            // Рассчитываем время для спавна мобов (равномерно за (время волны - 7 секунд))
-            float spawnTimeLimit = waveDuration - 7f;  // Мобы спавнятся за (время волны - 7 секунд)
-            float totalEnemies = allEnemiesToSpawn.Sum(enemySpawn => enemySpawn.count);  // Суммарное количество мобов
-            float spawnInterval = spawnTimeLimit / totalEnemies;  // Интервал спавна
+            float spawnTimeLimit = waveDuration - 7f;
+            float totalEnemies = allEnemiesToSpawn.Sum(enemySpawn => enemySpawn.count);
+            float spawnInterval = spawnTimeLimit / totalEnemies;
 
             float currentTime = 0f;
 
-            // Спавним мобов равномерно в течение времени спавна
             while (currentTime < spawnTimeLimit)
             {
-                // Выбираем случайного моба для спавна
                 EnemySpawn randomEnemySpawn = GetRandomEnemySpawn(allEnemiesToSpawn);
 
                 if (randomEnemySpawn != null && randomEnemySpawn.count > 0)
@@ -134,36 +147,30 @@ public class WaveManager : MonoBehaviour
                     Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
                     GameObject enemyPrefab = randomEnemySpawn.enemyPrefab;
 
-                    GameObject enemy = Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+                    // Генерация случайной позиции внутри радиуса вокруг точки спавна
+                    Vector2 randomPosition = spawnPoint.position + (Vector3)Random.insideUnitCircle * spawnRadius;
+                    GameObject enemy = Instantiate(enemyPrefab, randomPosition, Quaternion.identity);
+
 
                     AddEnemy(enemy);
 
-                    // Уменьшаем количество оставшихся мобов этого типа
                     randomEnemySpawn.count--;
 
-                    // Ожидаем следующий спавн
                     yield return new WaitForSeconds(spawnInterval);
-
-                    currentTime = Time.time - timeStartedWave;  // Обновляем текущее время
+                    currentTime = Time.time - timeStartedWave;
                 }
 
-                // Удаляем мобов с count = 0 из списка для оптимизации
                 allEnemiesToSpawn.RemoveAll(enemySpawn => enemySpawn.count <= 0);
             }
 
-            // Прекращаем спавн мобов, но продолжаем отсчет времени волны
             while (Time.time - timeStartedWave < waveDuration)
             {
-                yield return null;  // Ждем окончания волны
+                yield return null;
             }
 
-            // Уничтожаем оставшихся мобов после завершения волны
             RemoveRemainingEnemies();
-
-            // Завершение волны и сброс баффов
             EndWave();
 
-            // Открываем магазин после волны
             shop.OpenShop();
         }
         else
@@ -172,9 +179,25 @@ public class WaveManager : MonoBehaviour
         }
 
         spawningWave = false;
-
         StartCoroutine(StartNextWave());
-        playerHealth.barrierActivatedThisWave = false; // Разрешаем активацию на новой волне
+        playerHealth.barrierActivatedThisWave = false;
+    }
+
+    // Метод для спавна крестика и моба
+    private IEnumerator SpawnCrossAndEnemy(Vector3 spawnPosition, GameObject enemyPrefab)
+    {
+        // Спавним крестик
+        GameObject cross = Instantiate(crossPrefab, spawnPosition, Quaternion.identity);
+
+        // Ждем 2 секунды перед спавном моба
+        yield return new WaitForSeconds(2f);
+
+        // Удаляем крестик перед спавном моба
+        Destroy(cross);
+
+        // Спавним моба
+        GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+        AddEnemy(enemy);
     }
 
     public void EndWave()
@@ -235,15 +258,15 @@ public class WaveManager : MonoBehaviour
         waveConfigs = new Dictionary<int, WaveConfig>();
 
         // Волна 1
-        waveConfigs.Add(1, new WaveConfig(5f, new List<EnemySpawn>
+        waveConfigs.Add(1, new WaveConfig(20f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(50 + 1 * 1.5f)) // 50 Смертей
+        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(100 + 1 * 1.5f)) // 50 Смертей
     }));
 
         // Волна 2
-        waveConfigs.Add(2, new WaveConfig(5f, new List<EnemySpawn>
+        waveConfigs.Add(2, new WaveConfig(25f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(50 + 2 * 1.5f)), // 50 Смертей
+        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(150 + 2 * 1.5f)), // 50 Смертей
         new EnemySpawn(batPrefabs[0], 10), // 10 Летучих мышей
         new EnemySpawn(samuraiPrefabs[0], 1) // 10 Скелетов
     }));
@@ -251,7 +274,7 @@ public class WaveManager : MonoBehaviour
         // Волна 3
         waveConfigs.Add(3, new WaveConfig(30f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(55 + 3 * 1.5f)), // 55 Смертей
+        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(200 + 3 * 1.5f)), // 55 Смертей
         new EnemySpawn(batPrefabs[0], 20), // 20 Летучих мышей
         new EnemySpawn(samuraiPrefabs[0], 1) // 10 Скелетов
     }));
@@ -259,7 +282,7 @@ public class WaveManager : MonoBehaviour
         // Волна 4
         waveConfigs.Add(4, new WaveConfig(35f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(55 + 4 * 1.5f)), // 55 Смертей
+        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(255 + 4 * 1.5f)), // 55 Смертей
         new EnemySpawn(batPrefabs[0], 20), // 20 Летучих мышей
         new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
         new EnemySpawn(samuraiPrefabs[0], 1) // 10 Скелетов
@@ -268,13 +291,13 @@ public class WaveManager : MonoBehaviour
         // Волна 5
         waveConfigs.Add(5, new WaveConfig(40f, new List<EnemySpawn>
     {
-        new EnemySpawn(batPrefabs[0], Mathf.FloorToInt(50 + 5 * 1.5f)) // 50 Летучих мышей
+        new EnemySpawn(batPrefabs[0], Mathf.FloorToInt(250 + 5 * 1.5f)) // 50 Летучих мышей
     }));
 
         // Волна 6
         waveConfigs.Add(6, new WaveConfig(45f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(60 + 6 * 1.5f)), // 60 Смертей
+        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(260 + 6 * 1.5f)), // 60 Смертей
         new EnemySpawn(deathPrefabs[0], 6), // 6 Мобов Смерти
         new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
         new EnemySpawn(batPrefabs[0], 20) // 20 Летучих мышей

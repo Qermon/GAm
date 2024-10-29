@@ -4,8 +4,12 @@ using UnityEngine;
 
 public class LightningWeapon : Weapon
 {
+   
+
     public GameObject lightningPrefab; // Префаб молнии
     public int lightningCount = 5; // Количество молний за раз
+
+    private Coroutine lightningCoroutine; // Ссылка на корутину для остановки
 
     protected override void Start()
     {
@@ -55,6 +59,19 @@ public class LightningWeapon : Weapon
     {
         // Атака будет выполнена через корутину, поэтому ничего не делаем здесь
     }
+
+    public override void UseWeapon()
+    {
+        // Логика для использования молниеносного оружия
+        Debug.Log("Используется молниеносное оружие!");
+
+        // Запускаем корутину для спавна молний, если она еще не запущена
+        if (lightningCoroutine == null)
+        {
+            lightningCoroutine = StartCoroutine(SpawnLightning());
+        }
+    }
+
 }
 
 public class LightningBehaviour : MonoBehaviour
