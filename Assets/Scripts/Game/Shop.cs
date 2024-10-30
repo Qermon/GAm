@@ -19,13 +19,15 @@ public class Shop : MonoBehaviour
     public Button refreshButton; // Кнопка обновления
     private int currentRefreshCost = 7; // Начальная стоимость обновления
     public TextMeshProUGUI refreshCostText;  // Текстовый объект для отображения стоимости обновления
-
+    private float baseCost = 50f; // Используем float для более точных вычислений
+    private float priceIncreasePercentage = 0.1f; // 10% увеличение
 
 
     private PlayerHealth playerHealth;
     private PlayerMovement playerMovement;
     private PlayerGold playerGold;
     private LevelUpMenu levelUpMenu;
+    private WaveManager waveManager;
     private List<Weapon> playerWeapons; // Список оружий
     private Weapon weapon;
 
@@ -33,8 +35,6 @@ public class Shop : MonoBehaviour
     public UpgradeOption[] upgradeOptions; // Массив доступных баффов
     private HashSet<UpgradeType> existingBuffs = new HashSet<UpgradeType>(); // HashSet для отслеживания существующих баффов
 
-    private int moveSpeed;
-    private int critDamage;
     private float totalAttackSpeedBonus = 0f;
     private float totalAttackRangeBonus = 0f;
     private float totalPickupRadiusBonus = 0f;
@@ -116,8 +116,10 @@ public class Shop : MonoBehaviour
 
     private void Start()
     {
+
         refreshButton.onClick.AddListener(TryRefreshBuffs);
         playerWeapons = new List<Weapon>(FindObjectsOfType<Weapon>()); // Получаем все оружия в игре
+        waveManager = FindObjectOfType<WaveManager>();
         shopPanel.SetActive(false);
 
         if (closeButton != null)
@@ -143,6 +145,7 @@ public class Shop : MonoBehaviour
 
         UpdateRefreshButton();
         GenerateUpgrades();
+        float moveSpeed = playerMovement.moveSpeed * 200;
     }
 
     // Обновляет состояние кнопки и отображение стоимости
@@ -206,7 +209,8 @@ public class Shop : MonoBehaviour
 
     private void RefreshBuffs()
     {
-        GenerateUpgrades(); // Пересоздаём список баффов
+
+        InitializeShop();
         UpdateUpgradeUI();   // Обновляем UI
     }
 
@@ -225,7 +229,7 @@ public class Shop : MonoBehaviour
                 // Суммируем урон всех оружий
                 float totalDamage = 0f;
                 float totalCritDamage = 0f; // Для суммирования критического урона
-                float totalCritChance = 0f; // Для суммирования критического шанса
+                float totalCritChance = 0f; // Суммируем критический шанс
 
                 foreach (var weapon in playerWeapons)
                 {
@@ -244,22 +248,111 @@ public class Shop : MonoBehaviour
             UpdateTotalPickupRadiusBonus();
             UpdateTotalLifestealBonus();
             UpdateTotalRegenBonus();
+            UpdateRefreshButton();
 
-            playerStatsText.text = $"Здоровье: {(int)playerHealth.maxHealth}\n" + 
-                                   $"Урон: {(int)averageDamage}\n" + // Отображаем средний урон
-                                   $"Крит. урон: {(int)averageCritDamage}%\n" + // Отображаем средний критический урон
-                                   $"Крит. шанс: {(int)(averageCritChance * 100)}%\n" + // Умножаем на 100 для корректного отображения
-                                   $"Скорость атаки: {(int)totalAttackSpeedBonus}%\n" +// Отображение бонуса скорости атаки
-                                   $"Дальность атаки: {(int)totalAttackRangeBonus}%\n" +// Отображение бонуса скорости атаки
-                                   $"Регенерация: {(int)totalRegenBonus}%\n" +// Отображение бонуса скорости атаки
-                                   $"Вампиризм: {(int)totalLifestealBonus}%\n" +// Отображение бонуса скорости атаки
-                                   $"Защита: {playerHealth.defense}\n" +
-                                   $"Скорость бега: {(int)moveSpeed}\n" +
-                                   $"Радиус сбора: {(int)totalPickupRadiusBonus}%\n" +
-                                   $"Инвестиции: {playerHealth.investment}\n" +
-                                   $"Удача: {playerHealth.luck}\n";
+            playerStatsText.text = $"Здоровье: {FormatStatTextMaxHp((int)playerHealth.maxHealth)}\n" +
+                                   $"Урон: {FormatStatTextDamage((int)averageDamage)}\n" + // Отображаем средний урон
+                                   $"Крит. урон: {FormatStatText((int)averageCritDamage)}%\n" + // Критический урон
+                                   $"Крит. шанс: {FormatStatText((int)(averageCritChance * 100))}%\n" + // Критический шанс
+                                   $"Скорость атаки: {FormatStatText((int)totalAttackSpeedBonus)}%\n" + // Бонус скорости атаки
+                                   $"Дальность атаки: {FormatStatText((int)totalAttackRangeBonus)}%\n" + // Бонус дальности атаки
+                                   $"Регенерация: {FormatStatText((int)totalRegenBonus)}%\n" + // Регенерация
+                                   $"Вампиризм: {FormatStatText((int)totalLifestealBonus)}%\n" + // Вампиризм
+                                   $"Защита: {FormatStatText(playerHealth.defense)}\n" +
+                                   $"Скорость бега: {FormatStatTextMoveSpeed((int)moveSpeed)}\n" +
+                                   $"Радиус сбора: {FormatStatText((int)totalPickupRadiusBonus)}%\n" +
+                                   $"Инвестиции: {FormatStatText((int)playerHealth.investment)}\n" +
+                                   $"Удача: {FormatStatText((int)playerHealth.luck)}\n";
         }
     }
+
+    private string FormatStatText(int value)
+    {
+        string color;
+
+        if (value > 0)
+        {
+            color = "green"; // Зелёный для положительных значений
+        }
+        else if (value < 0)
+        {
+            color = "red"; // Красный для отрицательных значений
+        }
+        else
+        {
+            color = "white"; // Белый для 0
+        }
+
+        // Возвращаем строку с цветом
+        return $"<color={color}>{value}</color>";
+    }
+
+    private string FormatStatTextMaxHp(int value)
+    {
+        string color;
+
+        if (value > playerHealth.baseMaxHp)
+        {
+            color = "green"; // Зелёный для положительных значений
+        }
+        else if (value < playerHealth.baseMaxHp)
+        {
+            color = "red"; // Красный для отрицательных значений
+        }
+        else
+        {
+            color = "white";
+        }
+
+        // Возвращаем строку с цветом
+        return $"<color={color}>{value}</color>";
+    }
+
+    
+    
+    private string FormatStatTextMoveSpeed(int value)
+    {
+        string color;
+
+        if (value > 240)
+        {
+            color = "green"; // Зелёный для положительных значений
+        }
+        else if (value < 240)
+        {
+            color = "red"; // Красный для отрицательных значений
+        }
+        else
+        {
+            color = "white"; // Белый для 240
+        }
+
+        // Возвращаем строку с цветом
+        return $"<color={color}>{value}</color>";
+    }
+
+    private string FormatStatTextDamage(int value)
+    {
+        string color;
+
+        if (value > 27)
+        {
+            color = "green"; // Зелёный для положительных значений
+        }
+        else if (value < 27)
+        {
+            color = "red"; // Красный для отрицательных значений
+        }
+        else
+        {
+            color = "white"; // Белый для 27
+        }
+
+        // Возвращаем строку с цветом
+        return $"<color={color}>{value}</color>";
+    }
+
+
 
 
     public void UpdateTotalAttackSpeedBonus()
@@ -346,14 +439,19 @@ public class Shop : MonoBehaviour
         int randomIndex = Random.Range(0, availableOptions.Count);
         UpgradeOption selectedOption = availableOptions[randomIndex];
 
-        // Генерация стоимости апгрейда
-        int baseCost = 10;
-        int randomCost = baseCost + Random.Range(5, 15);
+        // Генерация стоимости апгрейда с учетом увеличения и случайного значения
+        float currentCost = CalculateCurrentCost();
+        int randomAdjustment = Random.Range(-10, 21); // Случайное значение от -10 до +20
+        int finalCost = Mathf.Max(0, (int)(currentCost + randomAdjustment)); // Убедитесь, что стоимость не отрицательная
 
         // Удаляем выбранный вариант из доступных
         availableOptions.RemoveAt(randomIndex);
 
-        return new Upgrade(selectedOption.upgradeType, randomCost, selectedOption.upgradeSprite);
+        return new Upgrade(selectedOption.upgradeType, finalCost, selectedOption.upgradeSprite);
+    }
+    private float CalculateCurrentCost()
+    {
+        return baseCost * Mathf.Pow(1 + priceIncreasePercentage, waveManager.waveNumber);
     }
 
 

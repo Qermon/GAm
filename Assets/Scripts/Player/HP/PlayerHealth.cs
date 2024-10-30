@@ -8,6 +8,7 @@ public class PlayerHealth : MonoBehaviour
 {
     public float maxHealth; // Максимальное здоровье
     public float currentHealth; // Текущее здоровье
+    public float baseMaxHp;
     public float regen = 0.01f; // Количество здоровья, восстанавливаемого каждую секунду
     public float baseRegen = 0.003f;
     private bool isRegenerating = false; // Флаг для отслеживания регенерации
@@ -41,6 +42,7 @@ public class PlayerHealth : MonoBehaviour
     private CircleCollider2D collectionRadius; // Ссылка на триггер-коллайдер для сбора предметов
     void Start()
     {
+        baseMaxHp = maxHealth;
         // Инициализация текущего здоровья
         currentHealth = maxHealth;
         shieldAmount = 0;
@@ -154,7 +156,7 @@ public class PlayerHealth : MonoBehaviour
     public float CalculateInvestmentBonus(float currentGold)
     {
         // Фиксированное количество золота за каждые 10 инвестиций
-        float fixedGoldBonus = Mathf.Floor(investment / 10) * 10; // Например, 10 золота за каждые 10 инвестиций
+        float fixedGoldBonus = Mathf.Floor(investment / 10); // Например, 1 золота за каждые 10 инвестиций
 
         // Процент получения золота в зависимости от уровня инвестиций
         float investmentPercentage = (Mathf.Floor(investment / 10) * 0.01f); // 1% за каждые 10 инвестиций

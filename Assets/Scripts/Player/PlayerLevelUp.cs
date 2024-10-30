@@ -5,7 +5,7 @@ public class PlayerLevelUp : MonoBehaviour
 {
     public int currentLevel = 1;      // Текущий уровень игрока
     public int currentExperience = 0; // Текущий опыт игрока
-    public int experienceToNextLevel = 5; // Опыт для перехода на следующий уровень
+    public int experienceToNextLevel = 100; // Опыт для перехода на следующий уровень
 
     public TMP_Text levelText; // Ссылка на UI Text элемент
 
@@ -37,7 +37,7 @@ public class PlayerLevelUp : MonoBehaviour
 
     private void UpdateLevel()
     {
-        experienceToNextLevel = 5 + (currentLevel - 1) * 10; // Обновляем опыт для следующего уровня
+        experienceToNextLevel = 100 + (currentLevel - 1) * 100; // Обновляем опыт для следующего уровня
 
         // Обновляем текст уровня в UI
         if (levelText != null)

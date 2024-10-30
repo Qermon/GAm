@@ -122,16 +122,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goldAmount: 5
-  maxHealth: 100
+  maxHealth: 150
   currentHealth: 0
-  enemyMoveSpeed: 0
-  damage: 25
+  enemyMoveSpeed: 0.6
+  damage: 40
   attackRange: 0.1
   attackCooldown: 1
   experienceItemPrefab: {fileID: 7339687537489862264, guid: d17a2951307f7a44e9068307e205694a, type: 3}
   experienceAmount: 20
+  baseMaxHealth: 100
+  baseEnemyMoveSpeed: 0.6
+  baseDamage: 40
   bloodEffectPrefab: {fileID: 3705117576596526473, guid: e5a7816d5d4589e4d8e44c4d9123ae14, type: 3}
-  moveSpeed: 0.8
+  moveSpeed: 0
   spawnInterval: 7
   mobsToSpawn: 5
   miniMobPrefab: {fileID: 6055379466590609192, guid: a9f17e74e4754ab46b949b34d64eb493, type: 3}
@@ -184,7 +187,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 10
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 0

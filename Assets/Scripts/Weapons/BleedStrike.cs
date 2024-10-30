@@ -5,10 +5,9 @@ using System.Collections.Generic;
 public class BleedStrike : Weapon
 {
     public GameObject projectilePrefab; // Префаб снаряда
-    public int maxTargets = 5; // Максимальное количество целей
-    public float bleedDuration = 5f; // Продолжительность кровотечения
-    public float slowEffect = 0.5f; // Степень замедления врага
-    public float projectileLifetime = 5f; // Время жизни снаряда
+    public float slowEffect = 0.15f; // Замедление врага
+    public float bleedDuration = 3f; // Длительность кровотечения
+    public float projectileLifetime = 3f; // Время жизни снаряда
 
     protected override void Start()
     {
@@ -18,186 +17,127 @@ public class BleedStrike : Weapon
 
     private IEnumerator LaunchBleedStrike()
     {
-        while (true) // Бесконечный цикл для постоянного запуска снарядов
+        while (true)
         {
-            if (IsEnemyInRange()) // Проверяем, есть ли враг в радиусе атаки
+            if (IsEnemyInRange()) // Проверка наличия врага в радиусе
             {
-                LaunchProjectile(); // Запускаем снаряд
+                LaunchProjectile();
             }
-            yield return new WaitForSeconds(1f / attackSpeed); // Ждем, исходя из скорости атаки
+            yield return new WaitForSeconds(1f / attackSpeed); // Задержка между атаками
         }
     }
 
     private bool IsEnemyInRange()
     {
         Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
-        return enemies.Length > 0; // Если есть хотя бы один враг в радиусе атаки, возвращаем true
+        return enemies.Length > 0;
     }
 
     private void LaunchProjectile()
     {
+        Collider2D nearestEnemy = FindNearestEnemy();
+        if (nearestEnemy == null) return;
+
+        Vector3 targetPosition = nearestEnemy.transform.position;
         GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
         projectile.tag = "Weapon"; // Устанавливаем тег
-        projectile.AddComponent<BleedProjectile>().Initialize(this, maxTargets, bleedDuration, slowEffect, damage * 0.1f); // Урон от кровотечения теперь 10% от урона
+        projectile.AddComponent<BleedProjectile>().Initialize(this, targetPosition, projectileLifetime, bleedDuration, slowEffect, damage);
     }
 
-
-    private void OnDrawGizmosSelected()
+    private Collider2D FindNearestEnemy()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange); // Рисуем радиус атаки
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        float minDistance = float.MaxValue;
+        Collider2D nearestEnemy = null;
+
+        foreach (var enemy in enemies)
+        {
+            float distance = Vector3.Distance(transform.position, enemy.transform.position);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                nearestEnemy = enemy;
+            }
+        }
+
+        return nearestEnemy;
     }
 }
 
 public class BleedProjectile : MonoBehaviour
 {
-    private BleedStrike weapon; // Ссылка на оружие
-    private Enemy target; // Текущая цель
-    private int targetsHit = 0; // Счетчик пораженных целей
-    private int maxTargets; // Максимальное количество целей
-    private float bleedDuration; // Продолжительность кровотечения
-    private float bleedDamagePerSecond; // Урон от кровотечения в секунду
-    private float slowEffect; // Замедление
-    private List<Enemy> hitEnemies = new List<Enemy>(); // Список пораженных врагов
-    private float projectileSpeed; // Скорость снаряда
-    private float projectileLifetime; // Время жизни снаряда
+    private Vector3 direction;
+    private float projectileLifetime;
+    private float bleedDuration;
+    private float slowEffect;
+    private float initialDamage;
+    private List<Enemy> hitEnemies = new List<Enemy>();
 
-    public void Initialize(BleedStrike weapon, int maxTargets, float bleedDuration, float slowEffect, float bleedDamagePerSecond)
+    public void Initialize(BleedStrike weapon, Vector3 targetPosition, float lifetime, float bleedDuration, float slowEffect, float initialDamage)
     {
-        this.weapon = weapon;
-        this.maxTargets = maxTargets;
-        this.bleedDuration = bleedDuration; // Присваиваем значение продолжительности кровотечения
-        this.slowEffect = slowEffect; // Присваиваем значение замедления
-        this.bleedDamagePerSecond = bleedDamagePerSecond; // Присваиваем значение урона от кровотечения
-        this.projectileSpeed = weapon.projectileSpeed;
-        this.projectileLifetime = weapon.projectileLifetime;
+        this.projectileLifetime = lifetime;
+        this.bleedDuration = bleedDuration;
+        this.slowEffect = slowEffect;
+        this.initialDamage = initialDamage;
 
-        FindNearestTarget(); // Находим ближайшую цель
-
-        if (target != null)
-        {
-            Vector3 direction = (target.transform.position - transform.position).normalized;
-            StartCoroutine(MoveProjectile(direction)); // Запускаем корутину для движения снаряда
-        }
-        else
-        {
-            Destroy(gameObject); // Уничтожаем снаряд, если врагов нет
-            Debug.LogWarning("No available enemies; destroying projectile.");
-        }
+        direction = (targetPosition - transform.position).normalized; // Направление на врага в момент спавна
+        StartCoroutine(DestroyAfterLifetime()); // Запуск корутины для уничтожения через 3 сек.
     }
 
-    private IEnumerator MoveProjectile(Vector3 direction)
+    private void Update()
     {
-        float lifetime = projectileLifetime;
+        // Двигаем снаряд
+        transform.position += direction * Time.deltaTime * 5f;
 
-        while (lifetime > 0 && targetsHit < maxTargets) // Снаряд живет до истечения времени или пока не поражены все цели
-        {
-            if (target == null)
-            {
-                FindNearestTarget(); // Ищем нового врага, если текущий был уничтожен
-                if (target == null)
-                {
-                    // Если нет цели в радиусе 1.5, уничтожаем снаряд
-                    Destroy(gameObject); // Уничтожаем снаряд, если больше нет целей
-                    yield break;
-                }
-                direction = (target.transform.position - transform.position).normalized; // Обновляем направление
-            }
-
-            transform.position += direction * projectileSpeed * Time.deltaTime; // Двигаем снаряд
-
-            // Поворачиваем снаряд в сторону движения
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
-
-            yield return null; // Ждем до следующего кадра
-
-            lifetime -= Time.deltaTime; // Уменьшаем время жизни снаряда
-
-            // Если враг был уничтожен, убираем его из списка целей
-            if (target != null && !target.gameObject.activeInHierarchy)
-            {
-                target = null;
-            }
-        }
-
-        Destroy(gameObject); // Уничтожаем снаряд по истечении времени или после максимального количества попаданий
+        // Поворачиваем снаряд в направлении движения
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
     }
 
-    private void FindNearestTarget()
+    private IEnumerator DestroyAfterLifetime()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 1.5f, LayerMask.GetMask("Mobs", "MobsFly")); // Ищем врагов в радиусе 1.5
-        float closestDistance = float.MaxValue;
-
-        foreach (Collider2D enemyCollider in enemies)
-        {
-            Enemy enemy = enemyCollider.GetComponent<Enemy>();
-            if (enemy != null && !hitEnemies.Contains(enemy)) // Не выбираем уже пораженных врагов
-            {
-                float distance = Vector2.Distance(transform.position, enemy.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    target = enemy;
-                }
-            }
-        }
+        yield return new WaitForSeconds(projectileLifetime);
+        Destroy(gameObject); // Уничтожаем снаряд через заданное время
     }
-
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Enemy"))
         {
             Enemy enemy = other.GetComponent<Enemy>();
-            if (enemy != null && CanHitEnemy(enemy)) // Проверяем, можно ли ударить врага
+            if (enemy != null && !hitEnemies.Contains(enemy))
             {
-                DealDamage(enemy); // Наносим мгновенный урон
-                StartCoroutine(ApplyBleedEffect(enemy)); // Применяем эффект кровотечения
-                targetsHit++; // Увеличиваем счетчик пораженных целей
-
-                if (targetsHit >= maxTargets)
-                {
-                    Destroy(gameObject); // Уничтожаем снаряд, если поражено максимальное количество целей
-                }
+                ApplyEffects(enemy);
+                hitEnemies.Add(enemy);
             }
         }
     }
 
-    private bool CanHitEnemy(Enemy enemy)
+    private void ApplyEffects(Enemy enemy)
     {
-        return !hitEnemies.Contains(enemy); // Проверяем, не был ли враг уже поражен
-    }
+        // Мгновенный урон
+        enemy.TakeDamage((int)initialDamage);
 
-    private void DealDamage(Enemy enemy)
-    {
-        float finalDamage = weapon.CalculateDamage(); // Рассчитываем мгновенный урон
-        Debug.Log($"Direct damage dealt to {enemy.name}: {finalDamage}");
-        enemy.TakeDamage((int)finalDamage); // Наносим мгновенный урон
-        hitEnemies.Add(enemy); // Добавляем врага в список пораженных
+        // Замедление
+        enemy.ModifySpeed(1f - slowEffect, bleedDuration);
+
+        // Эффект кровотечения
+        StartCoroutine(ApplyBleedEffect(enemy));
     }
 
     private IEnumerator ApplyBleedEffect(Enemy enemy)
     {
-        Debug.Log($"Enemy {enemy.name} is bleeding for {bleedDuration} seconds with {bleedDamagePerSecond} damage per second and slowed by {slowEffect * 100}%.");
+        float elapsed = 0f;
+        float bleedDamage = initialDamage * 0.05f; // 5% урона каждую секунду
 
-        // Замедляем врага
-        enemy.ModifySpeed(slowEffect, bleedDuration); // Добавляем длительность замедления
-
-        float elapsedTime = 0f;
-
-        while (elapsedTime < bleedDuration)
+        while (elapsed < bleedDuration)
         {
-            enemy.TakeDamage((int)bleedDamagePerSecond); // Наносим урон от кровотечения
-            Debug.Log($"Applying bleed damage: {bleedDamagePerSecond} to {enemy.name}. Total elapsed time: {elapsedTime} seconds.");
-
-            elapsedTime += 1f; // Ждем 1 секунду перед следующей порцией урона
+            enemy.TakeDamage((int)bleedDamage);
+            elapsed += 1f;
             yield return new WaitForSeconds(1f);
         }
 
-        // Возвращаем нормальную скорость врагу
-        enemy.ModifySpeed(1f / slowEffect, bleedDuration); // Возвращаем оригинальную скорость врагу
-
-        Debug.Log($"Bleed effect on {enemy.name} has ended after {bleedDuration} seconds.");
+        // Возвращаем врагу оригинальную скорость по завершении кровотечения
+        enemy.ModifySpeed(1f / (1f - slowEffect), bleedDuration);
     }
 }

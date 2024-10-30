@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     public TMP_Text waveNumberText;
     private static GameManager instance; // Синглтон для доступа из других классов
 
+
     void Awake()
     {
         // Создаем синглтон
@@ -21,6 +22,8 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject); // Уничтожаем дублирующийся экземпляр
         }
     }
+
+
 
     void Start()
     {
@@ -48,6 +51,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("Game has started!");
         waveManager.StartWave(); // Запускаем первую волну
     }
+
 
     void UpdateWaveUI()
     {

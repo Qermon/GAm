@@ -183,7 +183,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 10
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 0
@@ -212,9 +212,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentHealth: 15
   player: {fileID: 0}
-  moveSpeed: 5
+  moveSpeed: 3.5
   attackRange: 0.1
-  damage: 10
+  damage: 3
   attackSpeed: 1
   experienceItemPrefab: {fileID: 7339687537489862264, guid: d17a2951307f7a44e9068307e205694a, type: 3}
   experienceAmount: 3
@@ -233,12 +233,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goldAmount: 1
-  maxHealth: 25
+  maxHealth: 18
   currentHealth: 0
-  enemyMoveSpeed: 0
-  damage: 10
+  enemyMoveSpeed: 0.505
+  damage: 11
   attackRange: 0.1
   attackCooldown: 1
   experienceItemPrefab: {fileID: 7339687537489862264, guid: d17a2951307f7a44e9068307e205694a, type: 3}
   experienceAmount: 20
+  baseMaxHealth: 15
+  baseEnemyMoveSpeed: 0.5
+  baseDamage: 3
   bloodEffectPrefab: {fileID: 3705117576596526473, guid: e5a7816d5d4589e4d8e44c4d9123ae14, type: 3}

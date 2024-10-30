@@ -180,15 +180,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fa2b919079192a44b3c55f7c502925a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  goldAmount: 1
-  maxHealth: 100
+  goldAmount: 5
+  maxHealth: 90
   currentHealth: 0
-  enemyMoveSpeed: 1
-  damage: 10
+  enemyMoveSpeed: 0.808
+  damage: 11
   attackRange: 0.1
   attackCooldown: 1
   experienceItemPrefab: {fileID: 7339687537489862264, guid: d17a2951307f7a44e9068307e205694a, type: 3}
   experienceAmount: 20
+  baseMaxHealth: 75
+  baseEnemyMoveSpeed: 0.8
+  baseDamage: 10
   bloodEffectPrefab: {fileID: 3705117576596526473, guid: e5a7816d5d4589e4d8e44c4d9123ae14, type: 3}
   arrowPrefab: {fileID: 549788955791970133, guid: e607e408f70e4f145bb0697f0f0db5db, type: 3}
   shootPoint: {fileID: 841996027236295692}

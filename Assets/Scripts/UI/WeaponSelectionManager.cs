@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems; // Добавляем для работы с событиями мыши
 
 public enum WeaponType
 {
@@ -25,29 +26,43 @@ public class WeaponOption
     public Sprite weaponSprite;
     public WeaponType weaponType;
     public string weaponDescription;
-}
 
+
+    public float damage; // Урон
+    public float criticalDamage; // Критический урон
+    public float criticalChance; // Критический шанс
+    public float attackSpeed; // Скорость атаки
+    public float attackRange; // Дальность атаки
+}
+    
 public class WeaponSelectionManager : MonoBehaviour
 {
     public GameObject weaponSelectionPanel;
     public Image[] weaponIcons;
     public Button[] weaponButtons;
+    public Button[] weaponButtons1;
     public TMP_Text[] weaponTexts;
+    public TMP_Text[] weaponStats; // Текст для характеристик оружия
     public List<WeaponOption> weaponOptions;
+    public TMP_Text[] descriptionTexts; // Массив текстов описания для каждой кнопки
 
     private Player player;
     private WaveManager waveManager;
+    private Weapon weapon;
     private HashSet<WeaponType> selectedWeapons = new HashSet<WeaponType>(); // Хранение выбранного оружия
 
     private void Start()
     {
         player = FindObjectOfType<Player>();
-        waveManager = FindObjectOfType<WaveManager>();
 
         weaponSelectionPanel.SetActive(false);
         foreach (Image icon in weaponIcons)
         {
             icon.gameObject.SetActive(false);
+        }
+        foreach (TMP_Text description in descriptionTexts)
+        {
+            description.gameObject.SetActive(false); // Скрываем текст описания в начале
         }
     }
 
@@ -88,20 +103,66 @@ public class WeaponSelectionManager : MonoBehaviour
         {
             weaponIcons[i].sprite = weapons[i].weaponSprite;
             weaponIcons[i].gameObject.SetActive(true);
-            weaponTexts[i].text = weapons[i].weaponDescription;
+            weaponTexts[i].text = weapons[i].weaponName; // Отображаем имя оружия
             weaponTexts[i].gameObject.SetActive(true);
+
+            // Создаем строку с характеристиками
+            string weaponStatsText = $"Урон: {weapons[i].damage}\n" +
+                                     $"Крит. урон: {weapons[i].criticalDamage}%\n" +
+                                     $"Крит. шанс: {weapons[i].criticalChance}%\n" +
+                                     $"Скорость атаки: {weapons[i].attackSpeed}\n" +
+                                     $"Дальность атаки: {weapons[i].attackRange}\n";
+
+            weaponStats[i].text = weaponStatsText;
+            weaponStats[i].gameObject.SetActive(false);
+
+            // Устанавливаем текст описания
+            descriptionTexts[i].text = weapons[i].weaponDescription;
+            descriptionTexts[i].gameObject.SetActive(true);
 
             int index = i;
             weaponButtons[i].onClick.RemoveAllListeners();
             weaponButtons[i].onClick.AddListener(() => ChooseWeapon(weapons[index]));
+            weaponButtons1[i].onClick.RemoveAllListeners();
+            weaponButtons1[i].onClick.AddListener(() => ChooseWeapon(weapons[index]));
+
+            // Добавляем обработчики событий для иконок оружия
+            EventTrigger eventTrigger = weaponButtons1[i].gameObject.AddComponent<EventTrigger>();
+
+            EventTrigger.Entry pointerEnterEntry = new EventTrigger.Entry();
+            pointerEnterEntry.eventID = EventTriggerType.PointerEnter;
+            pointerEnterEntry.callback.AddListener((data) => { ShowWeaponDescription(index); });
+            eventTrigger.triggers.Add(pointerEnterEntry);
+
+            EventTrigger.Entry pointerExitEntry = new EventTrigger.Entry();
+            pointerExitEntry.eventID = EventTriggerType.PointerExit;
+            pointerExitEntry.callback.AddListener((data) => { HideWeaponDescription(index); });
+            eventTrigger.triggers.Add(pointerExitEntry);
         }
 
         for (int i = countToDisplay; i < weaponIcons.Length; i++)
         {
             weaponIcons[i].gameObject.SetActive(false);
             weaponTexts[i].gameObject.SetActive(false);
+            weaponStats[i].gameObject.SetActive(false);
+            descriptionTexts[i].gameObject.SetActive(false); // Скрываем текст описания
         }
     }
+
+    public void ShowWeaponDescription(int index)
+    {
+        // Скрываем текст характеристик и показываем текст описания для соответствующего индекса
+        weaponStats[index].gameObject.SetActive(true); // Скрываем характеристики
+        descriptionTexts[index].gameObject.SetActive(false); // Показываем описание
+    }
+
+    public void HideWeaponDescription(int index)
+    {
+        // Скрываем текст описания и показываем текст характеристик для соответствующего индекса
+        descriptionTexts[index].gameObject.SetActive(true); // Скрываем текст описания
+        weaponStats[index].gameObject.SetActive(false); // Показываем текст характеристик
+    }
+
 
     public void ChooseWeapon(WeaponOption weapon)
     {
@@ -210,7 +271,7 @@ public class WeaponSelectionManager : MonoBehaviour
                 var bleedStrike = player.GetComponent<BleedStrike>();
                 if (bleedStrike != null)
                 {
-                    bleedStrike.enabled = true; 
+                    bleedStrike.enabled = true;
                 }
                 break;
 
@@ -224,5 +285,10 @@ public class WeaponSelectionManager : MonoBehaviour
     {
         weaponSelectionPanel.SetActive(false);
         Time.timeScale = 1;
+        // Скрываем все тексты описания при закрытии выбора оружия
+        foreach (TMP_Text description in descriptionTexts)
+        {
+            description.gameObject.SetActive(false);
+        }
     }
 }
