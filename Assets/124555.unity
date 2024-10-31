@@ -2543,8 +2543,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goldAmount: 10
-  maxHealth: 1000
-  currentHealth: 100
+  maxHealth: 300
+  currentHealth: 300
   enemyMoveSpeed: 2
   damage: 20
   attackRange: 0.1
@@ -2556,6 +2556,9 @@ MonoBehaviour:
   bossMoveSpeed: 2
   bossGoldAmount: 50
   animator: {fileID: 0}
+  lightningPrefab: {fileID: 5028462435610278482, guid: afba68f00f7747b4d9e3ed1f899e34ee, type: 3}
+  lightningSpawnRadius: 3
+  invulnerabilityDuration: 10
 --- !u!1 &878191889
 GameObject:
   m_ObjectHideFlags: 0
