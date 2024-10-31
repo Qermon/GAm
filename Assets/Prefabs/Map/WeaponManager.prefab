@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3507047449287900105
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7665831970705119146}
+  - component: {fileID: 953058429320950538}
+  m_Layer: 0
+  m_Name: WeaponManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7665831970705119146
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3507047449287900105}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 242.9743, y: -385.83322, z: -10.328606}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &953058429320950538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3507047449287900105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e3b6be939264e6409ae9a5f2831132a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponSelectionPanel: {fileID: 0}
+  weaponIcons:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  weaponButtons:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  weaponTexts:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  weaponOptions:
+  - weaponName: Lightning
+    weaponSprite: {fileID: 21300000, guid: 089eda23402d9c844bf1e1a1ae959f04, type: 3}
+    weaponType: 0
+    weaponDescription: Lightning
+  - weaponName: Fire Ball
+    weaponSprite: {fileID: 21300000, guid: 95d9fc591e8f099478630af20c9fbb30, type: 3}
+    weaponType: 1
+    weaponDescription: Fire Ball
+  - weaponName: Boomerang
+    weaponSprite: {fileID: 21300000, guid: 22d92dbd34439fd4e96ae32cd8f87479, type: 3}
+    weaponType: 2
+    weaponDescription: Boomerang
+  - weaponName: Shuriken
+    weaponSprite: {fileID: 21300000, guid: 3149b8a9e744ad34e9fd23e6704a3028, type: 3}
+    weaponType: 3
+    weaponDescription: Shuriken
+  - weaponName: Zeus Light
+    weaponSprite: {fileID: 21300000, guid: 80fb0ff1a692ac2449d0696d70372b9e, type: 3}
+    weaponType: 6
+    weaponDescription: Zeus Light
+  - weaponName: Knife
+    weaponSprite: {fileID: 21300000, guid: ed4a74148a70ed94385f98ac2eb2c0ad, type: 3}
+    weaponType: 5
+    weaponDescription: Knife
+  - weaponName: Bleed Strike
+    weaponSprite: {fileID: 21300000, guid: 866d3a0abaaa7204e8d310920107d3e1, type: 3}
+    weaponType: 10
+    weaponDescription: Bleed Strike
+  - weaponName: Fire Strike
+    weaponSprite: {fileID: 21300000, guid: 806e895321171f045b78d3c765558d0b, type: 3}
+    weaponType: 7
+    weaponDescription: Fire Strike

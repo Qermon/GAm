@@ -1,14 +1,17 @@
+using System.Buffers.Text;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
     // Основные характеристики мобов
-    public int goldAmount = 10;
-    public float maxHealth = 100f;
+    public int goldAmount = 1;
+    public float maxHealth;
     public float currentHealth;
-    public float enemyMoveSpeed = 0f;
-    public float damage = 0f;
+    public float enemyMoveSpeed;
+    
+    public float damage;
     public float attackRange = 0.1f;
     public float attackCooldown = 1f;
     protected bool isDead = false;
@@ -23,7 +26,11 @@ public class Enemy : MonoBehaviour
     public GameObject experienceItemPrefab;
     public int experienceAmount = 20;
 
-    // Поле для префаба крови
+    public float baseMaxHealth;
+    public float baseEnemyMoveSpeed;
+    public float baseDamage;
+
+    public static List<Enemy> allEnemies = new List<Enemy>();
     public GameObject bloodEffectPrefab; // Добавьте это поле
 
     public bool IsDead
@@ -33,7 +40,8 @@ public class Enemy : MonoBehaviour
 
     protected virtual void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+
+    rb = GetComponent<Rigidbody2D>();
         originalMass = rb.mass;
 
         currentHealth = maxHealth;
@@ -48,6 +56,33 @@ public class Enemy : MonoBehaviour
             Debug.LogError("Объект Player не найден в сцене!");
         }
     }
+
+    public void UpdateStats(float damageMultiplier, float healthMultiplier, float speedMultiplier)
+    {
+        damage += baseDamage / 100 * damageMultiplier;
+        maxHealth += baseMaxHealth / 100 * healthMultiplier;
+        enemyMoveSpeed += baseEnemyMoveSpeed / 100 * speedMultiplier;
+    }
+
+    public void RefreshStats()
+    {
+        damage = baseDamage;
+        maxHealth = baseMaxHealth;
+        enemyMoveSpeed = baseEnemyMoveSpeed;
+    }
+
+
+
+    void OnEnable()
+    {
+        allEnemies.Add(this); // Добавляем моб в статический список при его активации
+    }
+
+    void OnDisable()
+    {
+        allEnemies.Remove(this); // Удаляем моб из списка при его деактивации
+    }
+
 
     protected virtual void Update()
     {
@@ -176,6 +211,8 @@ public class Enemy : MonoBehaviour
             Instantiate(experienceItemPrefab, transform.position, Quaternion.identity);
         }
     }
+
+    
 
     public void Heal(float amount)
     {

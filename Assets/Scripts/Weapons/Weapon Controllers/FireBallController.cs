@@ -11,6 +11,7 @@ public class FireBallController : Weapon
     {
         base.Start();
         attackTimer = 1f / attackSpeed; // Инициализируем таймер спавна
+
     }
 
     protected override void Update()

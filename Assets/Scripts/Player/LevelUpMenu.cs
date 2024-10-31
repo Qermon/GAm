@@ -50,16 +50,20 @@ public class LevelUpMenu : MonoBehaviour
     public List<UpgradeOption> upgradeOptions;
 
     public WaveManager waveManager;
-
+    
     private PlayerMovement playerMovement;
     private PlayerHealth playerHealth;
+    private Shop shop;
     private List<Weapon> playerWeapons; // Список оружий
     private int waveNumber; // Переменная для хранения текущей волны
+
+
 
     private void Start()
     {
         playerMovement = FindObjectOfType<PlayerMovement>();
         playerHealth = FindObjectOfType<PlayerHealth>();
+        shop = FindObjectOfType<Shop>();
         playerWeapons = new List<Weapon>(FindObjectsOfType<Weapon>()); // Получаем все оружия в игре
         waveManager = FindObjectOfType<WaveManager>(); // Ищем WaveManager в сцене
 
@@ -85,6 +89,7 @@ public class LevelUpMenu : MonoBehaviour
         DisplayUpgradeOptions(selectedUpgrades);
     }
 
+    
 
 
     private List<UpgradeOption> GetRandomUpgrades(int count)
@@ -105,6 +110,7 @@ public class LevelUpMenu : MonoBehaviour
                 availableOptions.Remove(selectedUpgrade); // Удаляем улучшение из доступных
             }
         }
+
 
         return selectedUpgrades;
     }
@@ -322,6 +328,7 @@ public class LevelUpMenu : MonoBehaviour
                 {
                     weapon.IncreaseAttackSpeed(attackSpeedIncrease);
                 }
+                shop.UpdateTotalAttackSpeedBonus();
                 Debug.Log("Скорость атаки увеличена на: " + attackSpeedIncrease * 100 + "%");
                 break;
 
@@ -342,6 +349,7 @@ public class LevelUpMenu : MonoBehaviour
                 {
                     weapon.IncreaseAttackRange(attackRangeIncrease);
                 }
+                shop.UpdateTotalAttackRangeBonus();
                 Debug.Log("Дальность атаки увеличена на: " + attackRangeIncrease * 100 + "%");
                 break;
 
@@ -363,6 +371,7 @@ public class LevelUpMenu : MonoBehaviour
                 // Регенерация здоровья: 15% / 20% / 25%
                 float regenIncrease = GetUpgradePercentage(upgrade.upgradeRarity, 0.15f, 0.20f, 0.25f);
                 playerHealth.IncreaseHealthRegen(regenIncrease);
+                shop.UpdateTotalRegenBonus();
                 Debug.Log("Регенерация здоровья увеличена на: " + regenIncrease * 100 + "%");
                 break;
 
@@ -370,6 +379,7 @@ public class LevelUpMenu : MonoBehaviour
                 // Вампиризм: 15% / 20% / 25%
                 float lifestealIncrease = GetUpgradePercentage(upgrade.upgradeRarity, 0.15f, 0.20f, 0.25f);
                 playerHealth.IncreaseLifesteal(lifestealIncrease);
+                shop.UpdateTotalLifestealBonus();
                 Debug.Log("Вампиризм увеличен на: " + lifestealIncrease * 100 + "%");
                 break;
 
@@ -384,6 +394,7 @@ public class LevelUpMenu : MonoBehaviour
                 // Радиус сбора: 30% / 40% / 50%
                 float pickupRadiusIncrease = GetUpgradePercentage(upgrade.upgradeRarity, 0.30f, 0.40f, 0.50f);
                 playerHealth.IncreasePickupRadius(pickupRadiusIncrease);
+                shop.UpdateTotalPickupRadiusBonus();
                 Debug.Log("Радиус сбора увеличен на: " + pickupRadiusIncrease * 100 + "%");
                 break;
 

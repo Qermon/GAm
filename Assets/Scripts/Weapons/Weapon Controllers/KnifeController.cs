@@ -96,11 +96,9 @@ public class KnifeBehaviour : MonoBehaviour
         // Поворачиваем кенжал в сторону движения
         if (direction != Vector3.zero) // Проверяем, не нулевая ли вектор
         {
-            float dirx = direction.x;
-            float diry = direction.y;
-
-            Vector3 scale = transform.localScale;
-            Vector3 rotation = transform.rotation.eulerAngles;
+            // Рассчитываем угол поворота
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle)); // Применяем поворот
         }
 
         // Проверяем на столкновение с врагом
@@ -157,3 +155,4 @@ public class KnifeBehaviour : MonoBehaviour
         }
     }
 }
+

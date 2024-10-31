@@ -5,9 +5,7 @@ using System.Collections.Generic;
 public class FireStrike : Weapon
 {
     public GameObject projectilePrefab; // Префаб снаряда
-    public int maxTargets = 5; // Максимальное количество целей, по которым может пройти снаряд
-    public float burnDuration = 3f; // Продолжительность горения
-    public float projectileLifetime = 5f; // Время жизни снаряда
+    public float projectileLifetime = 3f; // Время жизни снаряда
 
     protected override void Start()
     {
@@ -17,11 +15,11 @@ public class FireStrike : Weapon
 
     private IEnumerator LaunchFireStrike()
     {
-        while (true) // Бесконечный цикл для постоянного запуска снарядов
+        while (true)
         {
-            if (IsEnemyInRange()) // Проверяем, есть ли враг в радиусе активации
+            if (IsEnemyInRange())
             {
-                LaunchProjectile(); // Запускаем снаряд
+                LaunchProjectile();
             }
             yield return new WaitForSeconds(1f / attackSpeed); // Ждем, исходя из скорости атаки
         }
@@ -30,117 +28,70 @@ public class FireStrike : Weapon
     private bool IsEnemyInRange()
     {
         Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
-        return enemies.Length > 0; // Если есть хотя бы один враг в радиусе активации, возвращаем true
+        return enemies.Length > 0;
     }
 
     private void LaunchProjectile()
     {
         GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
-        projectile.tag = "Weapon"; // Устанавливаем тег
-        projectile.AddComponent<FireProjectile>().Initialize(this, maxTargets, burnDuration, damage * 0.5f); // Устанавливаем урон от горения
+        projectile.tag = "Weapon";
+        projectile.AddComponent<FireProjectile>().Initialize(this, damage); // Передаем урон в снаряд
     }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange); // Рисуем радиус активации
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }
 
-
 public class FireProjectile : MonoBehaviour
 {
-    private FireStrike weapon; // Ссылка на оружие
-    private Enemy target; // Текущая цель
-    private int targetsHit = 0; // Счетчик пораженных целей
-    private int maxTargets; // Максимальное количество целей
-    private float burnDuration; // Продолжительность горения
-    private float burnDamagePerSecond; // Урон от горения в секунду
+    private float initialDamage;
+    private float burnDuration = 5f; // Длительность горения
+    private float burnTickInterval = 1f; // Интервал тиков горения
+    private float burnDamageFactor = 0.25f; // Начальный урон от горения (25% от урона)
+    private float burnDecayFactor = 0.05f; // Уменьшение урона на 5% каждый тик
+    private float projectileSpeed = 10f; // Скорость полета
     private List<Enemy> hitEnemies = new List<Enemy>(); // Список пораженных врагов
-    private float projectileSpeed; // Скорость снаряда
-    private float projectileLifetime; // Время жизни снаряда
 
-    public void Initialize(FireStrike weapon, int maxTargets, float burnDuration, float burnDamagePerSecond)
+    public void Initialize(FireStrike weapon, float damage)
     {
-        this.weapon = weapon;
-        this.maxTargets = maxTargets;
-        this.burnDuration = burnDuration; // Присваиваем значение продолжительности горения
-        this.burnDamagePerSecond = burnDamagePerSecond; // Присваиваем значение урона от горения в секунду
-        this.projectileSpeed = weapon.projectileSpeed;
-        this.projectileLifetime = weapon.projectileLifetime;
+        initialDamage = damage;
+        FindNearestEnemyDirection();
 
-        FindNearestTarget(); // Находим ближайшую цель
+        StartCoroutine(DestroyAfterLifetime(3f)); // Уничтожаем через 3 секунды после спавна
+    }
 
-        if (target != null)
+    private void FindNearestEnemyDirection()
+    {
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 1.5f, LayerMask.GetMask("Mobs", "MobsFly"));
+        if (enemies.Length > 0)
         {
-            Vector3 direction = (target.transform.position - transform.position).normalized;
-            StartCoroutine(MoveProjectile(direction)); // Запускаем корутину для движения снаряда
+            Transform nearestEnemy = enemies[0].transform;
+            Vector3 direction = (nearestEnemy.position - transform.position).normalized;
+            StartCoroutine(MoveProjectile(direction));
+            RotateTowardsDirection(direction);
         }
         else
         {
             Destroy(gameObject); // Уничтожаем снаряд, если врагов нет
-            Debug.LogWarning("No available enemies; destroying projectile.");
         }
     }
-
-    private void FindNearestTarget()
-    {
-        // Ищем врагов в радиусе 1.5f
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 1.5f, LayerMask.GetMask("Mobs", "MobsFly"));
-        float closestDistance = float.MaxValue;
-        target = null; // Обнуляем цель перед поиском
-
-        foreach (Collider2D enemyCollider in enemies)
-        {
-            Enemy enemy = enemyCollider.GetComponent<Enemy>();
-            if (enemy != null && !hitEnemies.Contains(enemy)) // Не выбираем уже пораженных врагов
-            {
-                float distance = Vector2.Distance(transform.position, enemy.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    target = enemy; // Находим ближайшего врага
-                }
-            }
-        }
-    }
-
 
     private IEnumerator MoveProjectile(Vector3 direction)
     {
-        float lifetime = projectileLifetime;
-
-        while (lifetime > 0 && targetsHit < maxTargets) // Снаряд живет до истечения времени или пока не поражены все цели
+        while (true)
         {
-            if (target == null)
-            {
-                FindNearestTarget(); // Ищем нового врага, если текущий был уничтожен
-                if (target == null)
-                {
-                    Destroy(gameObject); // Уничтожаем снаряд, если больше нет целей
-                    yield break;
-                }
-                direction = (target.transform.position - transform.position).normalized; // Обновляем направление
-            }
-
-            transform.position += direction * projectileSpeed * Time.deltaTime; // Двигаем снаряд
-
-            // Поворачиваем снаряд в сторону движения
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
-
-            yield return null; // Ждем до следующего кадра
-
-            lifetime -= Time.deltaTime; // Уменьшаем время жизни снаряда
-
-            // Если враг был уничтожен, убираем его из списка целей
-            if (target != null && !target.gameObject.activeInHierarchy)
-            {
-                target = null;
-            }
+            transform.position += direction * projectileSpeed * Time.deltaTime;
+            yield return null;
         }
+    }
 
-        Destroy(gameObject); // Уничтожаем снаряд по истечении времени или после максимального количества попаданий
+    private void RotateTowardsDirection(Vector3 direction)
+    {
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -148,48 +99,42 @@ public class FireProjectile : MonoBehaviour
         if (other.CompareTag("Enemy"))
         {
             Enemy enemy = other.GetComponent<Enemy>();
-            if (enemy != null && CanHitEnemy(enemy)) // Проверяем, можно ли ударить врага
+            if (enemy != null && !hitEnemies.Contains(enemy))
             {
-                DealDamage(enemy); // Наносим урон
-                StartCoroutine(ApplyBurningEffect(enemy)); // Применяем эффект горения
-                targetsHit++; // Увеличиваем счетчик пораженных целей
-
-                if (targetsHit >= maxTargets)
-                {
-                    Destroy(gameObject); // Уничтожаем снаряд, если поражено максимальное количество целей
-                }
+                ApplyDirectDamage(enemy);
+                StartCoroutine(ApplyBurningEffect(enemy));
+                hitEnemies.Add(enemy); // Добавляем в список пораженных врагов
             }
         }
     }
 
-    private bool CanHitEnemy(Enemy enemy)
+    private void ApplyDirectDamage(Enemy enemy)
     {
-        return !hitEnemies.Contains(enemy); // Проверяем, не был ли враг уже поражен
-    }
-
-    private void DealDamage(Enemy enemy)
-    {
-        float finalDamage = weapon.CalculateDamage(); // Рассчитываем урон
-        Debug.Log($"Direct damage dealt to {enemy.name}: {finalDamage}");
-        enemy.TakeDamage((int)finalDamage); // Наносим урон
-        hitEnemies.Add(enemy); // Добавляем врага в список пораженных
+        enemy.TakeDamage((int)initialDamage); // Наносим прямой урон
     }
 
     private IEnumerator ApplyBurningEffect(Enemy enemy)
     {
-        Debug.Log($"Enemy {enemy.name} is burning for {burnDuration} seconds with {burnDamagePerSecond} damage per second!");
-
+        // Начальный урон от горения — 25% от урона снаряда
+        float remainingBurnDamage = initialDamage * 0.25f;
         float elapsedTime = 0f;
 
+        // Ждём 1 секунду перед первым тиком урона от горения
+        yield return new WaitForSeconds(1f);
+
+        // Наносим урон каждые 1 секунду в течение оставшихся 4 секунд
         while (elapsedTime < burnDuration)
         {
-            enemy.TakeDamage((int)burnDamagePerSecond); // Наносим урон от горения
-            Debug.Log($"Applying burn damage: {burnDamagePerSecond} to {enemy.name}. Total elapsed time: {elapsedTime} seconds.");
-
-            elapsedTime += 1f; // Ждем 1 секунду перед следующей порцией урона
+            enemy.TakeDamage((int)remainingBurnDamage); // Наносим урон на текущем тике
+            remainingBurnDamage *= 0.95f; // Уменьшаем урон на 5% от предыдущего значения
+            elapsedTime += 1f; // Переход к следующему тику
             yield return new WaitForSeconds(1f);
         }
+    }
 
-        Debug.Log($"Burn effect on {enemy.name} has ended after {burnDuration} seconds.");
+    private IEnumerator DestroyAfterLifetime(float lifetime)
+    {
+        yield return new WaitForSeconds(lifetime);
+        Destroy(gameObject);
     }
 }
