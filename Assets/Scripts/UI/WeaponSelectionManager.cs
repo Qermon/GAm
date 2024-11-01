@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems; // Добавляем для работы с событиями мыши
+using UnityEngine.Video;
+using System.Collections;
+using Unity.VisualScripting.FullSerializer.Internal;
+
 
 public enum WeaponType
 {
@@ -27,12 +31,15 @@ public class WeaponOption
     public WeaponType weaponType;
     public string weaponDescription;
 
+    public VideoClip weaponVideo; // Свойство для хранения видео клипа
 
     public float damage; // Урон
     public float criticalDamage; // Критический урон
     public float criticalChance; // Критический шанс
     public float attackSpeed; // Скорость атаки
     public float attackRange; // Дальность атаки
+
+    public Sprite skillImage; // Картинка скила для каждого оружия
 }
     
 public class WeaponSelectionManager : MonoBehaviour
@@ -45,14 +52,23 @@ public class WeaponSelectionManager : MonoBehaviour
     public TMP_Text[] weaponStats; // Текст для характеристик оружия
     public List<WeaponOption> weaponOptions;
     public TMP_Text[] descriptionTexts; // Массив текстов описания для каждой кнопки
+    public Image[] skillImageContainers; // Массив контейнеров для картинок скилов
+
+
+    private double currentVideoTime = 0; // Переменная для хранения времени видео
+
+    public RawImage videoImage; // Ссылка на RawImage для отображения видео
+    public VideoPlayer videoPlayer; // Ссылка на VideoPlayer
 
     private Player player;
     private WaveManager waveManager;
     private Weapon weapon;
+    private CursorManager cursorManager;
     private HashSet<WeaponType> selectedWeapons = new HashSet<WeaponType>(); // Хранение выбранного оружия
 
     private void Start()
     {
+        cursorManager = FindObjectOfType<CursorManager>();
         player = FindObjectOfType<Player>();
 
         weaponSelectionPanel.SetActive(false);
@@ -64,6 +80,12 @@ public class WeaponSelectionManager : MonoBehaviour
         {
             description.gameObject.SetActive(false); // Скрываем текст описания в начале
         }
+        foreach (Image skillContainer in skillImageContainers)
+        {
+            skillContainer.gameObject.SetActive(false);
+        }
+
+        videoImage.gameObject.SetActive(false); // Скрыть видео в начале
     }
 
     public void OpenWeaponSelection()
@@ -94,6 +116,7 @@ public class WeaponSelectionManager : MonoBehaviour
 
     private void DisplayWeaponOptions(List<WeaponOption> weapons)
     {
+        cursorManager.ShowCursor();
         weaponSelectionPanel.SetActive(true);
         Time.timeScale = 0;
 
@@ -103,10 +126,9 @@ public class WeaponSelectionManager : MonoBehaviour
         {
             weaponIcons[i].sprite = weapons[i].weaponSprite;
             weaponIcons[i].gameObject.SetActive(true);
-            weaponTexts[i].text = weapons[i].weaponName; // Отображаем имя оружия
+            weaponTexts[i].text = weapons[i].weaponName;
             weaponTexts[i].gameObject.SetActive(true);
 
-            // Создаем строку с характеристиками
             string weaponStatsText = $"Урон: {weapons[i].damage}\n" +
                                      $"Крит. урон: {weapons[i].criticalDamage}%\n" +
                                      $"Крит. шанс: {weapons[i].criticalChance}%\n" +
@@ -116,7 +138,6 @@ public class WeaponSelectionManager : MonoBehaviour
             weaponStats[i].text = weaponStatsText;
             weaponStats[i].gameObject.SetActive(false);
 
-            // Устанавливаем текст описания
             descriptionTexts[i].text = weapons[i].weaponDescription;
             descriptionTexts[i].gameObject.SetActive(true);
 
@@ -131,12 +152,20 @@ public class WeaponSelectionManager : MonoBehaviour
 
             EventTrigger.Entry pointerEnterEntry = new EventTrigger.Entry();
             pointerEnterEntry.eventID = EventTriggerType.PointerEnter;
-            pointerEnterEntry.callback.AddListener((data) => { ShowWeaponDescription(index); });
+            pointerEnterEntry.callback.AddListener((data) =>
+            {
+                ShowWeaponDescription(index);
+                PlayWeaponVideo(weapons[index].weaponVideo); // Запускаем видео при наведении
+            });
             eventTrigger.triggers.Add(pointerEnterEntry);
 
             EventTrigger.Entry pointerExitEntry = new EventTrigger.Entry();
             pointerExitEntry.eventID = EventTriggerType.PointerExit;
-            pointerExitEntry.callback.AddListener((data) => { HideWeaponDescription(index); });
+            pointerExitEntry.callback.AddListener((data) =>
+            {
+                HideWeaponDescription(index);
+                StopWeaponVideo(); // Останавливаем видео при выходе
+            });
             eventTrigger.triggers.Add(pointerExitEntry);
         }
 
@@ -145,15 +174,63 @@ public class WeaponSelectionManager : MonoBehaviour
             weaponIcons[i].gameObject.SetActive(false);
             weaponTexts[i].gameObject.SetActive(false);
             weaponStats[i].gameObject.SetActive(false);
-            descriptionTexts[i].gameObject.SetActive(false); // Скрываем текст описания
+            descriptionTexts[i].gameObject.SetActive(false);
         }
     }
+
+
+    private void PlayWeaponVideo(VideoClip videoClip)
+    {
+        if (videoClip != null && videoPlayer != null)
+        {
+            // Устанавливаем клип и время
+            videoPlayer.clip = videoClip;
+            videoPlayer.time = currentVideoTime; // Устанавливаем сохраненное время
+
+            // Проверяем, активен ли VideoPlayer
+            if (!videoPlayer.gameObject.activeSelf)
+            {
+                videoPlayer.gameObject.SetActive(true);
+            }
+
+
+            StartCoroutine(WaitForHalfSecond());
+        }
+       
+    }
+
+    private IEnumerator WaitForHalfSecond()
+    {
+        // Ждем 0.5 секунды
+     
+
+        // Код, который будет выполнен после задержки
+        videoImage.gameObject.SetActive(true);
+        yield return new WaitForSeconds(0.5f);
+    }
+
+    private void StopWeaponVideo()
+    {
+        if (videoPlayer != null && videoPlayer.isPlaying)
+        {
+            // Сохраняем текущее время видео
+            currentVideoTime = videoPlayer.time; // Сохраняем текущее время
+            videoPlayer.Stop(); // Останавливаем воспроизведение
+
+            // Скрываем RawImage, когда видео остановлено
+            videoImage.gameObject.SetActive(false);
+        }
+    }
+
+
+
 
     public void ShowWeaponDescription(int index)
     {
         // Скрываем текст характеристик и показываем текст описания для соответствующего индекса
         weaponStats[index].gameObject.SetActive(true); // Скрываем характеристики
         descriptionTexts[index].gameObject.SetActive(false); // Показываем описание
+
     }
 
     public void HideWeaponDescription(int index)
@@ -161,8 +238,8 @@ public class WeaponSelectionManager : MonoBehaviour
         // Скрываем текст описания и показываем текст характеристик для соответствующего индекса
         descriptionTexts[index].gameObject.SetActive(true); // Скрываем текст описания
         weaponStats[index].gameObject.SetActive(false); // Показываем текст характеристик
-    }
 
+    }
 
     public void ChooseWeapon(WeaponOption weapon)
     {
@@ -170,8 +247,22 @@ public class WeaponSelectionManager : MonoBehaviour
         {
             selectedWeapons.Add(weapon.weaponType); // Добавляем оружие в список выбранных
             ActivateWeaponScript(weapon.weaponType);
+            UpdateSkillImageContainers(weapon.skillImage); // Обновляем контейнер с картинками
         }
         CloseWeaponSelection();
+    }
+    private void UpdateSkillImageContainers(Sprite skillImage)
+    {
+        // Проходим по массиву контейнеров и находим первый неактивный слот
+        for (int i = 0; i < skillImageContainers.Length; i++)
+        {
+            if (!skillImageContainers[i].gameObject.activeSelf)
+            {
+                skillImageContainers[i].sprite = skillImage; // Устанавливаем спрайт выбранного оружия
+                skillImageContainers[i].gameObject.SetActive(true); // Включаем видимость контейнера
+                break; // Прекращаем цикл после вставки в первый свободный слот
+            }
+        }
     }
 
     private void ActivateWeaponScript(WeaponType weaponType)
@@ -283,6 +374,8 @@ public class WeaponSelectionManager : MonoBehaviour
 
     public void CloseWeaponSelection()
     {
+        cursorManager.HideCursor();
+        videoImage.gameObject.SetActive(false);
         weaponSelectionPanel.SetActive(false);
         Time.timeScale = 1;
         // Скрываем все тексты описания при закрытии выбора оружия

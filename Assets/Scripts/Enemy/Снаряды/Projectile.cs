@@ -1,12 +1,14 @@
 using UnityEngine;
 
-public class Projectile : MonoBehaviour
+public class WitchsProjectile : MonoBehaviour
 {
     public float speed = 10f; // Скорость снаряда
     public float lifetime = 5f; // Время жизни снаряда
     private Rigidbody2D rb; // Ссылка на Rigidbody2D
     private Vector2 direction; // Направление движения снаряда
-    public float damage = 30f; 
+    public float damage = 10f;
+    public float baseDamage = 10f;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -29,6 +31,16 @@ public class Projectile : MonoBehaviour
         {
             Debug.LogError("Направление снаряда не установлено!");
         }
+    }
+
+    public void UpdateStats(float projectile)
+    {
+        damage *= projectile;
+    }
+
+    public void RefreshStats()
+    {
+        damage = baseDamage;
     }
 
     // Метод для установки направления снаряда
@@ -71,5 +83,4 @@ public class Projectile : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
 }

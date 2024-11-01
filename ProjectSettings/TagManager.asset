@@ -10,6 +10,7 @@ TagManager:
   - Blood
   - Projectile
   - EXP
+  - WaveManager
   layers:
   - Default
   - TransparentFX

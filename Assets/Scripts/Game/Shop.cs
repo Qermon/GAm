@@ -30,7 +30,8 @@ public class Shop : MonoBehaviour
     private WaveManager waveManager;
     private List<Weapon> playerWeapons; // Список оружий
     private Weapon weapon;
-
+    private CursorManager cursorManager;
+    
 
     public UpgradeOption[] upgradeOptions; // Массив доступных баффов
     private HashSet<UpgradeType> existingBuffs = new HashSet<UpgradeType>(); // HashSet для отслеживания существующих баффов
@@ -116,7 +117,7 @@ public class Shop : MonoBehaviour
 
     private void Start()
     {
-
+        cursorManager = FindObjectOfType<CursorManager>();
         refreshButton.onClick.AddListener(TryRefreshBuffs);
         playerWeapons = new List<Weapon>(FindObjectsOfType<Weapon>()); // Получаем все оружия в игре
         waveManager = FindObjectOfType<WaveManager>();
@@ -166,6 +167,7 @@ public class Shop : MonoBehaviour
 
     public void OpenShop()
     {
+        cursorManager.ShowCursor();
         InitializeShop(); // Инициализация доступных баффов
         shopPanel.SetActive(true);
         Time.timeScale = 0f;
@@ -178,6 +180,7 @@ public class Shop : MonoBehaviour
 
     public void CloseShop()
     {
+        cursorManager.HideCursor();
         shopPanel.SetActive(false);
         Time.timeScale = 1f;
         playerGold.OnShopClosed();

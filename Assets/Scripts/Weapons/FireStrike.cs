@@ -52,16 +52,17 @@ public class FireProjectile : MonoBehaviour
     private float burnTickInterval = 1f; // Интервал тиков горения
     private float burnDamageFactor = 0.25f; // Начальный урон от горения (25% от урона)
     private float burnDecayFactor = 0.05f; // Уменьшение урона на 5% каждый тик
-    private float projectileSpeed = 10f; // Скорость полета
+    private float projectileSpeed = 3.5f; // Скорость полета
     private List<Enemy> hitEnemies = new List<Enemy>(); // Список пораженных врагов
 
     public void Initialize(FireStrike weapon, float damage)
     {
         initialDamage = damage;
         FindNearestEnemyDirection();
-
-        StartCoroutine(DestroyAfterLifetime(3f)); // Уничтожаем через 3 секунды после спавна
+        StartCoroutine(DestroyAfterLifetime(3f));
     }
+
+
 
     private void FindNearestEnemyDirection()
     {
@@ -115,20 +116,20 @@ public class FireProjectile : MonoBehaviour
 
     private IEnumerator ApplyBurningEffect(Enemy enemy)
     {
-        // Начальный урон от горения — 25% от урона снаряда
-        float remainingBurnDamage = initialDamage * 0.25f;
+        float remainingBurnDamage = initialDamage * burnDamageFactor;
         float elapsedTime = 0f;
 
-        // Ждём 1 секунду перед первым тиком урона от горения
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(burnTickInterval);
 
-        // Наносим урон каждые 1 секунду в течение оставшихся 4 секунд
         while (elapsedTime < burnDuration)
         {
-            enemy.TakeDamage((int)remainingBurnDamage); // Наносим урон на текущем тике
-            remainingBurnDamage *= 0.95f; // Уменьшаем урон на 5% от предыдущего значения
-            elapsedTime += 1f; // Переход к следующему тику
-            yield return new WaitForSeconds(1f);
+            if (enemy != null) // Проверяем на null перед нанесением урона
+            {
+                enemy.TakeDamage((int)remainingBurnDamage);
+                remainingBurnDamage *= (1 - burnDecayFactor);
+            }
+            elapsedTime += burnTickInterval;
+            yield return new WaitForSeconds(burnTickInterval);
         }
     }
 

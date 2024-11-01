@@ -3,7 +3,8 @@ using UnityEngine;
 public class Arrow : MonoBehaviour
 {
     public float speed = 7f; // Скорость полета стрелы
-    public int damage = 20; // Урон, который наносит стрела
+    public float damage = 5f; // Урон, который наносит стрела
+    public float baseDamage = 5f;
     private Transform target; // Цель (игрок)
 
     void Start()
@@ -32,6 +33,16 @@ public class Arrow : MonoBehaviour
         }
     }
 
+    public void UpdateStats(float projectile)
+    {
+        damage *= projectile;
+    }
+
+    public void RefreshStats()
+    {
+        damage = baseDamage;
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         // Проверяем столкновение с объектом, имеющим тег "Wall" или "Weapon"
@@ -56,7 +67,7 @@ public class Arrow : MonoBehaviour
             // Наносим урон игроку только если это не CircleCollider2D
             if (playerHealth != null)
             {
-                playerHealth.TakeDamage(damage);
+                playerHealth.TakeDamage((int)damage);
             }
 
             Destroy(gameObject); // Уничтожаем стрелу после удара

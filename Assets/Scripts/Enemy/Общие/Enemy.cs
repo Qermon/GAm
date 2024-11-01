@@ -32,7 +32,8 @@ public class Enemy : MonoBehaviour
 
     public static List<Enemy> allEnemies = new List<Enemy>();
     public GameObject bloodEffectPrefab; // Добавьте это поле
-
+    private WaveManager waveManager; 
+    private float currentSlowEffect = 0f; // Текущее замедление
     public bool IsDead
     {
         get { return isDead; }
@@ -41,10 +42,14 @@ public class Enemy : MonoBehaviour
     protected virtual void Start()
     {
 
-    rb = GetComponent<Rigidbody2D>();
+        enemyMoveSpeed = baseEnemyMoveSpeed; // Инициализация текущей скорости
+        rb = GetComponent<Rigidbody2D>();
         originalMass = rb.mass;
 
         currentHealth = maxHealth;
+
+        GameObject waveManagerObject = GameObject.FindGameObjectWithTag("WaveManager");
+        
 
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         if (playerObject != null)
@@ -59,8 +64,8 @@ public class Enemy : MonoBehaviour
 
     public void UpdateStats(float damageMultiplier, float healthMultiplier, float speedMultiplier)
     {
-        damage += baseDamage / 100 * damageMultiplier;
-        maxHealth += baseMaxHealth / 100 * healthMultiplier;
+        damage *= damageMultiplier;
+        maxHealth *= healthMultiplier;
         enemyMoveSpeed += baseEnemyMoveSpeed / 100 * speedMultiplier;
     }
 
@@ -111,9 +116,38 @@ public class Enemy : MonoBehaviour
         return currentHealth;
     }
 
+    public float GetCurrentSlowEffect()
+    {
+        return currentSlowEffect; // Возвращаем текущее замедление
+    }
+
+
     public void ModifySpeed(float speedMultiplier, float duration)
     {
-        StartCoroutine(ApplySpeedChange(speedMultiplier, duration));
+        float newSlowEffect = 1f - speedMultiplier; // Преобразуем множитель в замедление
+
+        // Проверяем, чтобы новое замедление не превышало 10%
+        if (currentSlowEffect + newSlowEffect > 0.1f)
+        {
+            newSlowEffect = 0.1f - currentSlowEffect; // Ограничиваем замедление до 10%
+        }
+
+        if (newSlowEffect > 0)
+        {
+            currentSlowEffect += newSlowEffect; // Обновляем текущее замедление
+            StartCoroutine(ApplySpeedChange(speedMultiplier, duration));
+            StartCoroutine(ResetSlowEffect(duration)); // Запускаем корутину для сброса замедления
+        }
+    }
+    private IEnumerator ResetSlowEffect(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        if (!isDead)
+        {
+            currentSlowEffect = 0; 
+            enemyMoveSpeed = baseEnemyMoveSpeed + baseEnemyMoveSpeed / 100 * waveManager.waveNumber;
+        }
+
     }
 
     private IEnumerator ApplySpeedChange(float speedMultiplier, float duration)
@@ -169,6 +203,8 @@ public class Enemy : MonoBehaviour
             }
         }
     }
+
+
 
     protected virtual void Die()
     {

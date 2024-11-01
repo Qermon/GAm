@@ -3,83 +3,91 @@ using UnityEngine;
 
 public class Wizard : Enemy
 {
-    public Animator animator; // Ссылка на компонент Animator
-    public GameObject projectilePrefab; // Префаб снаряда
-    public Transform firePoint; // Точка, откуда выпускается снаряд
+    public GameObject arrowPrefab; // Префаб стрелы
+    public Transform shootPoint; // Точка, откуда выпускается стрела
+    public float shootCooldown = 3f; // Время между сериями выстрелов
 
-    public float safeDistance = 5f; // Дистанция, на которой маг держится от игрока
-    public float moveDuration = 2f; // Время движения в одном направлении
-    private float lastAttackTime = 0f; // Время последней атаки
-    private bool isAttacking = false; // Флаг для проверки состояния атаки
+    private bool isShooting = false; // Флаг для проверки, стреляет ли лучник
+    private float shootTimer = 1f; // Таймер для отсчета времени до следующей атаки
     private Vector2 randomDirection; // Направление для случайного движения
+    private float moveDuration = 2f; // Время движения в одном направлении
     private float changeDirectionTime; // Таймер для смены направления
-    private Rigidbody2D rb; // Rigidbody для управления движением
-    private float originalMass; // Исходная масса моба
+    protected Rigidbody2D rb; // Изменяем с private на protected
+
+    private WaveManager waveManager;
+    private Animator animator; // Для анимаций
 
     protected override void Start()
     {
+        waveManager = GetComponent<WaveManager>();
         base.Start();
-        animator = GetComponent<Animator>(); // Получаем компонент Animator
         rb = GetComponent<Rigidbody2D>(); // Инициализируем Rigidbody2D
-        originalMass = rb.mass; // Сохраняем оригинальную массу
+        animator = GetComponent<Animator>(); // Получаем компонент Animator
         randomDirection = GetRandomDirection(); // Генерация случайного направления
         changeDirectionTime = Time.time + moveDuration; // Устанавливаем начальное время для смены направления
     }
 
     protected override void Update()
     {
-        base.Update();
+        if (isDead) return;
 
-        if (isDead || player == null) return;
+        shootTimer -= Time.deltaTime;
 
-        // Проверяем дистанцию до игрока
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        if (!isShooting && shootTimer <= 0f)
+        {
+            StartShooting();
+            shootTimer = shootCooldown; // Сбрасываем таймер на следующее действие
+        }
 
-        // Если игрок далеко, двигаемся в случайном направлении
-        if (distanceToPlayer > safeDistance && !isAttacking)
+        if (!isShooting)
         {
             MoveInRandomDirection();
-            animator.SetFloat("moveSpeed", enemyMoveSpeed); // Анимация движения
-        }
-        else
-        {
-            // Останавливаем движение и атакуем
-            animator.SetFloat("moveSpeed", 0f); // Останавливаем анимацию движения
-
-            // Условие для атаки
-            if (Time.time >= lastAttackTime + attackCooldown && !isAttacking)
-            {
-                StartAttack(); // Запуск атаки
-            }
         }
     }
 
-    private void StartAttack()
+    private void StartShooting()
     {
-        lastAttackTime = Time.time; // Обновляем время последней атаки
-        isAttacking = true; // Устанавливаем флаг атаки
-        animator.SetBool("isAttacking", true); // Запуск анимации атаки
+        if (player == null || isShooting) return; // Проверяем, что игрок существует
 
-        // Поворачиваем мага к игроку перед атакой
+        isShooting = true;
+        rb.velocity = Vector2.zero; // Останавливаем лучника при стрельбе
+
+        // Поворачиваем лучника к игроку
         Vector2 directionToPlayer = (player.position - transform.position).normalized;
-        FlipSprite(directionToPlayer); // Поворот мага по направлению к игроку
+        FlipSprite(directionToPlayer); // Поворот по оси X
+
+        animator.SetBool($"Shot1", true); // Используем булевые параметры для управления анимацией
+
     }
 
-    // Метод, вызываемый событием анимации для выпуска снаряда
-    public void ShootProjectile()
+    // Этот метод вызывается через событие в анимации
+    public void ShootArrow()
     {
-        GameObject projectileInstance = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity); // Используем firePoint
-        Projectile projectile = projectileInstance.GetComponent<Projectile>();
-        Vector2 directionToPlayer = (player.transform.position - firePoint.position).normalized; // Используем firePoint для направления
-        projectile.SetDirection(directionToPlayer); // Устанавливаем направление снаряда
+        enemyMoveSpeed = 0;
+        // Создаем снаряд
+        GameObject projectile = Instantiate(arrowPrefab, shootPoint.position, shootPoint.rotation);
+        WitchsProjectile witchsProjectile = projectile.GetComponent<WitchsProjectile>();
+
+        Vector2 directionToPlayer = (player.position - transform.position).normalized;
+        FlipSprite(directionToPlayer); // Поворот по оси X
+
+        if (witchsProjectile != null)
+        {
+            witchsProjectile.SetDirection(directionToPlayer); // Устанавливаем направление
+        }
+
     }
 
-    // Метод, вызываемый в конце анимации атаки
-    public void FinishAttack()
+    public void EndShooting()
     {
-        isAttacking = false; // Сбрасываем флаг атаки после завершения анимации
-        animator.SetBool("isAttacking", false); // Остановка анимации атаки
+        animator.SetBool("Shot1", false); // Завершаем анимацию атаки
+        isShooting = false; // Разрешаем движение моба
+
+        enemyMoveSpeed = baseEnemyMoveSpeed; // Восстанавливаем скорость движения
+        shootTimer = shootCooldown; // Сбрасываем таймер для следующей атаки
     }
+
+
 
     private void MoveInRandomDirection()
     {
@@ -98,6 +106,7 @@ public class Wizard : Enemy
             changeDirectionTime = Time.time + moveDuration; // Устанавливаем новое время для смены направления
         }
     }
+
 
     private Vector2 GetRandomDirection()
     {

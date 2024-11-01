@@ -10,7 +10,8 @@ public class FireBallController : Weapon
     protected override void Start()
     {
         base.Start();
-        attackTimer = 1f / attackSpeed; // Инициализируем таймер спавна
+        ResetAttackTimer();
+
 
     }
 
@@ -24,8 +25,13 @@ public class FireBallController : Weapon
         if (attackTimer <= 0f) // Если время для атаки истекло
         {
             SpawnFireBall();
-            attackTimer = 1f / attackSpeed; // Сбрасываем таймер
+            ResetAttackTimer();
         }
+    }
+
+    private void ResetAttackTimer()
+    {
+        attackTimer = 1f / attackSpeed; // Сбрасываем таймер с учетом скорости атаки
     }
 
     private void SpawnFireBall()
@@ -73,7 +79,6 @@ public class FireBall : MonoBehaviour
 
     // Словарь для отслеживания времени последней атаки по врагу
     private static Dictionary<GameObject, float> lastAttackTimes = new Dictionary<GameObject, float>();
-    private float attackCooldown = 1f; // Время между атаками по одному врагу (1 секунда)
 
     public void Initialize(Vector3 targetPosition, float projectileSpeed, float projectileLifetime, Weapon weaponInstance)
     {
@@ -116,7 +121,6 @@ public class FireBall : MonoBehaviour
         if (lastAttackTimes.ContainsKey(enemy))
         {
             float timeSinceLastAttack = Time.time - lastAttackTimes[enemy];
-            return timeSinceLastAttack >= attackCooldown; // Проверяем, прошло ли достаточно времени
         }
         return true; // Если враг ещё не атакован, можем атаковать
     }

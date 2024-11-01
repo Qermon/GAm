@@ -118,26 +118,42 @@ public class BleedProjectile : MonoBehaviour
         // Мгновенный урон
         enemy.TakeDamage((int)initialDamage);
 
-        // Замедление
-        enemy.ModifySpeed(1f - slowEffect, bleedDuration);
-
+        // Замедление, если текущее замедление меньше 10%
+        float currentSlowEffect = enemy.GetCurrentSlowEffect(); // Предполагаем, что у вас есть метод для получения текущего замедления
+        if (currentSlowEffect < 0.1f) // Проверяем, меньше ли текущего замедления 10%
+        {
+            enemy.ModifySpeed(1f - slowEffect, bleedDuration); // Применяем замедление
+        }
         // Эффект кровотечения
         StartCoroutine(ApplyBleedEffect(enemy));
     }
 
     private IEnumerator ApplyBleedEffect(Enemy enemy)
     {
+        yield return new WaitForSeconds(1f);
+
+        // Проверяем на null только после ожидания
+        if (enemy == null) yield break;
+
         float elapsed = 0f;
         float bleedDamage = initialDamage * 0.05f; // 5% урона каждую секунду
 
         while (elapsed < bleedDuration)
         {
-            enemy.TakeDamage((int)bleedDamage);
+            if (enemy != null) // Проверяем на null перед вызовом метода TakeDamage
+            {
+                enemy.TakeDamage((int)bleedDamage);
+            }
+
             elapsed += 1f;
             yield return new WaitForSeconds(1f);
         }
 
-        // Возвращаем врагу оригинальную скорость по завершении кровотечения
-        enemy.ModifySpeed(1f / (1f - slowEffect), bleedDuration);
+        if (enemy != null) // Проверка перед вызовом ModifySpeed
+        {
+            // Возвращаем врагу оригинальную скорость по завершении кровотечения
+            enemy.ModifySpeed(1f / (1f - slowEffect), bleedDuration);
+        }
     }
+
 }

@@ -15,6 +15,8 @@ public class WaveManager : MonoBehaviour
     public GameObject[] boomPrefabs;      // Префабы бомбардировщиков
     public GameObject[] healerPrefabs;    // Префабы лекарей
     public GameObject[] buffMobPrefabs;   // Префабы бафферов
+    public GameObject[] ArchersArrow;
+    public GameObject[] WitchsProjectile;
     public Transform[] spawnPoints;       // Точки спауна
     public float spawnRadius = 2f; // Радиус для разброса спавна вокруг точки
     public float timeBetweenWaves = 5f;
@@ -25,9 +27,10 @@ public class WaveManager : MonoBehaviour
     private float timeStartedWave;
     private float waveDuration;
 
-    private float damageMultiplier = 10f;
-    private float healthMultiplier = 20f;
-    private float speedMultiplier = 1f;
+    private float damageMultiplier = 1.2f;
+    private float healthMultiplier = 1.4f;
+    public float speedMultiplier = 0.5f;
+    private float projectile = 1.2f;
 
     public Transform player; // Ссылка на объект игрока
     public Vector2 centerOfMap = new Vector2(18.5f, -12.5f); // Координаты центра карты
@@ -117,18 +120,30 @@ public class WaveManager : MonoBehaviour
             return;
         }
 
-        UpdateEnemyStats();
+
+
 
         if (waveNumber == 0)
         {
             ResetEnemyStats();
         }
-        
-        
-        
-        
 
-        if (!spawningWave)
+        if (waveNumber <= 10 && waveNumber != 0)
+        {
+            UpdateEnemyStats();
+            
+        }
+
+        if (waveNumber <= 20 && waveNumber > 10)
+        {
+            UpdateEnemyStats();
+            UpdateEnemyStats();         
+        }
+
+
+
+
+            if (!spawningWave)
         {
             // Проверяем, был ли куплен бафф критического шанса
             foreach (var weapon in FindObjectsOfType<Weapon>())
@@ -220,6 +235,15 @@ public class WaveManager : MonoBehaviour
             }
         }
 
+        foreach (GameObject prefab in deathPrefabs)
+        {
+            Enemy enemy = prefab.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                enemy.UpdateStats(damageMultiplier, healthMultiplier, speedMultiplier);
+            }
+        }
+
         // Цикл для мобов Bat
         foreach (GameObject prefab in batPrefabs)
         {
@@ -289,12 +313,39 @@ public class WaveManager : MonoBehaviour
                 enemy.UpdateStats(damageMultiplier, healthMultiplier, speedMultiplier);
             }
         }
+
+        foreach (GameObject prefab in ArchersArrow)
+        {
+            Arrow arrow = prefab.GetComponent<Arrow>();
+            if (arrow != null)
+            {
+                arrow.UpdateStats(projectile);
+            }
+        }
+
+        foreach (GameObject prefab in WitchsProjectile)
+        {
+            WitchsProjectile witchsProjectile = prefab.GetComponent<WitchsProjectile>();
+            if (witchsProjectile != null)
+            {
+                witchsProjectile.UpdateStats(projectile);
+            }
+        }
     }
 
     private void ResetEnemyStats()
     {
         // Цикл для мобов Death
         foreach (GameObject prefab in deathMobPrefabs)
+        {
+            Enemy enemy = prefab.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                enemy.RefreshStats();
+            }
+        }
+
+        foreach (GameObject prefab in deathPrefabs)
         {
             Enemy enemy = prefab.GetComponent<Enemy>();
             if (enemy != null)
@@ -370,6 +421,24 @@ public class WaveManager : MonoBehaviour
             if (enemy != null)
             {
                 enemy.RefreshStats();
+            }
+        }
+
+        foreach (GameObject prefab in ArchersArrow)
+        {
+            Arrow arrow = prefab.GetComponent<Arrow>();
+            if (arrow != null)
+            {
+                arrow.RefreshStats();
+            }
+        }
+
+        foreach (GameObject prefab in WitchsProjectile)
+        {
+            WitchsProjectile witchsProjectile = prefab.GetComponent<WitchsProjectile>();
+            if (witchsProjectile != null)
+            {
+                witchsProjectile.RefreshStats();
             }
         }
     }
@@ -513,8 +582,8 @@ public class WaveManager : MonoBehaviour
         // Волна 7
         waveConfigs.Add(7, new WaveConfig(55f, new List<EnemySpawn>
     {
-        new EnemySpawn(batPrefabs[0], Mathf.FloorToInt(270 + 27 * 1.5f)), // 50 Летучих мышей
-        new EnemySpawn(archerPrefabs[0], 5), // 5 Лучников
+        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(270 + 27 * 1.5f)), // 50 Летучих мышей
+        new EnemySpawn(archerPrefabs[0], 2), // 5 Лучников
         new EnemySpawn(wizardPrefabs[0], 5), // 5 Магов
         new EnemySpawn(boomPrefabs[0], 5), // 5 Бомбардировщиков
         new EnemySpawn(samuraiPrefabs[0], 8) // 10 Скелетов

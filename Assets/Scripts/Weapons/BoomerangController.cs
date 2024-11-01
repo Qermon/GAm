@@ -99,7 +99,8 @@ public class BoomerangBehaviour : MonoBehaviour
             distanceTraveled += speed * Time.deltaTime;
 
             // Проверяем на столкновение с врагом
-            Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 0.5f, LayerMask.GetMask("Mobs", "MobsFly")); // Находим всех врагов в радиусе 0.5f
+            Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 0.25f, LayerMask.GetMask("Mobs", "MobsFly")); // Находим всех врагов в радиусе 1.5
+
 
             foreach (var enemy in enemies)
             {

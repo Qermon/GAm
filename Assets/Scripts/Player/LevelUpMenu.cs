@@ -50,6 +50,7 @@ public class LevelUpMenu : MonoBehaviour
     public List<UpgradeOption> upgradeOptions;
 
     public WaveManager waveManager;
+    private CursorManager cursorManager;
     
     private PlayerMovement playerMovement;
     private PlayerHealth playerHealth;
@@ -61,6 +62,7 @@ public class LevelUpMenu : MonoBehaviour
 
     private void Start()
     {
+        cursorManager = FindObjectOfType<CursorManager>();
         playerMovement = FindObjectOfType<PlayerMovement>();
         playerHealth = FindObjectOfType<PlayerHealth>();
         shop = FindObjectOfType<Shop>();
@@ -77,6 +79,7 @@ public class LevelUpMenu : MonoBehaviour
 
     public void OpenLevelUpMenu()
     {
+        cursorManager.ShowCursor();
         waveNumber = waveManager.GetWaveNumber(); // Обновляем значение waveNumber
 
         if (upgradeOptions.Count < 3)
@@ -268,6 +271,7 @@ public class LevelUpMenu : MonoBehaviour
 
     public void CloseLevelUpMenu()
     {
+        cursorManager.HideCursor();
         levelUpPanel.SetActive(false);
         Time.timeScale = 1;
     }

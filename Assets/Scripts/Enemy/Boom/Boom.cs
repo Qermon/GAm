@@ -3,83 +3,123 @@ using UnityEngine;
 
 public class Boom : Enemy
 {
-    public float explosionRadius = 0.5f;   // Радиус отталкивания врагов
-    public float detectionRadius = 2f;     // Радиус, в котором моб остановится перед взрывом
-    public float explosionDelay = 2f;      // Время ожидания перед взрывом
-    public int explosionDamage = 50;       // Урон от взрыва
+    private bool isPreparingToExplode = false;
+    private bool isTriggeredToExplode = false;
+    public float explosionPreparationTime = 1.5f;
+    public float explosionRadius = 2f;
 
-    private bool isExploding = false;      // Проверка, начался ли взрыв
-    private Animator animator;             // Ссылка на Animator
+    private Animator animator;
 
     protected override void Start()
     {
         base.Start();
-        animator = GetComponent<Animator>();  // Получаем компонент Animator
+        animator = GetComponent<Animator>();
     }
 
     protected override void Update()
     {
-        if (isDead || isExploding || player == null) return;
+        if (isDead || player == null) return;
 
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        if (!isPreparingToExplode)
+        {
+            MoveTowardsPlayer();
 
-        // Если моб находится в радиусе взрыва, начинается зарядка взрыва
-        if (distanceToPlayer <= detectionRadius)
-        {
-            StartCoroutine(Explode());
-        }
-        else
-        {
-            // Движение к игроку, если он вне радиуса взрыва
-            animator.SetBool("isMoving", true);  // Активируем анимацию движения
-            base.MoveTowardsPlayer();
+            // Проверка радиуса до игрока
+            if (Vector2.Distance(transform.position, player.position) <= 1f)
+            {
+                StartExplosionPreparation();
+            }
         }
     }
 
-    // Метод для взрыва
-    private IEnumerator Explode()
+    public override void TakeDamage(int damage)
     {
-        isExploding = true;
+        if (isDead) return;
 
-        // Останавливаем движение и включаем анимацию Idle
-        animator.SetBool("isMoving", false);
-        animator.SetTrigger("Idle");
+        currentHealth -= damage;
+        currentHealth = Mathf.Max(currentHealth, 0);
 
-        // Ожидание перед взрывом
-        yield return new WaitForSeconds(explosionDelay);
-
-        // Активируем анимацию взрыва
-        animator.SetTrigger("ExplodeTrigger");
-
-        // Ожидаем, пока анимация взрыва завершится (пример: 0.5 сек, зависит от длины анимации)
-        yield return new WaitForSeconds(0.5f); // Подкорректируй длительность ожидания под свою анимацию
-
-        // Нанесение урона и отталкивание врагов
-        Collider2D[] hitObjects = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
-        foreach (Collider2D obj in hitObjects)
+        if (currentHealth <= 0 && !isPreparingToExplode)
         {
-            if (obj.CompareTag("Enemy") || obj.CompareTag("Player"))
-            {
-                // Нанесение урона
-                obj.GetComponent<Enemy>()?.TakeDamage(explosionDamage);
-                obj.GetComponent<PlayerHealth>()?.TakeDamage(explosionDamage);
+            StartExplosionPreparation();
+        }
+    }
 
-                // Отталкивание объекта
-                Vector2 direction = (obj.transform.position - transform.position).normalized;
-                obj.GetComponent<Rigidbody2D>()?.AddForce(direction * 100f); // Отталкивание
+    private void StartExplosionPreparation()
+    {
+        if (isPreparingToExplode) return;
+
+        isPreparingToExplode = true;
+        enemyMoveSpeed = 0; // Остановим движение моба
+
+        // Включаем анимацию подготовки
+        animator.SetBool("isPreparingToExplode", true);
+        StartCoroutine(PrepareForExplosion());
+    }
+
+    private IEnumerator PrepareForExplosion()
+    {
+        yield return new WaitForSeconds(explosionPreparationTime);
+
+        if (isDead && isTriggeredToExplode)
+        {
+            Explode();
+        }
+        else if (!isDead)
+        {
+            isTriggeredToExplode = true;
+            Explode();
+        }
+    }
+
+    private void Explode()
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, explosionRadius);
+        foreach (var hit in hits)
+        {
+            if (hit.CompareTag("Player"))
+            {
+                PlayerHealth playerHealth = hit.GetComponent<PlayerHealth>();
+                if (playerHealth != null)
+                {
+                    playerHealth.TakeDamage((int)damage);
+                }
             }
         }
 
-        // Смерть моба после взрыва
-        Die();
+        // Запускаем анимацию взрыва перед удалением объекта
+        animator.SetTrigger("Explode");
+
+        // Удаление объекта после завершения анимации
+        Destroy(gameObject, 0.5f); // Время задержки соответствует длительности анимации взрыва
+    }
+    private void DestroySelf()
+    {
+        Destroy(gameObject);
     }
 
-    // Метод для визуализации радиуса взрыва в редакторе Unity
+
+    protected override void Die()
+    {
+        isDead = true;
+        animator.SetBool("isDead", true); // Устанавливаем флаг для анимации взрыва
+        base.Die();  // Вызов базового метода Die для начисления золота, опыта и т.д.
+    }
+
+    protected override void MoveTowardsPlayer()
+    {
+        if (!isPreparingToExplode && player != null)
+        {
+            Vector2 direction = (player.position - transform.position).normalized;
+            transform.position = Vector2.MoveTowards(transform.position, player.position, enemyMoveSpeed * Time.deltaTime);
+            FlipSprite(direction);
+        }
+    }
+
     private void OnDrawGizmosSelected()
     {
+        // Отображение радиуса взрыва в редакторе
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, explosionRadius); // Радиус взрыва
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, detectionRadius); // Радиус детекции
+        Gizmos.DrawWireSphere(transform.position, explosionRadius);
     }
 }
