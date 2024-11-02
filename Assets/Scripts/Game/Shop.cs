@@ -563,148 +563,213 @@ public class Shop : MonoBehaviour
 
     private string GetUpgradeDescription(UpgradeType upgradeType)
     {
+        string description = string.Empty;
+
         switch (upgradeType)
         {
             case UpgradeType.ShieldPerWave:
-                return "Барьер 30% от макс хп каждую волну пока хп не упадет до 29%.";
+                description = "Барьер <color=green>30%</color> от макс хп каждую волну пока хп не упадет до <color=green>29%</color>";
+                break;
 
             case UpgradeType.ShieldOnKill:
-                return "Шанс 5% получить барьер при убийстве врага, 10% от макс. здоровья.";
+                description = "Шанс <color=green>5%</color> получить барьер при убийстве врага, <color=green>10%</color> от макс. здоровья";
+                break;
 
             case UpgradeType.BarrierOnLowHealth:
-                return "При снижении здоровья ниже 50% раз за волну даёт барьер в 20% от макс. здоровья.";
+                description = "При снижении здоровья ниже <color=green>50%</color> раз за волну даёт барьер в <color=green>20%</color> от макс. здоровья";
+                break;
 
             case UpgradeType.HealthRegenPerWave:
-                return "Регенерация +200%, но у тебя 30% хп в начале каждой волны.";
+                description = "Регенерация +200%, но у тебя <color=green>30%</color> хп в начале каждой волны";
+                break;
 
             case UpgradeType.CritChanceBuff:
-                return "Каждую секунду увеличивает крит шанс на 0.5% до конца волны.";
+                description = "Каждую секунду увеличивает крит шанс на <color=green>0.5%</color> до конца волны";
+                break;
 
             case UpgradeType.CritDamageBuff:
-                return "Каждую секунду увеличивает крит урон на 1% до конца волны.";
+                description = "Каждую секунду увеличивает крит урон на <color=green>1%</color> до конца волны";
+                break;
 
             case UpgradeType.AttackSpeedDamage:
-                return "Скорость атаки +20%\nУрон -5%.";
+                description = "Скорость атаки +20%\nУрон -5%";
+                break;
 
             case UpgradeType.AttackSpeedDamageCritMove:
-                return "Скорость атаки +15%\nУрон +5%\nКрит Урон +5%\nСкорость бега -10%.";
+                description = "Скорость атаки +15%\nУрон +5%\nКрит Урон +5%\nСкорость бега -10%";
+                break;
 
             case UpgradeType.CritDamageCritChance:
-                return "Крит. урон +30%\nШанс крита -10%.";
+                description = "Крит. урон +30%\nШанс крита -10%";
+                break;
 
             case UpgradeType.MaxHpArmorMove:
-                return "Здоровье +30%\nБроня +20\nСкорость бега -10%.";
+                description = "Здоровье +30%\nБроня +20\nСкорость бега -10%";
+                break;
 
             case UpgradeType.AttackSpeedHp:
-                return "Здоровье -15%\nСкорость атаки +20%.";
+                description = "Здоровье -15%\nСкорость атаки +20%";
+                break;
 
             case UpgradeType.DamageMove:
-                return "Урон +20%\nСкорость бега -5%.";
+                description = "Урон +20%\nСкорость бега -5%";
+                break;
 
             case UpgradeType.DamageRegen:
-                return "Урон +15%\nРегенерация -10%.";
+                description = "Урон +15%\nРегенерация  -10%";
+                break;
 
             case UpgradeType.CritChanceDamage:
-                return "Шанс крита +10%\nУрон -3%.";
+                description = "Шанс крита +10%\nУрон -3%";
+                break;
 
             case UpgradeType.AttackSpeedCritArmor:
-                return "Шанс крита +5%\nБроня +10\nСкорость атаки -5%.";
+                description = "Шанс крита +5%\nБроня +10\nСкорость атаки -5%";
+                break;
 
             case UpgradeType.AttackRangeMoveSpeed:
-                return "Дальность атаки +15%\nСкорость бега -3%.";
+                description = "Дальность атаки +15%\nСкорость бега -3%";
+                break;
 
             case UpgradeType.RegenLuck:
-                return "Регенерация +20%\nУдача -20.";
+                description = "Регенерация +20%\nУдача -20";
+                break;
 
             case UpgradeType.LifestealDamage:
-                return "Вампиризм +15%\nУрон -3%.";
+                description = "Вампиризм +15%\nУрон -3%";
+                break;
 
             case UpgradeType.InvestmentLuckMaxHp:
-                return "Инвестиции +75\nУдача +30\nЗдоровье -15%.";
+                description = "Инвестиции +75\nУдача +30\nЗдоровье -15%";
+                break;
 
             case UpgradeType.MoveSpeedDamage:
-                return "Скорость бега +15%\nУрон -5%.";
+                description = "Скорость бега +15%\nУрон -5%";
+                break;
 
             case UpgradeType.ArmorAttackRange:
-                return "Броня +20\nДальность атаки -5%.";
+                description = "Броня +20\nДальность атаки -5%";
+                break;
 
             case UpgradeType.CritDamageCritChance1:
-                return "Крит. урон +20%\nШанс крита -5%.";
+                description = "Крит. урон +20%\nШанс крита -5%";
+                break;
 
             case UpgradeType.LuckRegen:
-                return "Удача +40\nРегенерация -15%.";
+                description = "Удача +40\nРегенерация -15%";
+                break;
 
             case UpgradeType.PickupRadiusAttackSpeed:
-                return "Радиус подбора +20%\nСкорость атаки -5%.";
+                description = "Радиус подбора +20%\nСкорость атаки -5%";
+                break;
 
             case UpgradeType.RegenMoveSpeed:
-                return "Регенерация +15%\nСкорость бега -5%.";
+                description = "Регенерация +15%\nСкорость бега -5%";
+                break;
 
             case UpgradeType.InvestmentDamageArmor:
-                return "Инвестиции +50\nУрон +3%\nБроня -15.";
+                description = "Инвестиции +50\nУрон +3%\nБроня -15";
+                break;
 
             case UpgradeType.MaxHpCritChanceMove:
-                return "Здоровье +10%\nШанс крита +5%\nСкорость передвижения -5%.";
+                description = "Здоровье +10%\nШанс крита +5%\nСкорость передвижения  -5%";
+                break;
 
             case UpgradeType.AttackSpeedLuck:
-                return "Скорость атаки +15%\nУдача -30.";
+                description = "Скорость атаки +15%\nУдача -30";
+                break;
 
             case UpgradeType.LifestealPickupRadius:
-                return "Вампиризм +15%\nРадиус подбора -15%.";
+                description = "Вампиризм +15%\nРадиус подбора -15%";
+                break;
 
             case UpgradeType.CritDamageDamageArmor:
-                return "Крит. урон +25%\nБроня +10\nУрон -5%.";
+                description = "Крит. урон +25%\nБроня +10\nУрон -5%";
+                break;
 
             case UpgradeType.AttackSpeedCritChancePickup:
-                return "Скорость атаки +15%\nШанс крита +3%\nРадиус подбора -10%.";
+                description = "Скорость атаки +15%\nШанс крита +3%\nРадиус подбора  -10%";
+                break;
 
             case UpgradeType.DamageMaxHpArmor:
-                return "Урон +25%\nЗдоровье -5%\nБроня -5.";
+                description = "Урон +25%\nЗдоровье -5%\nБроня -5";
+                break;
 
             case UpgradeType.Damage:
-                return "Урон +15%.";
+                description = "Урон +15%";
+                break;
 
             case UpgradeType.CritDamage:
-                return "Крит. урон +20%.";
+                description = "Крит. урон +20%";
+                break;
 
             case UpgradeType.AttackSpeed:
-                return "Скорость атаки +20%.";
+                description = "Скорость атаки +20%";
+                break;
 
             case UpgradeType.CritChance:
-                return "Шанс крита +10%.";
+                description = "Шанс крита +10%";
+                break;
 
             case UpgradeType.AttackRange:
-                return "Дальность атаки +20%.";
+                description = "Дальность атаки +20%";
+                break;
 
             case UpgradeType.MaxHealth:
-                return "Здоровье +25%.";
+                description = "Здоровье +25%";
+                break;
 
             case UpgradeType.Armor:
-                return "Броня +15.";
+                description = "Броня +15";
+                break;
 
             case UpgradeType.HealthRegen:
-                return "Регенерация +20%.";
+                description = "Регенерация +20%";
+                break;
 
             case UpgradeType.Lifesteal:
-                return "Вампиризм +20%.";
+                description = "Вампиризм +20%";
+                break;
 
             case UpgradeType.Investment:
-                return "Инвестиции +75.";
+                description = "Инвестиции +75";
+                break;
 
             case UpgradeType.PickupRadius:
-                return "Радиус подбора +40%.";
+                description = "Радиус подбора +40%";
+                break;
 
             case UpgradeType.MoveSpeed:
-                return "Скорость бега +15%.";
+                description = "Скорость бега +15%";
+                break;
 
             case UpgradeType.Luck:
-                return "Удача +20.";
+                description = "Удача +20";
+                break;
 
             default:
-                return "Неизвестный бафф.";
+                description = "Неизвестный бафф";
+                break;
         }
+
+        return FormatDescription(description);
     }
-    
+
+
+    private string FormatDescription(string description)
+    {
+        // Ищем значения с + и выделяем зелёным цветом
+        description = Regex.Replace(description, @"\+\d+%?", match => $"<color=green>{match.Value}</color>");
+
+        // Ищем значения с - и выделяем красным цветом
+        description = Regex.Replace(description, @"-\d+%?", match => $"<color=red>{match.Value}</color>");
+
+        return description;
+    }
+
+
+
+
 
     private void ApplyUpgrade(Upgrade upgrade)
     {
@@ -1116,5 +1181,4 @@ public class Shop : MonoBehaviour
                 break;
         }
     }
-
 }
