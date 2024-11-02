@@ -10,7 +10,7 @@ public class Enemy : MonoBehaviour
     public float maxHealth;
     public float currentHealth;
     public float enemyMoveSpeed;
-
+    
     public float damage;
     public float attackRange = 0.1f;
     public float attackCooldown = 1f;
@@ -36,7 +36,7 @@ public class Enemy : MonoBehaviour
 
     public static List<Enemy> allEnemies = new List<Enemy>();
     public GameObject bloodEffectPrefab; // Добавьте это поле
-    private WaveManager waveManager;
+    private WaveManager waveManager; 
     private float currentSlowEffect = 0f; // Текущее замедление
     public bool IsDead
     {
@@ -53,7 +53,7 @@ public class Enemy : MonoBehaviour
         currentHealth = maxHealth;
 
         GameObject waveManagerObject = GameObject.FindGameObjectWithTag("WaveManager");
-
+        
 
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         if (playerObject != null)
@@ -148,7 +148,7 @@ public class Enemy : MonoBehaviour
         yield return new WaitForSeconds(duration);
         if (!isDead)
         {
-            currentSlowEffect = 0;
+            currentSlowEffect = 0; 
             enemyMoveSpeed = baseEnemyMoveSpeed + baseEnemyMoveSpeed / 100 * waveManager.waveNumber;
         }
 
@@ -276,7 +276,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-
+    
 
     public void Heal(float amount)
     {

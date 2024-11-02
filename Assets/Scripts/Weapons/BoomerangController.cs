@@ -86,12 +86,10 @@ public class BoomerangBehaviour : MonoBehaviour
             {
                 transform.position = Vector3.MoveTowards(transform.position, player.position, returnSpeed * Time.deltaTime);
             }
-
             // Проверяем, достигли ли игрока
             if (Vector3.Distance(transform.position, player.position) < 0.1f)
             {
                 Destroy(gameObject); // Уничтожаем бумеранг при достижении игрока
-                return;
             }
         }
         else
@@ -100,22 +98,24 @@ public class BoomerangBehaviour : MonoBehaviour
             transform.position += direction * speed * Time.deltaTime;
             distanceTraveled += speed * Time.deltaTime;
 
+            // Проверяем на столкновение с врагом
+            Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 0.25f, LayerMask.GetMask("Mobs", "MobsFly")); // Находим всех врагов в радиусе 1.5
+
+
+            foreach (var enemy in enemies)
+            {
+                if (CanAttackEnemy(enemy.gameObject)) // Проверяем, можно ли атаковать врага
+                {
+                    // Наносим урон врагу
+                    enemy.GetComponent<Enemy>().TakeDamage(damage);
+                    UpdateLastAttackTime(enemy.gameObject); // Обновляем время последней атаки
+                }
+            }
+
             // Проверяем, не превысило ли расстояние
             if (distanceTraveled >= maxDistance)
             {
                 returning = true; // Начинаем возвращение, если достигли максимального расстояния
-            }
-        }
-
-        // Проверяем на столкновение с врагом в радиусе бумеранга при движении в любом направлении
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 0.25f, LayerMask.GetMask("Mobs", "MobsFly"));
-        foreach (var enemy in enemies)
-        {
-            if (CanAttackEnemy(enemy.gameObject)) // Проверяем, можно ли атаковать врага
-            {
-                // Наносим урон врагу
-                enemy.GetComponent<Enemy>().TakeDamage(damage);
-                UpdateLastAttackTime(enemy.gameObject); // Обновляем время последней атаки
             }
         }
     }
