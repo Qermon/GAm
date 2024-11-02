@@ -154,7 +154,6 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator SpawnWave()
     {
-        
         spawningWave = true;
         waveNumber++;
 
@@ -175,7 +174,7 @@ public class WaveManager : MonoBehaviour
             for (int i = 0; i < totalEnemyTypes; i++)
             {
                 allEnemiesToSpawn[i].CalculateSpawnInterval(spawnTimeLimit);
-                nextSpawnTime[i] = timeStartedWave + 2f; // Первые 2 секунды враги не спавнятся
+                nextSpawnTime[i] = timeStartedWave + 0.25f; // Первые 2 секунды враги не спавнятся
             }
 
             // Основной цикл спавна врагов
@@ -188,8 +187,9 @@ public class WaveManager : MonoBehaviour
                         EnemySpawn enemySpawn = allEnemiesToSpawn[i];
                         Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
                         Vector2 spawnPosition = spawnPoint.position + (Vector3)Random.insideUnitCircle * spawnRadius;
-                        GameObject enemy = Instantiate(enemySpawn.enemyPrefab, spawnPosition, Quaternion.identity);
-                        AddEnemy(enemy);
+
+                        // Запуск корутины для спавна крестика и моба
+                        StartCoroutine(SpawnCrossAndEnemy(spawnPosition, enemySpawn.enemyPrefab));
 
                         enemiesLeftToSpawn[i]--;
                         nextSpawnTime[i] = Time.time + enemySpawn.spawnInterval; // Используем рассчитанный интервал
@@ -197,6 +197,11 @@ public class WaveManager : MonoBehaviour
                 }
 
                 yield return null; // Ждем следующий кадр
+            }
+            // Ждем оставшееся время до завершения волны
+            while (Time.time - timeStartedWave < waveDuration)
+            {
+                yield return null; // Продолжаем ждать до окончания времени волны
             }
 
             // Убираем оставшихся врагов и завершаем волну
@@ -213,6 +218,25 @@ public class WaveManager : MonoBehaviour
         StartCoroutine(StartNextWave());
         playerHealth.barrierActivatedThisWave = false;
     }
+
+
+    // Метод для спавна крестика и моба
+    private IEnumerator SpawnCrossAndEnemy(Vector3 spawnPosition, GameObject enemyPrefab)
+    {
+        // Спавним крестик за 1.75 секунды до моба
+        GameObject cross = Instantiate(crossPrefab, spawnPosition, Quaternion.identity);
+
+        // Ждем 1.75 секунды перед спавном моба
+        yield return new WaitForSeconds(1.75f);
+
+        // Удаляем крестик перед спавном моба
+        Destroy(cross);
+
+        // Спавним моба
+        GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+        AddEnemy(enemy);
+    }
+
 
 
     private void UpdateEnemyStats()
@@ -435,23 +459,6 @@ public class WaveManager : MonoBehaviour
         }
     }
 
-    // Метод для спавна крестика и моба
-    private IEnumerator SpawnCrossAndEnemy(Vector3 spawnPosition, GameObject enemyPrefab)
-    {
-        // Спавним крестик
-        GameObject cross = Instantiate(crossPrefab, spawnPosition, Quaternion.identity);
-
-        // Ждем 2 секунды перед спавном моба
-        yield return new WaitForSeconds(2f);
-
-        // Удаляем крестик перед спавном моба
-        Destroy(cross);
-
-        // Спавним моба
-        GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
-        AddEnemy(enemy);
-    }
-
     public void EndWave()
     {
         foreach (var weapon in FindObjectsOfType<Weapon>())
@@ -488,10 +495,8 @@ public class WaveManager : MonoBehaviour
         // Волна 1
         waveConfigs.Add(1, new WaveConfig(25f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(140 + 24 * 1.5f)),
-        new EnemySpawn(batPrefabs[0], 20),
-        new EnemySpawn(wizardPrefabs[0], 2),
-        new EnemySpawn(samuraiPrefabs[0], 2)
+        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(55 + 21 * 1.5f)),
+
     }));
 
         // Волна 2
