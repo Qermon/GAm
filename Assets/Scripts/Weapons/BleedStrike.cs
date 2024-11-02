@@ -41,8 +41,9 @@ public class BleedStrike : Weapon
         Vector3 targetPosition = nearestEnemy.transform.position;
         GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
         projectile.tag = "Weapon"; // Устанавливаем тег
-        projectile.AddComponent<BleedProjectile>().Initialize(this, targetPosition, projectileLifetime, bleedDuration, slowEffect, damage);
+        projectile.AddComponent<BleedProjectile>().Initialize(this, targetPosition, projectileLifetime, bleedDuration, slowEffect, damage, criticalDamage);
     }
+
 
     private Collider2D FindNearestEnemy()
     {
@@ -72,16 +73,25 @@ public class BleedProjectile : MonoBehaviour
     private float slowEffect;
     private float initialDamage;
     private List<Enemy> hitEnemies = new List<Enemy>();
+    private bool isCriticalHit;
+    private Weapon weapon;
 
-    public void Initialize(BleedStrike weapon, Vector3 targetPosition, float lifetime, float bleedDuration, float slowEffect, float initialDamage)
+    public void Initialize(BleedStrike weapon, Vector3 targetPosition, float lifetime, float bleedDuration, float slowEffect, float initialDamage, float criticalDamage)
     {
         this.projectileLifetime = lifetime;
         this.bleedDuration = bleedDuration;
         this.slowEffect = slowEffect;
         this.initialDamage = initialDamage;
 
-        direction = (targetPosition - transform.position).normalized; // Направление на врага в момент спавна
-        StartCoroutine(DestroyAfterLifetime()); // Запуск корутины для уничтожения через 3 сек.
+        // Сохраняем ссылку на оружие для доступа к критическому урону
+        this.weapon = weapon;
+
+        // Определяем, является ли удар критическим, используя случайное значение
+        float randomValue = Random.value; // Генерация случайного числа от 0 до 1
+        isCriticalHit = randomValue < weapon.criticalChance; // Условие для критического удара
+
+        direction = (targetPosition - transform.position).normalized;
+        StartCoroutine(DestroyAfterLifetime());
     }
 
     private void Update()
@@ -115,45 +125,49 @@ public class BleedProjectile : MonoBehaviour
 
     private void ApplyEffects(Enemy enemy)
     {
-        // Мгновенный урон
-        enemy.TakeDamage((int)initialDamage);
+        // Рассчитываем урон
+        float damageToDeal = isCriticalHit ? initialDamage * (1 + weapon.criticalDamage / 100f) : initialDamage;
 
-        // Замедление, если текущее замедление меньше 10%
-        float currentSlowEffect = enemy.GetCurrentSlowEffect(); // Предполагаем, что у вас есть метод для получения текущего замедления
-        if (currentSlowEffect < 0.1f) // Проверяем, меньше ли текущего замедления 10%
+        // Наносим мгновенный урон и передаем флаг isCriticalHit
+        enemy.TakeDamage((int)damageToDeal, isCriticalHit);
+
+        // Применяем эффект замедления
+        float currentSlowEffect = enemy.GetCurrentSlowEffect();
+        if (currentSlowEffect < 0.1f)
         {
-            enemy.ModifySpeed(1f - slowEffect, bleedDuration); // Применяем замедление
+            enemy.ModifySpeed(1f - slowEffect, bleedDuration);
         }
-        // Эффект кровотечения
+
+        // Запускаем эффект кровотечения
         StartCoroutine(ApplyBleedEffect(enemy));
     }
+
+
 
     private IEnumerator ApplyBleedEffect(Enemy enemy)
     {
         yield return new WaitForSeconds(1f);
 
-        // Проверяем на null только после ожидания
         if (enemy == null) yield break;
 
         float elapsed = 0f;
-        float bleedDamage = initialDamage * 0.05f; // 5% урона каждую секунду
+        float bleedDamage = initialDamage * 0.05f;
 
         while (elapsed < bleedDuration)
         {
-            if (enemy != null) // Проверяем на null перед вызовом метода TakeDamage
+            if (enemy != null)
             {
-                enemy.TakeDamage((int)bleedDamage);
+                // Наносим урон с учетом критического удара
+                enemy.TakeDamage((int)bleedDamage, isCriticalHit);
             }
 
             elapsed += 1f;
             yield return new WaitForSeconds(1f);
         }
 
-        if (enemy != null) // Проверка перед вызовом ModifySpeed
+        if (enemy != null)
         {
-            // Возвращаем врагу оригинальную скорость по завершении кровотечения
             enemy.ModifySpeed(1f / (1f - slowEffect), bleedDuration);
         }
     }
-
 }

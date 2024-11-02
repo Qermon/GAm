@@ -310,14 +310,6 @@ public class WeaponSelectionManager : MonoBehaviour
                 }
                 break;
 
-            case WeaponType.KillerFog:
-                var killerFog = player.GetComponent<KillerFog>();
-                if (killerFog != null)
-                {
-                    killerFog.enabled = true;
-                }
-                break;
-
             case WeaponType.Knife:
                 var knifeController = player.GetComponent<KnifeController>();
                 if (knifeController != null)
@@ -339,22 +331,6 @@ public class WeaponSelectionManager : MonoBehaviour
                 if (fireStrike != null)
                 {
                     fireStrike.enabled = true;
-                }
-                break;
-
-            case WeaponType.FreezeStrike:
-                var freezeStrike = player.GetComponent<FreezeStrike>();
-                if (freezeStrike != null)
-                {
-                    freezeStrike.enabled = true;
-                }
-                break;
-
-            case WeaponType.PoisonStrike:
-                var poisonStrike = player.GetComponent<PoisonStrike>();
-                if (poisonStrike != null)
-                {
-                    poisonStrike.enabled = true;
                 }
                 break;
 

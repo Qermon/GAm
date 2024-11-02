@@ -5,6 +5,8 @@ public class DamageTextController : MonoBehaviour
 {
     public float moveUpSpeed = 1.0f;        // Скорость перемещения текста вверх
     public float duration = 1.0f;           // Время, через которое текст исчезает
+    public Color criticalHitColor = Color.red; // Цвет для критического урона
+    public Color normalHitColor = Color.white; // Цвет для обычного урона
 
     private TextMeshProUGUI damageText;
     private float timer;
@@ -14,11 +16,12 @@ public class DamageTextController : MonoBehaviour
         damageText = GetComponent<TextMeshProUGUI>(); // Получаем компонент
     }
 
-    public void SetDamage(int damage)
+    public void SetDamage(int damage, bool isCriticalHit)
     {
         if (damageText != null)
         {
             damageText.text = damage.ToString(); // Установка текста урона
+            damageText.color = isCriticalHit ? criticalHitColor : normalHitColor; // Установка цвета
         }
         else
         {

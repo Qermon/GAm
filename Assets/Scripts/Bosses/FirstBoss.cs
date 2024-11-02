@@ -14,9 +14,11 @@ public class FirstBoss : Enemy
     private Rigidbody2D rb; // Добавляем Rigidbody2D для физики
     private bool isRegenerating = false; // Флаг для регенерации
     private bool isInvulnerable = false; // Флаг для неуязвимости
+    private Weapon weapon;
 
     protected override void Start()
     {
+        weapon = GetComponent<Weapon>();
         base.Start();
         attackRange = bossAttackRange;
         enemyMoveSpeed = bossMoveSpeed;
@@ -130,11 +132,20 @@ public class FirstBoss : Enemy
         }
     }
 
-    public override void TakeDamage(int damage)
+    public override void TakeDamage(int damage, bool isCriticalHit) // Убедитесь, что параметр присутствует
     {
-        base.TakeDamage(damage);
-        Debug.Log("Босс получает урон!");
+        if (isDead) return;
+
+        // Обработка критического удара
+        if (isCriticalHit)
+        {
+            damage = (int)(damage + damage / 100 * weapon.criticalDamage); // Увеличиваем урон, если это критический удар
+        }
+
+        currentHealth -= damage;
+        currentHealth = Mathf.Max(currentHealth, 0);
     }
+
 
     protected override void Die()
     {

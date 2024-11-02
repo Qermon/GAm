@@ -1,129 +1,118 @@
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class LightningWeapon : Weapon
 {
-   
-
-    public GameObject lightningPrefab; // Префаб молнии
-    public int lightningCount = 5; // Количество молний за раз
-
-    private Coroutine lightningCoroutine; // Ссылка на корутину для остановки
+    public GameObject projectilePrefab; // Префаб снаряда
+    public float projectileLifetime = 3f; // Время жизни снаряда
+    public int numberOfProjectiles = 3; // Количество молний
 
     protected override void Start()
     {
         base.Start();
-        StartCoroutine(SpawnLightning()); // Запускаем корутину для спавна молний
+        StartCoroutine(LaunchLightning()); // Запуск корутины атаки
     }
 
-    private IEnumerator SpawnLightning()
+    private IEnumerator LaunchLightning()
     {
         while (true)
         {
-            yield return new WaitForSeconds(1f / attackSpeed); // Ждем перед следующим спавном
-            if (attackTimer <= 0f) // Проверяем, можно ли атаковать
+            if (IsEnemyInRange()) // Проверка наличия врага в радиусе
             {
-                for (int i = 0; i < lightningCount; i++)
+                LaunchProjectiles();
+            }
+            yield return new WaitForSeconds(1f / attackSpeed); // Задержка между атаками
+        }
+    }
+
+    private bool IsEnemyInRange()
+    {
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        return enemies.Length > 0; // Проверяем, есть ли враги в радиусе attackRange
+    }
+
+    private void LaunchProjectiles()
+    {
+        HashSet<Vector2> occupiedPositions = new HashSet<Vector2>(); // Хранение занятых позиций
+
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        if (enemies.Length == 0) return; // Если нет врагов, выходим
+
+        for (int i = 0; i < numberOfProjectiles; i++)
+        {
+            Vector2 spawnPosition = Vector2.zero; // Инициализируем переменную
+            bool validPosition = false;
+            int attempts = 0;
+
+            while (!validPosition && attempts < 100) // Пробуем найти действительную позицию
+            {
+                spawnPosition = (Vector2)transform.position + Random.insideUnitCircle * attackRange; // Используем attackRange
+
+                // Проверяем, не пересекается ли с коллайдерами и не занята ли позиция
+                if (!Physics2D.OverlapCircle(spawnPosition, 0.1f, LayerMask.GetMask("Wall")) && !occupiedPositions.Contains(spawnPosition))
                 {
-                    SpawnLightningBolt();
+                    occupiedPositions.Add(spawnPosition); // Добавляем позицию в занятые
+                    validPosition = true; // Позиция найдена
                 }
-                attackTimer = 1f / attackSpeed; // Устанавливаем таймер атаки
+                attempts++;
+            }
+
+            if (validPosition)
+            {
+                GameObject projectile = Instantiate(projectilePrefab, spawnPosition, Quaternion.identity);
+                projectile.tag = "Weapon"; // Устанавливаем тег
+                projectile.AddComponent<LightningProjectile>().Initialize(this, projectileLifetime, damage, criticalDamage);
             }
         }
     }
-
-    private void SpawnLightningBolt()
-    {
-        Vector2 randomPosition;
-
-        // Ищем подходящую позицию, пока не найдем ее
-        do
-        {
-            randomPosition = (Vector2)transform.position + Random.insideUnitCircle * attackRange; // Заменяем spawnRadius на attackRange
-        } while (IsPositionBlocked(randomPosition)); // Проверяем, заблокирована ли позиция
-
-        GameObject spawnedLightning = Instantiate(lightningPrefab, randomPosition, Quaternion.identity);
-        LightningBehaviour lightningBehaviour = spawnedLightning.AddComponent<LightningBehaviour>(); // Добавляем поведение молнии
-        lightningBehaviour.SetDamage((int)CalculateDamage()); // Устанавливаем урон молнии
-    }
-
-    private bool IsPositionBlocked(Vector2 position)
-    {
-        // Проверяем, есть ли объекты с тегом "Wall" в радиусе 0.1 от позиции
-        Collider2D hit = Physics2D.OverlapCircle(position, 0.1f, LayerMask.GetMask("Wall"));
-        return hit != null; // Если hit не null, значит на позиции есть объект с тегом Wall
-    }
-
-    protected override void PerformAttack()
-    {
-        // Атака будет выполнена через корутину, поэтому ничего не делаем здесь
-    }
-
-    public override void UseWeapon()
-    {
-        // Логика для использования молниеносного оружия
-        Debug.Log("Используется молниеносное оружие!");
-
-        // Запускаем корутину для спавна молний, если она еще не запущена
-        if (lightningCoroutine == null)
-        {
-            lightningCoroutine = StartCoroutine(SpawnLightning());
-        }
-    }
-
 }
 
-public class LightningBehaviour : MonoBehaviour
+public class LightningProjectile : MonoBehaviour
 {
-    private int damage; // Урон молнии
-    private static Dictionary<GameObject, float> lastAttackTimes = new Dictionary<GameObject, float>(); // Словарь для отслеживания времени последней атаки
-    private float attackCooldown = 0.5f; // Время между атаками по одному врагу (1 секунда)
+    private float projectileLifetime;
+    private float initialDamage;
+    private bool isCriticalHit;
+    private Weapon weapon;
 
-    private void Start()
+    public void Initialize(LightningWeapon weapon, float lifetime, float initialDamage, float criticalDamage)
     {
-        Destroy(gameObject, 3f); // Уничтожаем молнию через 3 секунды
+        this.projectileLifetime = lifetime;
+        this.initialDamage = initialDamage;
+        this.weapon = weapon;
+
+        // Определяем, является ли удар критическим
+        float randomValue = Random.value; // Генерация случайного числа от 0 до 1
+        isCriticalHit = randomValue < weapon.criticalChance; // Условие для критического удара
+
+        StartCoroutine(DestroyAfterLifetime());
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private IEnumerator DestroyAfterLifetime()
     {
-        if (collision.CompareTag("Enemy"))
+        yield return new WaitForSeconds(projectileLifetime);
+        Destroy(gameObject); // Уничтожаем снаряд через заданное время
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Enemy"))
         {
-            GameObject enemy = collision.gameObject;
-            if (CanAttackEnemy(enemy)) // Проверяем, можем ли атаковать врага
+            Enemy enemy = other.GetComponent<Enemy>();
+            if (enemy != null)
             {
-                collision.GetComponent<Enemy>().TakeDamage(damage); // Наносим урон врагу
-                UpdateLastAttackTime(enemy); // Обновляем время последней атаки
+                DealDamage(enemy);
+                // Уничтожаем снаряд после удара
             }
         }
     }
 
-    public void SetDamage(int lightningDamage)
+    private void DealDamage(Enemy enemy)
     {
-        damage = lightningDamage; // Устанавливаем урон
-    }
+        // Рассчитываем урон с учетом критического удара
+        float damageToDeal = isCriticalHit ? initialDamage * (1 + weapon.criticalDamage / 100f) : initialDamage;
 
-    // Проверка, можно ли атаковать врага (учитывая время последней атаки)
-    private bool CanAttackEnemy(GameObject enemy)
-    {
-        if (lastAttackTimes.ContainsKey(enemy))
-        {
-            float timeSinceLastAttack = Time.time - lastAttackTimes[enemy];
-            return timeSinceLastAttack >= attackCooldown; // Проверяем, прошло ли достаточно времени
-        }
-        return true; // Если враг ещё не атакован, можем атаковать
-    }
-
-    // Обновление времени последней атаки
-    private void UpdateLastAttackTime(GameObject enemy)
-    {
-        if (lastAttackTimes.ContainsKey(enemy))
-        {
-            lastAttackTimes[enemy] = Time.time; // Обновляем время последней атаки
-        }
-        else
-        {
-            lastAttackTimes.Add(enemy, Time.time); // Добавляем врага в словарь
-        }
+        // Наносим урон врагу
+        enemy.TakeDamage((int)damageToDeal, isCriticalHit);
     }
 }

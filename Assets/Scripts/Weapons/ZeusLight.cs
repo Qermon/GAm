@@ -157,8 +157,12 @@ public class ZeusProjectile : MonoBehaviour
 
     private void DealDamage(Enemy enemy)
     {
-        Debug.Log("Dealing damage: " + currentDamage + " to " + enemy.name);
-        enemy.TakeDamage((int)currentDamage); // Наносим урон врагу
+        // Проверяем вероятность критического удара
+        bool isCriticalHit = Random.value < weapon.criticalChance;
+        float damageToDeal = isCriticalHit ? currentDamage * (1 + weapon.criticalDamage / 100f) : currentDamage;
+
+        // Наносим урон врагу
+        enemy.TakeDamage((int)damageToDeal, isCriticalHit);
         currentDamage -= currentDamage * bounceDamageReduction; // Уменьшаем урон
         bouncesLeft--; // Уменьшаем количество отскоков
     }

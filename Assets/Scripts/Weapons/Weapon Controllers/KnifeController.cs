@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class KnifeController : Weapon
 {
-    public GameObject knifePrefab; // Префаб кенжала
+    public GameObject knifePrefab; // Префаб кинжала
     public float attackInterval = 1.0f; // Интервал между атаками
-    public float speed = 10f; // Скорость кенжала
+    public float speed = 10f; // Скорость кинжала
     public float maxDistance = 5f; // Максимальное расстояние полета
 
     private new void Start()
     {
-        StartCoroutine(ShootKnives()); // Запускаем корутину для броска кенжалов
+        base.Start(); // Убедитесь, что вызывается базовый метод Start, если есть что-то важное в родительском классе
+        StartCoroutine(ShootKnives()); // Запускаем корутину для броска кинжалов
     }
 
     private IEnumerator ShootKnives()
@@ -33,8 +34,8 @@ public class KnifeController : Weapon
         {
             Vector3 directionToEnemy = (targetEnemy.transform.position - transform.position).normalized; // Получаем направление к врагу
             GameObject spawnedKnife = Instantiate(knifePrefab, transform.position, Quaternion.identity);
-            KnifeBehaviour knifeBehaviour = spawnedKnife.AddComponent<KnifeBehaviour>(); // Добавляем поведение кенжала
-            knifeBehaviour.Initialize(directionToEnemy, speed, (int)CalculateDamage(), transform, maxDistance); // Устанавливаем параметры
+            KnifeBehaviour knifeBehaviour = spawnedKnife.AddComponent<KnifeBehaviour>(); // Добавляем поведение кинжала
+            knifeBehaviour.Initialize(directionToEnemy, speed, (int)CalculateDamage(), transform, maxDistance, this); // Устанавливаем параметры
         }
     }
 
@@ -71,12 +72,13 @@ public class KnifeController : Weapon
 
 public class KnifeBehaviour : MonoBehaviour
 {
-    private Vector3 direction; // Направление движения кенжала
-    private float speed; // Скорость кенжала
-    private int damage; // Урон кенжала
+    private Vector3 direction; // Направление движения кинжала
+    private float speed; // Скорость кинжала
+    private int baseDamage; // Базовый урон кинжала
     private Transform player; // Ссылка на игрока
     private float maxDistance; // Максимальное расстояние полета
     private float distanceTraveled; // Пройденное расстояние
+    private Weapon weapon; // Ссылка на оружие
 
     // Словарь для отслеживания времени последней атаки по каждому врагу
     private static Dictionary<GameObject, float> lastAttackTimes = new Dictionary<GameObject, float>();
@@ -84,51 +86,67 @@ public class KnifeBehaviour : MonoBehaviour
 
     private void Start()
     {
-        Destroy(gameObject, 5f); // Уничтожаем кенжал через 5 секунд, если не вернулся
+        Destroy(gameObject, 5f); // Уничтожаем кинжал через 5 секунд, если не вернулся
     }
 
     private void Update()
     {
-        // Двигаем кенжал в заданном направлении
+        // Двигаем кинжал в заданном направлении
         transform.position += direction * speed * Time.deltaTime;
         distanceTraveled += speed * Time.deltaTime;
 
-        // Поворачиваем кенжал в сторону движения
-        if (direction != Vector3.zero) // Проверяем, не нулевая ли вектор
+        // Поворачиваем кинжал в сторону движения
+        if (direction != Vector3.zero)
         {
-            // Рассчитываем угол поворота
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle)); // Применяем поворот
+            transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
         }
 
         // Проверяем на столкновение с врагом
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 0.5f, LayerMask.GetMask("Mobs", "MobsFly")); // Находим всех врагов в радиусе 0.5f
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 0.5f, LayerMask.GetMask("Mobs", "MobsFly"));
 
         foreach (var enemy in enemies)
         {
-            // Проверяем, можем ли мы атаковать этого врага (прошла ли 1 секунда с последней атаки)
             if (CanAttackEnemy(enemy.gameObject))
             {
-                // Наносим урон врагу
-                enemy.GetComponent<Enemy>().TakeDamage(damage);
-                UpdateLastAttackTime(enemy.gameObject); // Обновляем время последней атаки по этому врагу
+                // Рассчитываем урон и проверяем, был ли он критическим
+                float damageDealt = CalculateDamage(); // Рассчитываем урон
+                bool isCriticalHit = damageDealt > weapon.damage; // Проверяем, был ли урон критическим
+                enemy.GetComponent<Enemy>().TakeDamage((int)damageDealt, isCriticalHit); // Наносим урон
+                UpdateLastAttackTime(enemy.gameObject); // Обновляем время последней атаки
             }
         }
 
-        // Проверяем, не превысило ли расстояние
         if (distanceTraveled >= maxDistance)
         {
-            Destroy(gameObject); // Уничтожаем кенжал, если достигли максимального расстояния
+            Destroy(gameObject);
         }
     }
 
-    public void Initialize(Vector3 newDirection, float knifeSpeed, int knifeDamage, Transform playerTransform, float maxDistance)
+
+    public void Initialize(Vector3 newDirection, float knifeSpeed, int knifeDamage, Transform playerTransform, float maxDistance, Weapon weapon)
     {
         direction = newDirection.normalized; // Нормализуем направление
         speed = knifeSpeed; // Устанавливаем скорость
-        damage = knifeDamage; // Устанавливаем урон
+        baseDamage = knifeDamage; // Устанавливаем базовый урон
         player = playerTransform; // Сохраняем ссылку на игрока
         this.maxDistance = maxDistance; // Устанавливаем максимальное расстояние
+        this.weapon = weapon; // Сохраняем ссылку на оружие
+    }
+
+    private float CalculateDamage()
+    {
+        // Генерируем случайное значение
+        float randomValue = Random.value;
+
+        // Проверка на критический удар
+        if (randomValue < weapon.criticalChance)
+        {
+            // Если критический удар, рассчитываем критический урон
+            float critDamage = baseDamage + baseDamage * (weapon.criticalDamage / 100f);
+            return critDamage; // Возвращаем критический урон
+        }
+        return baseDamage; // Возвращаем базовый урон
     }
 
     // Метод для проверки, можем ли мы атаковать врага (на основе времени последней атаки)
@@ -155,4 +173,3 @@ public class KnifeBehaviour : MonoBehaviour
         }
     }
 }
-

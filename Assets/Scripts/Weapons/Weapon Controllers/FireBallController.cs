@@ -11,8 +11,6 @@ public class FireBallController : Weapon
     {
         base.Start();
         ResetAttackTimer();
-
-
     }
 
     protected override void Update()
@@ -76,6 +74,7 @@ public class FireBall : MonoBehaviour
     private float speed; // Скорость
     private float lifetime; // Время жизни
     private Weapon weapon; // Ссылка на оружие
+    private float initialDamage;
 
     // Словарь для отслеживания времени последней атаки по врагу
     private static Dictionary<GameObject, float> lastAttackTimes = new Dictionary<GameObject, float>();
@@ -87,12 +86,16 @@ public class FireBall : MonoBehaviour
         lifetime = projectileLifetime;
         weapon = weaponInstance; // Сохраняем ссылку на оружие
 
+        // Устанавливаем значение урона
+        initialDamage = weapon.damage; // Предполагая, что CalculateDamage() возвращает базовый урон
+
         // Поворачиваем снаряд в сторону цели
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
 
         Destroy(gameObject, lifetime); // Уничтожаем снаряд через lifetime секунд
     }
+
 
     private void Update()
     {
@@ -107,13 +110,15 @@ public class FireBall : MonoBehaviour
             Enemy enemy = other.GetComponent<Enemy>();
             if (enemy != null && CanAttackEnemy(enemy.gameObject)) // Проверяем, можем ли атаковать врага
             {
-                float finalDamage = weapon.CalculateDamage(); // Рассчитываем урон
-                enemy.TakeDamage((int)finalDamage); // Наносим урон
-                Debug.Log("Урон огненного шара нанесён: " + finalDamage);
-                UpdateLastAttackTime(enemy.gameObject); // Обновляем время последней атаки
+                float damageToDeal = weapon.CalculateDamage(); // Получаем урон от оружия
+                bool isCriticalHit = damageToDeal > weapon.damage; // Проверяем, был ли критический удар
+
+                // Наносим урон врагу
+                enemy.TakeDamage((int)damageToDeal, isCriticalHit); // Учитываем критический удар
             }
         }
     }
+
 
     // Проверка, можно ли атаковать врага (учитывая время последней атаки)
     private bool CanAttackEnemy(GameObject enemy)
@@ -121,6 +126,10 @@ public class FireBall : MonoBehaviour
         if (lastAttackTimes.ContainsKey(enemy))
         {
             float timeSinceLastAttack = Time.time - lastAttackTimes[enemy];
+            if (timeSinceLastAttack < 1f) // Можно атаковать не чаще, чем раз в секунду
+            {
+                return false;
+            }
         }
         return true; // Если враг ещё не атакован, можем атаковать
     }

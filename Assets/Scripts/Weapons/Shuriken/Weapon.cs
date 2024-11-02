@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public abstract class Weapon : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public abstract class Weapon : MonoBehaviour
     public float projectileSpeed; // Скорость снарядов
 
     protected float attackTimer; // Внутренний таймер для контроля атаки
+    private Enemy target; // Поле для хранения цели атаки
 
     private bool isCritChanceBuffPurchased = false; // Флаг, указывающий был ли куплен бафф
     private bool isCritChanceBuffActive = false; // Флаг, указывающий активен ли бафф
@@ -55,15 +57,21 @@ public abstract class Weapon : MonoBehaviour
 
     protected virtual void PerformAttack()
     {
+        if (target == null) return; // Проверка на случай, если цель не задана
+
         float finalDamage = CalculateDamage();
-        bool isCriticalHit = finalDamage == criticalDamage;
+        bool isCriticalHit = finalDamage > damage; // Проверка, был ли урон критическим
 
         string damageMessage = isCriticalHit
             ? $"Критический удар! Урон: {finalDamage}"
             : $"Обычный урон: {finalDamage}";
 
         Debug.Log(damageMessage);
+
+        // Передаём урон и информацию о критическом ударе
+        target.TakeDamage((int)finalDamage, isCriticalHit);
     }
+
 
     public virtual void UseWeapon()
     {
@@ -114,13 +122,16 @@ public abstract class Weapon : MonoBehaviour
         float randomValue = Random.value;
 
         // Проверка на критический удар
-        if (randomValue < criticalChance)
+        bool isCriticalHit = randomValue < criticalChance;
+        if (isCriticalHit)
         {
+            // Если критический удар, рассчитываем критический урон
             float critDamage = damage + damage * (criticalDamage / 100f);
-            return critDamage;
+            return critDamage; // Возвращаем критический урон
         }
-        return damage;
+        return damage; // Возвращаем базовый урон
     }
+
 
 
     public void PurchaseCritChanceBuff()

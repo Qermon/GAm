@@ -12,13 +12,13 @@ public class Shuriken : Weapon
     protected override void Start()
     {
         base.Start();
+        CreateShurikens(); // Создаем сюрикены
+    }
 
-        if (shurikenPrefab == null)
-        {
-            return;
-        }
+    private void CreateShurikens()
+    {
+        if (shurikenPrefab == null) return;
 
-        // Создаем сюрикены
         shurikens = new GameObject[shurikenCount];
         for (int i = 0; i < shurikenCount; i++)
         {
@@ -76,17 +76,20 @@ public class ShurikenCollision : MonoBehaviour
 
     // Словарь для отслеживания времени последней атаки по каждому врагу
     private static Dictionary<GameObject, float> lastAttackTimes = new Dictionary<GameObject, float>();
-    private float attackCooldown = 1f; // Время между атаками по одному и тому же врагу (1 секунда)
+    private float attackCooldown = 0.25f; // Время между атаками по одному и тому же врагу
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy")) // Если попали во врага
         {
             Enemy enemy = other.GetComponent<Enemy>();
-            if (enemy != null && CanAttackEnemy(enemy.gameObject)) // Проверяем, можем ли атаковать
+            if (enemy != null && CanAttackEnemy(enemy.gameObject)) // Проверяем, можем ли атаковать врага
             {
-                float finalDamage = weapon.CalculateDamage(); // Рассчитываем финальный урон
-                enemy.TakeDamage((int)finalDamage); // Наносим урон врагу
+                float damageToDeal = weapon.CalculateDamage(); // Получаем урон от оружия
+                bool isCriticalHit = damageToDeal > weapon.damage; // Проверяем, был ли критический удар
+
+                // Наносим урон врагу
+                enemy.TakeDamage((int)damageToDeal, isCriticalHit); // Учитываем критический удар
                 UpdateLastAttackTime(enemy.gameObject); // Обновляем время последней атаки
             }
         }
@@ -106,13 +109,6 @@ public class ShurikenCollision : MonoBehaviour
     // Метод для обновления времени последней атаки
     private void UpdateLastAttackTime(GameObject enemy)
     {
-        if (lastAttackTimes.ContainsKey(enemy))
-        {
-            lastAttackTimes[enemy] = Time.time; // Обновляем время последней атаки
-        }
-        else
-        {
-            lastAttackTimes.Add(enemy, Time.time); // Добавляем запись о времени атаки, если врага еще нет в словаре
-        }
+        lastAttackTimes[enemy] = Time.time; // Обновляем время последней атаки
     }
 }

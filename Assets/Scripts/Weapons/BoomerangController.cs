@@ -28,10 +28,15 @@ public class BoomerangController : Weapon
         GameObject closestEnemy = FindClosestEnemy(); // Находим ближайшего врага
         if (closestEnemy != null) // Проверяем, есть ли враги
         {
-            Vector3 directionToEnemy = (closestEnemy.transform.position - transform.position).normalized; // Получаем направление к врагу
+            Vector3 directionToEnemy = (closestEnemy.transform.position - transform.position).normalized;
+
+            // Рассчитываем урон и критический удар
+            float finalDamage = CalculateDamage();
+            bool isCriticalHit = finalDamage > damage;
+
             GameObject spawnedBoomerang = Instantiate(boomerangPrefab, transform.position, Quaternion.identity);
             BoomerangBehaviour boomerangBehaviour = spawnedBoomerang.AddComponent<BoomerangBehaviour>(); // Добавляем поведение бумеранга
-            boomerangBehaviour.Initialize(directionToEnemy, speed, (int)CalculateDamage(), transform, returnSpeed, maxDistance); // Устанавливаем параметры
+            boomerangBehaviour.Initialize(directionToEnemy, speed, (int)finalDamage, isCriticalHit, transform, returnSpeed, maxDistance); // Передаем значения
         }
     }
 
@@ -63,6 +68,7 @@ public class BoomerangBehaviour : MonoBehaviour
     private float returnSpeed; // Скорость возвращения
     private float maxDistance; // Максимальное расстояние полета
     private bool returning; // Флаг возвращения
+    private bool isCriticalHit; // Флаг критического удара
 
     private Vector3 startPosition; // Начальная позиция бумеранга
     private float distanceTraveled; // Пройденное расстояние
@@ -113,21 +119,22 @@ public class BoomerangBehaviour : MonoBehaviour
         {
             if (CanAttackEnemy(enemy.gameObject)) // Проверяем, можно ли атаковать врага
             {
-                // Наносим урон врагу
-                enemy.GetComponent<Enemy>().TakeDamage(damage);
+                enemy.GetComponent<Enemy>().TakeDamage(damage, isCriticalHit);
+
                 UpdateLastAttackTime(enemy.gameObject); // Обновляем время последней атаки
             }
         }
     }
 
-    public void Initialize(Vector3 newDirection, float boomerangSpeed, int boomerangDamage, Transform playerTransform, float returnSpeed, float maxDistance)
+    public void Initialize(Vector3 newDirection, float boomerangSpeed, int boomerangDamage, bool criticalHit, Transform playerTransform, float returnSpeed, float maxDistance)
     {
-        direction = newDirection.normalized; // Нормализуем направление
-        speed = boomerangSpeed; // Устанавливаем скорость
-        damage = boomerangDamage; // Устанавливаем урон
-        player = playerTransform; // Сохраняем ссылку на игрока
-        this.returnSpeed = returnSpeed; // Устанавливаем скорость возвращения
-        this.maxDistance = maxDistance; // Устанавливаем максимальное расстояние
+        direction = newDirection.normalized;
+        speed = boomerangSpeed;
+        damage = boomerangDamage;
+        isCriticalHit = criticalHit; // Устанавливаем флаг критического удара
+        player = playerTransform;
+        this.returnSpeed = returnSpeed;
+        this.maxDistance = maxDistance;
     }
 
     // Метод для проверки, можем ли мы атаковать врага (на основе времени последней атаки)

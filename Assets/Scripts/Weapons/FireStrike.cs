@@ -54,14 +54,16 @@ public class FireProjectile : MonoBehaviour
     private float burnDecayFactor = 0.05f; // Уменьшение урона на 5% каждый тик
     private float projectileSpeed = 3.5f; // Скорость полета
     private List<Enemy> hitEnemies = new List<Enemy>(); // Список пораженных врагов
+    private bool isCriticalHit;
+    private Weapon weapon;
 
     public void Initialize(FireStrike weapon, float damage)
     {
+        this.weapon = weapon; // Сохраняем ссылку на оружие
         initialDamage = damage;
         FindNearestEnemyDirection();
         StartCoroutine(DestroyAfterLifetime(3f));
     }
-
 
 
     private void FindNearestEnemyDirection()
@@ -111,8 +113,13 @@ public class FireProjectile : MonoBehaviour
 
     private void ApplyDirectDamage(Enemy enemy)
     {
-        enemy.TakeDamage((int)initialDamage); // Наносим прямой урон
+        // Проверяем вероятность критического удара
+        bool isCriticalHit = Random.value < weapon.criticalChance; // Предполагая, что criticalChance хранится в процентах
+        float damageToDeal = isCriticalHit ? initialDamage * (1 + weapon.criticalDamage / 100f) : initialDamage; // Учитываем критический урон
+
+        enemy.TakeDamage((int)damageToDeal, isCriticalHit); // Наносим урон с учетом критического удара
     }
+
 
     private IEnumerator ApplyBurningEffect(Enemy enemy)
     {
@@ -125,7 +132,7 @@ public class FireProjectile : MonoBehaviour
         {
             if (enemy != null) // Проверяем на null перед нанесением урона
             {
-                enemy.TakeDamage((int)remainingBurnDamage);
+                enemy.TakeDamage((int)remainingBurnDamage, isCriticalHit); // Наносим урон от горения с учетом критического удара
                 remainingBurnDamage *= (1 - burnDecayFactor);
             }
             elapsedTime += burnTickInterval;

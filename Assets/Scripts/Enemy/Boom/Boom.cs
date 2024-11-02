@@ -9,11 +9,13 @@ public class Boom : Enemy
     public float explosionRadius = 2f;
 
     private Animator animator;
+    private Weapon weapon;
 
     protected override void Start()
     {
         base.Start();
         animator = GetComponent<Animator>();
+        weapon = GetComponent<Weapon>();
     }
 
     protected override void Update()
@@ -32,9 +34,15 @@ public class Boom : Enemy
         }
     }
 
-    public override void TakeDamage(int damage)
+    public override void TakeDamage(int damage, bool isCriticalHit) // Убедитесь, что параметр присутствует
     {
         if (isDead) return;
+
+        // Обработка критического удара
+        if (isCriticalHit)
+        {
+            damage = (int)(damage + damage / 100 * weapon.criticalDamage); // Увеличиваем урон, если это критический удар
+        }
 
         currentHealth -= damage;
         currentHealth = Mathf.Max(currentHealth, 0);
@@ -44,6 +52,7 @@ public class Boom : Enemy
             StartExplosionPreparation();
         }
     }
+
 
     private void StartExplosionPreparation()
     {

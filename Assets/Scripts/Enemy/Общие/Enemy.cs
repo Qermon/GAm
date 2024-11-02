@@ -32,7 +32,7 @@ public class Enemy : MonoBehaviour
 
     public GameObject damageTextPrefab;   // Префаб DamageText
     private Camera mainCamera;             // Ссылка на камеру
-
+    public Canvas canvas; // Поле должно быть типа Canvas, не GameObject и не Transform
 
     public static List<Enemy> allEnemies = new List<Enemy>();
     public GameObject bloodEffectPrefab; // Добавьте это поле
@@ -184,12 +184,13 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public virtual void TakeDamage(int damage)
+    public virtual void TakeDamage(int damage, bool isCriticalHit)
     {
         Debug.Log($"Taking damage: {damage}"); // Отладочное сообщение
         currentHealth -= damage;
         currentHealth = Mathf.Max(currentHealth, 0);
-       
+
+        ShowDamageText(damage, isCriticalHit);
 
         if (currentHealth <= 0 && !isDead)
         {
@@ -209,7 +210,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void ShowDamageText(int damage)
+    private void ShowDamageText(int damage, bool isCriticalHit)
     {
         if (damageTextPrefab == null)
         {
@@ -217,13 +218,20 @@ public class Enemy : MonoBehaviour
             return;
         }
 
-        // Создаем текст урона над врагом
-        GameObject damageTextInstance = Instantiate(damageTextPrefab, transform.position + Vector3.up, Quaternion.identity);
-        DamageTextController damageText = damageTextInstance.GetComponent<DamageTextController>();
+        if (canvas == null)
+        {
+            Debug.LogError("CanvasDamage не задан!");
+            return;
+        }
 
+        // Создаём текст урона как дочерний элемент CanvasDamage
+        GameObject damageTextInstance = Instantiate(damageTextPrefab, canvas.transform);
+        damageTextInstance.transform.position = transform.position;
+
+        DamageTextController damageText = damageTextInstance.GetComponent<DamageTextController>();
         if (damageText != null)
         {
-            damageText.SetDamage(damage);
+            damageText.SetDamage(damage, isCriticalHit);
         }
 
         // Поворачиваем текст в сторону камеры
@@ -232,7 +240,20 @@ public class Enemy : MonoBehaviour
     }
 
 
+    private void Awake()
+    {
+        // Если Canvas не задан, находим CanvasDamage по имени
+        if (canvas == null)
+        {
+            canvas = GameObject.Find("CanvasDamage")?.GetComponent<Canvas>();
+        }
 
+        // Проверяем, найден ли канвас
+        if (canvas == null)
+        {
+            Debug.LogError("CanvasDamage не найден на сцене!");
+        }
+    }
 
     protected virtual void Die()
     {
