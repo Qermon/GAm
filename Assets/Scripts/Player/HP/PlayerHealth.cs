@@ -7,8 +7,8 @@ using UnityEngine.UI;
 public class PlayerHealth : MonoBehaviour
 {
     public float maxHealth; // Максимальное здоровье
+    public float baseMaxHealth;
     public float currentHealth; // Текущее здоровье
-    public float baseMaxHp;
     public float regen = 0.01f; // Количество здоровья, восстанавливаемого каждую секунду
     public float baseRegen = 0.003f;
     private bool isRegenerating = false; // Флаг для отслеживания регенерации
@@ -42,7 +42,7 @@ public class PlayerHealth : MonoBehaviour
     private CircleCollider2D collectionRadius; // Ссылка на триггер-коллайдер для сбора предметов
     void Start()
     {
-        baseMaxHp = maxHealth;
+        baseMaxHealth = maxHealth;
         // Инициализация текущего здоровья
         currentHealth = maxHealth;
         shieldAmount = 0;
@@ -78,7 +78,7 @@ public class PlayerHealth : MonoBehaviour
     }
     public void IncreaseMaxHealth(float percentage)
     {
-        int increaseAmount = Mathf.FloorToInt(maxHealth * percentage); // Рассчитываем увеличение на основе процента от текущего maxHealth
+        float increaseAmount = baseMaxHealth * percentage; // Рассчитываем увеличение на основе процента от базового максхп
         maxHealth += increaseAmount; // Увеличиваем максимальное здоровье
         currentHealth += increaseAmount; // Увеличиваем текущее здоровье на то же количество, чтобы игрок не терял здоровье
         healthBar.SetMaxHealth((int)maxHealth); // Обновляем максимальное здоровье на UI
@@ -470,3 +470,4 @@ public class PlayerHealth : MonoBehaviour
 
 
 }
+
