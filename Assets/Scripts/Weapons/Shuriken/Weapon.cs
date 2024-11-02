@@ -6,7 +6,7 @@ public abstract class Weapon : MonoBehaviour
 {
     [Header("Weapon Stats")]
     public float damage = 10f; // Пример начального урона
-    public float baseDamage; 
+    public float baseDamage;
     public float criticalDamage = 20f; // Урон при критическом ударе
     public float criticalChance = 0.1f; // Шанс критического удара (10%)
     public float attackSpeed; // Скорость атаки
@@ -25,7 +25,7 @@ public abstract class Weapon : MonoBehaviour
     private bool isCritDamageBuffPurchased = false; // Флаг, указывающий был ли куплен бафф
     private bool isCritDamageBuffActive = false; // Флаг, указывающий активен ли бафф
     private float critDamageBuffCount = 0f; // Сколько процентов увеличивается критический урон
-    
+
 
     // Базовые значения для баффов
 

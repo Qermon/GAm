@@ -1,9 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Linq;
+using TMPro;
 
 public class Shop : MonoBehaviour
 {

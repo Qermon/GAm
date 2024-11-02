@@ -30,6 +30,10 @@ public class Enemy : MonoBehaviour
     public float baseEnemyMoveSpeed;
     public float baseDamage;
 
+    public GameObject damageTextPrefab;   // Префаб DamageText
+    private Camera mainCamera;             // Ссылка на камеру
+
+
     public static List<Enemy> allEnemies = new List<Enemy>();
     public GameObject bloodEffectPrefab; // Добавьте это поле
     private WaveManager waveManager;
@@ -41,7 +45,7 @@ public class Enemy : MonoBehaviour
 
     protected virtual void Start()
     {
-
+        mainCamera = Camera.main;
         enemyMoveSpeed = baseEnemyMoveSpeed; // Инициализация текущей скорости
         rb = GetComponent<Rigidbody2D>();
         originalMass = rb.mass;
@@ -182,8 +186,10 @@ public class Enemy : MonoBehaviour
 
     public virtual void TakeDamage(int damage)
     {
+        Debug.Log($"Taking damage: {damage}"); // Отладочное сообщение
         currentHealth -= damage;
         currentHealth = Mathf.Max(currentHealth, 0);
+       
 
         if (currentHealth <= 0 && !isDead)
         {
@@ -191,8 +197,7 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            // Спавн крови с шансом 20%
-            if (Random.Range(0f, 1f) <= 0.2f) // 20% шанс
+            if (Random.Range(0f, 1f) <= 0.2f)
             {
                 GameObject bloodEffectInstance = Instantiate(bloodEffectPrefab, transform.position, Quaternion.identity);
                 BloodEffect bloodEffect = bloodEffectInstance.GetComponent<BloodEffect>();
@@ -203,6 +208,29 @@ public class Enemy : MonoBehaviour
             }
         }
     }
+
+    private void ShowDamageText(int damage)
+    {
+        if (damageTextPrefab == null)
+        {
+            Debug.LogError("Damage Text Prefab is null!");
+            return;
+        }
+
+        // Создаем текст урона над врагом
+        GameObject damageTextInstance = Instantiate(damageTextPrefab, transform.position + Vector3.up, Quaternion.identity);
+        DamageTextController damageText = damageTextInstance.GetComponent<DamageTextController>();
+
+        if (damageText != null)
+        {
+            damageText.SetDamage(damage);
+        }
+
+        // Поворачиваем текст в сторону камеры
+        damageTextInstance.transform.LookAt(damageTextInstance.transform.position + Camera.main.transform.rotation * Vector3.forward,
+                                             Camera.main.transform.rotation * Vector3.up);
+    }
+
 
 
 

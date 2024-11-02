@@ -126,13 +126,13 @@ public class WaveManager : MonoBehaviour
         if (waveNumber <= 10 && waveNumber != 0)
         {
             UpdateEnemyStats();
-            
+
         }
 
         if (waveNumber <= 20 && waveNumber > 10)
         {
             UpdateEnemyStats();
-            UpdateEnemyStats();         
+            UpdateEnemyStats();
         }
 
         if (!spawningWave)
@@ -148,7 +148,7 @@ public class WaveManager : MonoBehaviour
             }
 
             StartCoroutine(SpawnWave());
-            
+
         }
     }
 
@@ -396,7 +396,7 @@ public class WaveManager : MonoBehaviour
             Enemy enemy = prefab.GetComponent<Enemy>();
             if (enemy != null)
             {
-               enemy.RefreshStats();
+                enemy.RefreshStats();
             }
         }
 
@@ -502,60 +502,60 @@ public class WaveManager : MonoBehaviour
         // Волна 2
         waveConfigs.Add(2, new WaveConfig(30f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(60 + 22 * 1.5f)), 
+        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(60 + 22 * 1.5f)),
 
     }));
 
         // Волна 3
         waveConfigs.Add(3, new WaveConfig(35f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(120 + 23 * 1.5f)), 
-        new EnemySpawn(batPrefabs[0], 15), 
-        new EnemySpawn(samuraiPrefabs[0], 1) 
+        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(120 + 23 * 1.5f)),
+        new EnemySpawn(batPrefabs[0], 15),
+        new EnemySpawn(samuraiPrefabs[0], 1)
     }));
 
         // Волна 4
         waveConfigs.Add(4, new WaveConfig(40f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(140 + 24 * 1.5f)), 
-        new EnemySpawn(batPrefabs[0], 20), 
-        new EnemySpawn(wizardPrefabs[0], 2), 
-        new EnemySpawn(samuraiPrefabs[0], 2) 
+        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(140 + 24 * 1.5f)),
+        new EnemySpawn(batPrefabs[0], 20),
+        new EnemySpawn(wizardPrefabs[0], 2),
+        new EnemySpawn(samuraiPrefabs[0], 2)
     }));
 
         // Волна 5
         waveConfigs.Add(5, new WaveConfig(45f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(150 + 5 * 21.5f)) 
+        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(150 + 5 * 21.5f))
     }));
 
         // Волна 6
         waveConfigs.Add(6, new WaveConfig(50f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(260 + 26 * 1.5f)), 
-        new EnemySpawn(deathPrefabs[0], 10), 
-        new EnemySpawn(wizardPrefabs[0], 3), 
-        new EnemySpawn(samuraiPrefabs[0], 7) 
+        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(260 + 26 * 1.5f)),
+        new EnemySpawn(deathPrefabs[0], 10),
+        new EnemySpawn(wizardPrefabs[0], 3),
+        new EnemySpawn(samuraiPrefabs[0], 7)
     }));
 
         // Волна 7
         waveConfigs.Add(7, new WaveConfig(55f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(270 + 27 * 1.5f)), 
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(wizardPrefabs[0], 5), 
-        new EnemySpawn(boomPrefabs[0], 5), 
-        new EnemySpawn(samuraiPrefabs[0], 8) 
+        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(270 + 27 * 1.5f)),
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(wizardPrefabs[0], 5),
+        new EnemySpawn(boomPrefabs[0], 5),
+        new EnemySpawn(samuraiPrefabs[0], 8)
     }));
 
         // Волна 8
         waveConfigs.Add(8, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 28 * 1.5f)), 
-        new EnemySpawn(samuraiPrefabs[0], 10), 
-        new EnemySpawn(boomPrefabs[0], 5), 
-        new EnemySpawn(healerPrefabs[0], 2), 
-        new EnemySpawn(deathPrefabs[0], 15), 
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 28 * 1.5f)),
+        new EnemySpawn(samuraiPrefabs[0], 10),
+        new EnemySpawn(boomPrefabs[0], 5),
+        new EnemySpawn(healerPrefabs[0], 2),
+        new EnemySpawn(deathPrefabs[0], 15),
         new EnemySpawn(wizardPrefabs[0], 5),
         new EnemySpawn(archerPrefabs[0], 5)
     }));
@@ -563,73 +563,73 @@ public class WaveManager : MonoBehaviour
         // Волна 9
         waveConfigs.Add(9, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)), 
-        new EnemySpawn(samuraiPrefabs[0], 15), 
-        new EnemySpawn(boomPrefabs[0], 6), 
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(samuraiPrefabs[0], 15),
+        new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
-        new EnemySpawn(wizardPrefabs[0], 5), 
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(wizardPrefabs[0], 5),
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 10
         waveConfigs.Add(10, new WaveConfig(60f, new List<EnemySpawn>
     {
-         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)), 
-        new EnemySpawn(samuraiPrefabs[0], 15), 
-        new EnemySpawn(boomPrefabs[0], 6), 
+         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(samuraiPrefabs[0], 15),
+        new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
         new EnemySpawn(wizardPrefabs[0], 5),
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 11
         waveConfigs.Add(11, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)), 
-        new EnemySpawn(samuraiPrefabs[0], 15), 
-        new EnemySpawn(boomPrefabs[0], 6), 
-        new EnemySpawn(deathPrefabs[0], 15), 
-        new EnemySpawn(wizardPrefabs[0], 5), 
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(samuraiPrefabs[0], 15),
+        new EnemySpawn(boomPrefabs[0], 6),
+        new EnemySpawn(deathPrefabs[0], 15),
+        new EnemySpawn(wizardPrefabs[0], 5),
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 12
         waveConfigs.Add(12, new WaveConfig(60f, new List<EnemySpawn>
-    { 
+    {
             new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
-        new EnemySpawn(samuraiPrefabs[0], 15), 
-        new EnemySpawn(boomPrefabs[0], 6), 
-        new EnemySpawn(deathPrefabs[0], 15), 
-        new EnemySpawn(wizardPrefabs[0], 5), 
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(samuraiPrefabs[0], 15),
+        new EnemySpawn(boomPrefabs[0], 6),
+        new EnemySpawn(deathPrefabs[0], 15),
+        new EnemySpawn(wizardPrefabs[0], 5),
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 13
         waveConfigs.Add(13, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)), 
-        new EnemySpawn(samuraiPrefabs[0], 15), 
-        new EnemySpawn(boomPrefabs[0], 6), 
-        new EnemySpawn(deathPrefabs[0], 15), 
-        new EnemySpawn(wizardPrefabs[0], 5), 
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(samuraiPrefabs[0], 15),
+        new EnemySpawn(boomPrefabs[0], 6),
+        new EnemySpawn(deathPrefabs[0], 15),
+        new EnemySpawn(wizardPrefabs[0], 5),
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 14
         waveConfigs.Add(14, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)), 
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
-        new EnemySpawn(boomPrefabs[0], 6), 
+        new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
-        new EnemySpawn(wizardPrefabs[0], 5), 
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(wizardPrefabs[0], 5),
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 15
@@ -637,191 +637,191 @@ public class WaveManager : MonoBehaviour
     {
         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
-        new EnemySpawn(boomPrefabs[0], 6), 
-        new EnemySpawn(deathPrefabs[0], 15), 
-        new EnemySpawn(wizardPrefabs[0], 5), 
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(boomPrefabs[0], 6),
+        new EnemySpawn(deathPrefabs[0], 15),
+        new EnemySpawn(wizardPrefabs[0], 5),
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 16
         waveConfigs.Add(16, new WaveConfig(60f, new List<EnemySpawn>
     {
-         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)), 
-        new EnemySpawn(samuraiPrefabs[0], 15), 
-        new EnemySpawn(boomPrefabs[0], 6), 
-        new EnemySpawn(deathPrefabs[0], 15), 
-        new EnemySpawn(wizardPrefabs[0], 5), 
-        new EnemySpawn(archerPrefabs[0], 2), 
+         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(samuraiPrefabs[0], 15),
+        new EnemySpawn(boomPrefabs[0], 6),
+        new EnemySpawn(deathPrefabs[0], 15),
+        new EnemySpawn(wizardPrefabs[0], 5),
+        new EnemySpawn(archerPrefabs[0], 2),
         new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 17
         waveConfigs.Add(17, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)), 
-        new EnemySpawn(samuraiPrefabs[0], 15), 
-        new EnemySpawn(boomPrefabs[0], 6), 
-        new EnemySpawn(deathPrefabs[0], 15), 
-        new EnemySpawn(wizardPrefabs[0], 5), 
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(samuraiPrefabs[0], 15),
+        new EnemySpawn(boomPrefabs[0], 6),
+        new EnemySpawn(deathPrefabs[0], 15),
+        new EnemySpawn(wizardPrefabs[0], 5),
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 18
         waveConfigs.Add(18, new WaveConfig(60f, new List<EnemySpawn>
     {
-         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)), 
-        new EnemySpawn(samuraiPrefabs[0], 15), 
+         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
-        new EnemySpawn(wizardPrefabs[0], 5), 
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(wizardPrefabs[0], 5),
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 19
         waveConfigs.Add(19, new WaveConfig(60f, new List<EnemySpawn>
     {
-         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)), 
-        new EnemySpawn(samuraiPrefabs[0], 15), 
+         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6), // 
-        new EnemySpawn(deathPrefabs[0], 15), 
-        new EnemySpawn(wizardPrefabs[0], 5), 
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(deathPrefabs[0], 15),
+        new EnemySpawn(wizardPrefabs[0], 5),
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 20
         waveConfigs.Add(20, new WaveConfig(60f, new List<EnemySpawn>
     {
         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
-        new EnemySpawn(samuraiPrefabs[0], 15), 
-        new EnemySpawn(boomPrefabs[0], 6), 
-        new EnemySpawn(deathPrefabs[0], 15), 
-        new EnemySpawn(wizardPrefabs[0], 5), 
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(samuraiPrefabs[0], 15),
+        new EnemySpawn(boomPrefabs[0], 6),
+        new EnemySpawn(deathPrefabs[0], 15),
+        new EnemySpawn(wizardPrefabs[0], 5),
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 21
         waveConfigs.Add(21, new WaveConfig(60f, new List<EnemySpawn>
     {
-         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)), 
+         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
-        new EnemySpawn(boomPrefabs[0], 6), 
-        new EnemySpawn(deathPrefabs[0], 15), 
-        new EnemySpawn(wizardPrefabs[0], 5), 
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(boomPrefabs[0], 6),
+        new EnemySpawn(deathPrefabs[0], 15),
+        new EnemySpawn(wizardPrefabs[0], 5),
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 22
         waveConfigs.Add(22, new WaveConfig(60f, new List<EnemySpawn>
     {
-         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)), 
-        new EnemySpawn(samuraiPrefabs[0], 15), 
-        new EnemySpawn(boomPrefabs[0], 6), 
-        new EnemySpawn(deathPrefabs[0], 15), 
+         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(samuraiPrefabs[0], 15),
+        new EnemySpawn(boomPrefabs[0], 6),
+        new EnemySpawn(deathPrefabs[0], 15),
         new EnemySpawn(wizardPrefabs[0], 5),
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 23
         waveConfigs.Add(23, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)), 
-        new EnemySpawn(samuraiPrefabs[0], 15), 
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
-        new EnemySpawn(deathPrefabs[0], 15), 
+        new EnemySpawn(deathPrefabs[0], 15),
         new EnemySpawn(wizardPrefabs[0], 5),
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 24
         waveConfigs.Add(24, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)), 
-        new EnemySpawn(samuraiPrefabs[0], 15), 
-        new EnemySpawn(boomPrefabs[0], 6), 
-        new EnemySpawn(deathPrefabs[0], 15), 
-        new EnemySpawn(wizardPrefabs[0], 5), 
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(samuraiPrefabs[0], 15),
+        new EnemySpawn(boomPrefabs[0], 6),
+        new EnemySpawn(deathPrefabs[0], 15),
+        new EnemySpawn(wizardPrefabs[0], 5),
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 25
         waveConfigs.Add(25, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)), 
-        new EnemySpawn(samuraiPrefabs[0], 15), 
-        new EnemySpawn(boomPrefabs[0], 6), 
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(samuraiPrefabs[0], 15),
+        new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
-        new EnemySpawn(wizardPrefabs[0], 5), 
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(wizardPrefabs[0], 5),
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 26
         waveConfigs.Add(26, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)), 
-        new EnemySpawn(samuraiPrefabs[0], 15), 
-        new EnemySpawn(boomPrefabs[0], 6), 
-        new EnemySpawn(deathPrefabs[0], 15), 
-        new EnemySpawn(wizardPrefabs[0], 5), 
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(samuraiPrefabs[0], 15),
+        new EnemySpawn(boomPrefabs[0], 6),
+        new EnemySpawn(deathPrefabs[0], 15),
+        new EnemySpawn(wizardPrefabs[0], 5),
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 27
         waveConfigs.Add(27, new WaveConfig(60f, new List<EnemySpawn>
     {
         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
-        new EnemySpawn(samuraiPrefabs[0], 15), 
-        new EnemySpawn(boomPrefabs[0], 6), 
-        new EnemySpawn(deathPrefabs[0], 15), 
+        new EnemySpawn(samuraiPrefabs[0], 15),
+        new EnemySpawn(boomPrefabs[0], 6),
+        new EnemySpawn(deathPrefabs[0], 15),
         new EnemySpawn(wizardPrefabs[0], 5),
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 28
         waveConfigs.Add(28, new WaveConfig(60f, new List<EnemySpawn>
     {
-         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)), 
-        new EnemySpawn(samuraiPrefabs[0], 15), 
-        new EnemySpawn(boomPrefabs[0], 6), 
-        new EnemySpawn(deathPrefabs[0], 15), 
-        new EnemySpawn(wizardPrefabs[0], 5), 
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(samuraiPrefabs[0], 15),
+        new EnemySpawn(boomPrefabs[0], 6),
+        new EnemySpawn(deathPrefabs[0], 15),
+        new EnemySpawn(wizardPrefabs[0], 5),
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 29
         waveConfigs.Add(29, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)), 
-        new EnemySpawn(samuraiPrefabs[0], 15), 
-        new EnemySpawn(boomPrefabs[0], 6), 
-        new EnemySpawn(deathPrefabs[0], 15), 
-        new EnemySpawn(wizardPrefabs[0], 5), 
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(samuraiPrefabs[0], 15),
+        new EnemySpawn(boomPrefabs[0], 6),
+        new EnemySpawn(deathPrefabs[0], 15),
+        new EnemySpawn(wizardPrefabs[0], 5),
         new EnemySpawn(archerPrefabs[0], 2),
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
 
         // Волна 30
         waveConfigs.Add(30, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)), 
-        new EnemySpawn(samuraiPrefabs[0], 15), 
-        new EnemySpawn(boomPrefabs[0], 6), 
-        new EnemySpawn(deathPrefabs[0], 15), 
-        new EnemySpawn(wizardPrefabs[0], 5), 
-        new EnemySpawn(archerPrefabs[0], 2), 
-        new EnemySpawn(buffMobPrefabs[0], 2) 
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(samuraiPrefabs[0], 15),
+        new EnemySpawn(boomPrefabs[0], 6),
+        new EnemySpawn(deathPrefabs[0], 15),
+        new EnemySpawn(wizardPrefabs[0], 5),
+        new EnemySpawn(archerPrefabs[0], 2),
+        new EnemySpawn(buffMobPrefabs[0], 2)
     }));
     }
 

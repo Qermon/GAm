@@ -41,7 +41,7 @@ public class WeaponOption
 
     public Sprite skillImage; // Картинка скила для каждого оружия
 }
-    
+
 public class WeaponSelectionManager : MonoBehaviour
 {
     public GameObject weaponSelectionPanel;
@@ -196,13 +196,13 @@ public class WeaponSelectionManager : MonoBehaviour
 
             StartCoroutine(WaitForHalfSecond());
         }
-       
+
     }
 
     private IEnumerator WaitForHalfSecond()
     {
         // Ждем 0.5 секунды
-     
+
 
         // Код, который будет выполнен после задержки
         videoImage.gameObject.SetActive(true);
