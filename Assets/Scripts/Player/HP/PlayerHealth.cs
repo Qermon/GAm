@@ -7,8 +7,8 @@ using UnityEngine.UI;
 public class PlayerHealth : MonoBehaviour
 {
     public float maxHealth; // Максимальное здоровье
+    public float baseMaxHealth;
     public float currentHealth; // Текущее здоровье
-    public float baseMaxHp;
     public float regen = 0.01f; // Количество здоровья, восстанавливаемого каждую секунду
     public float baseRegen = 0.003f;
     private bool isRegenerating = false; // Флаг для отслеживания регенерации
@@ -25,7 +25,7 @@ public class PlayerHealth : MonoBehaviour
     public float pickupRadius; // Радиус сбора предметов
     public int luck = 0; // Уровень удачи
 
-    public int shieldAmount = 0; 
+    public int shieldAmount = 0;
     private float shieldPercent; // Процент от максимального здоровья для щита
     private int shieldBuffCount = 0; // Для хранения количества активированных баффов
     public float maxShieldAmount = 0; // Для отслеживания предыдущего значения щита
@@ -42,7 +42,7 @@ public class PlayerHealth : MonoBehaviour
     private CircleCollider2D collectionRadius; // Ссылка на триггер-коллайдер для сбора предметов
     void Start()
     {
-        baseMaxHp = maxHealth;
+        baseMaxHealth = maxHealth;
         // Инициализация текущего здоровья
         currentHealth = maxHealth;
         shieldAmount = 0;
@@ -78,7 +78,7 @@ public class PlayerHealth : MonoBehaviour
     }
     public void IncreaseMaxHealth(float percentage)
     {
-        int increaseAmount = Mathf.FloorToInt(maxHealth * percentage); // Рассчитываем увеличение на основе процента от текущего maxHealth
+        float increaseAmount = baseMaxHealth * percentage; // Рассчитываем увеличение на основе процента от базового максхп
         maxHealth += increaseAmount; // Увеличиваем максимальное здоровье
         currentHealth += increaseAmount; // Увеличиваем текущее здоровье на то же количество, чтобы игрок не терял здоровье
         healthBar.SetMaxHealth((int)maxHealth); // Обновляем максимальное здоровье на UI
@@ -103,7 +103,7 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log($"Инвестиции увеличены на {amount}. Текущие инвестиции: {investment}");
     }
 
-   
+
 
     // Метод для увеличения удачи
     public void IncreaseLuck(int amount)
@@ -169,7 +169,7 @@ public class PlayerHealth : MonoBehaviour
     }
 
 
-   
+
     // Метод для активации щита в начале каждой волны
     public void ActivateShield()
     {
@@ -189,13 +189,13 @@ public class PlayerHealth : MonoBehaviour
     // Метод для активации барьера
     public void ActivateBarrier()
     {
-     
+
         UpdateBarrierUI();
         Debug.Log($"Барьера активировано: {shieldAmount}");
     }
 
     // Метод для обновления полоски барьера
-    
+
     public void UpdateBarrierUI()
     {
         if (barrierImage != null)
@@ -209,14 +209,14 @@ public class PlayerHealth : MonoBehaviour
             else if (shieldAmount <= 0)
             {
                 barrierImage.fillAmount = 0f; // Если щита нет, полоска не отображается
-                
+
             }
             else
             {
-                barrierImage.fillAmount = (float)shieldAmount / maxShieldAmount; 
+                barrierImage.fillAmount = (float)shieldAmount / maxShieldAmount;
             }
 
-            
+
         }
         else
         {
@@ -284,19 +284,19 @@ public class PlayerHealth : MonoBehaviour
     {
         shieldAmount += additionalShield;
 
-      
+
         UpdateBarrierUI();
         Debug.Log($"Барьера добавлено: +{additionalShield}, общий барьер: {shieldAmount}");
     }
 
     private void CheckHealth()
     {
-        
+
         // Проверяем, если текущее здоровье меньше или равно 29% от максимального
         if (currentHealth <= maxHealth * 0.29f)
         {
             shieldBuffCount = 0; // Обнуляем количество баффов
-            Debug.Log("Shield buff count обнулен, текущее здоровье: " + maxHealth/currentHealth);
+            Debug.Log("Shield buff count обнулен, текущее здоровье: " + maxHealth / currentHealth);
         }
     }
 
@@ -309,7 +309,7 @@ public class PlayerHealth : MonoBehaviour
     {
         shieldAmount -= amount;
         shieldAmount = Mathf.Max(shieldAmount, 0); // Убедитесь, что shieldAmount не меньше 0
-        
+
     }
     private IEnumerator Die()
     {
@@ -377,7 +377,7 @@ public class PlayerHealth : MonoBehaviour
         if (healthBar != null)
         {
             healthBar.SetHealth(currentHealth);
-           
+
         }
     }
 

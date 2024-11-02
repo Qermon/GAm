@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using TMPro;
+using System.Linq;
 
 public class Shop : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class Shop : MonoBehaviour
     public TextMeshProUGUI[] buffCostTexts; // Тексты для отображения стоимости баффов
     public TextMeshProUGUI[] buffDescriptionTexts; // Поля для вывода описания для каждого баффа
     private List<Upgrade> upgrades = new List<Upgrade>(); // Список доступных баффов
-    
+
     public Button refreshButton; // Кнопка обновления
     private int currentRefreshCost = 7; // Начальная стоимость обновления
     public TextMeshProUGUI refreshCostText;  // Текстовый объект для отображения стоимости обновления
@@ -30,7 +31,7 @@ public class Shop : MonoBehaviour
     private List<Weapon> playerWeapons; // Список оружий
     private Weapon weapon;
     private CursorManager cursorManager;
-    
+
 
     public UpgradeOption[] upgradeOptions; // Массив доступных баффов
     private HashSet<UpgradeType> existingBuffs = new HashSet<UpgradeType>(); // HashSet для отслеживания существующих баффов
@@ -220,29 +221,36 @@ public class Shop : MonoBehaviour
     private void UpdatePlayerStats()
     {
         float moveSpeed = playerMovement.moveSpeed * 200;
-        float averageDamage = 0f; // Объявляем переменную вне блока if
-        float averageCritDamage = 0f; // Для среднего критического урона
-        float averageCritChance = 0f; // Для среднего критического шанса
+        float averageDamage = 0f;
+        float averageCritDamage = 0f;
+        float averageCritChance = 0f;
 
         if (playerHealth != null && playerStatsText != null && playerMovement != null)
         {
             if (playerWeapons != null && playerWeapons.Count > 0)
             {
-                // Суммируем урон всех оружий
                 float totalDamage = 0f;
-                float totalCritDamage = 0f; // Для суммирования критического урона
-                float totalCritChance = 0f; // Суммируем критический шанс
+                float totalCritDamage = 0f;
+                float totalCritChance = 0f;
+                int activeWeaponsCount = 0;
 
                 foreach (var weapon in playerWeapons)
                 {
-                    totalDamage += weapon.damage; // Предполагается, что у вас есть свойство damage в классе Weapon
-                    totalCritDamage += weapon.criticalDamage; // Суммируем критический урон
-                    totalCritChance += weapon.criticalChance; // Суммируем критический шанс
+                    if (weapon != null && weapon.IsActive()) // Проверяем, активен ли скрипт
+                    {
+                        totalDamage += weapon.damage;
+                        totalCritDamage += weapon.criticalDamage;
+                        totalCritChance += weapon.criticalChance;
+                        activeWeaponsCount++;
+                    }
                 }
 
-                averageDamage = totalDamage / playerWeapons.Count; // Средний урон
-                averageCritDamage = totalCritDamage / playerWeapons.Count; // Средний критический урон
-                averageCritChance = totalCritChance / playerWeapons.Count; // Средний критический шанс
+                if (activeWeaponsCount > 0)
+                {
+                    averageDamage = totalDamage / activeWeaponsCount;
+                    averageCritDamage = totalCritDamage / activeWeaponsCount;
+                    averageCritChance = totalCritChance / activeWeaponsCount;
+                }
             }
 
             UpdateTotalAttackSpeedBonus();
@@ -253,13 +261,13 @@ public class Shop : MonoBehaviour
             UpdateRefreshButton();
 
             playerStatsText.text = $"Здоровье: {FormatStatTextMaxHp((int)playerHealth.maxHealth)}\n" +
-                                   $"Урон: {FormatStatTextDamage((int)averageDamage)}\n" + // Отображаем средний урон
-                                   $"Крит. урон: {FormatStatText((int)averageCritDamage)}%\n" + // Критический урон
-                                   $"Крит. шанс: {FormatStatText((int)(averageCritChance * 100))}%\n" + // Критический шанс
-                                   $"Скорость атаки: {FormatStatText((int)totalAttackSpeedBonus)}%\n" + // Бонус скорости атаки
-                                   $"Дальность атаки: {FormatStatText((int)totalAttackRangeBonus)}%\n" + // Бонус дальности атаки
-                                   $"Регенерация: {FormatStatText((int)totalRegenBonus)}%\n" + // Регенерация
-                                   $"Вампиризм: {FormatStatText((int)totalLifestealBonus)}%\n" + // Вампиризм
+                                   $"Урон: {FormatStatTextDamage((int)averageDamage)}\n" +
+                                   $"Крит. урон: {FormatStatText((int)averageCritDamage)}%\n" +
+                                   $"Крит. шанс: {FormatStatText((int)(averageCritChance * 100))}%\n" +
+                                   $"Скорость атаки: {FormatStatText((int)totalAttackSpeedBonus)}%\n" +
+                                   $"Дальность атаки: {FormatStatText((int)totalAttackRangeBonus)}%\n" +
+                                   $"Регенерация: {FormatStatText((int)totalRegenBonus)}%\n" +
+                                   $"Вампиризм: {FormatStatText((int)totalLifestealBonus)}%\n" +
                                    $"Защита: {FormatStatText(playerHealth.defense)}\n" +
                                    $"Скорость бега: {FormatStatTextMoveSpeed((int)moveSpeed)}\n" +
                                    $"Радиус сбора: {FormatStatText((int)totalPickupRadiusBonus)}%\n" +
@@ -267,6 +275,8 @@ public class Shop : MonoBehaviour
                                    $"Удача: {FormatStatText((int)playerHealth.luck)}\n";
         }
     }
+
+
 
     private string FormatStatText(int value)
     {
@@ -293,11 +303,11 @@ public class Shop : MonoBehaviour
     {
         string color;
 
-        if (value > playerHealth.baseMaxHp)
+        if (value > playerHealth.baseMaxHealth)
         {
             color = "green"; // Зелёный для положительных значений
         }
-        else if (value < playerHealth.baseMaxHp)
+        else if (value < playerHealth.baseMaxHealth)
         {
             color = "red"; // Красный для отрицательных значений
         }
@@ -310,8 +320,8 @@ public class Shop : MonoBehaviour
         return $"<color={color}>{value}</color>";
     }
 
-    
-    
+
+
     private string FormatStatTextMoveSpeed(int value)
     {
         string color;
@@ -335,23 +345,50 @@ public class Shop : MonoBehaviour
 
     private string FormatStatTextDamage(int value)
     {
+        float averageDamage = 0f;
+
+        if (playerHealth != null && playerStatsText != null && playerMovement != null)
+        {
+            if (playerWeapons != null && playerWeapons.Count > 0)
+            {
+                float totalDamage = 0f;
+                int activeWeaponsCount = 0;
+
+                foreach (var weapon in playerWeapons)
+                {
+                    if (weapon != null && weapon.IsActive()) // Проверяем, активен ли скрипт
+                    {
+                        totalDamage += weapon.baseDamage;
+                        activeWeaponsCount++;
+                    }
+                }
+
+                if (activeWeaponsCount > 0)
+                {
+                    averageDamage = totalDamage / activeWeaponsCount;
+                }
+            }
+        }
+
         string color;
 
-        if (value > 27)
+        if (value > averageDamage)
         {
             color = "green"; // Зелёный для положительных значений
         }
-        else if (value < 27)
+        else if (value < averageDamage)
         {
             color = "red"; // Красный для отрицательных значений
         }
         else
         {
-            color = "white"; // Белый для 27
+            color = "white";
         }
 
         // Возвращаем строку с цветом
+        Debug.Log((averageDamage));
         return $"<color={color}>{value}</color>";
+
     }
 
 
@@ -607,15 +644,15 @@ public class Shop : MonoBehaviour
                 break;
 
             case UpgradeType.AttackSpeedHp:
-                description = "Здоровье -15%\nСкорость атаки +20%";
+                description = "Скорость атаки +20%\nЗдоровье -15%";
                 break;
 
             case UpgradeType.DamageMove:
-                description = "Урон +20%\nСкорость бега -5%";
+                description = "Урон +20%\nСкорость бега\n-5%";
                 break;
 
             case UpgradeType.DamageRegen:
-                description = "Урон +15%\nРегенерация  -10%";
+                description = "Урон +15%\nРегенерация\n-10%";
                 break;
 
             case UpgradeType.CritChanceDamage:
@@ -627,7 +664,7 @@ public class Shop : MonoBehaviour
                 break;
 
             case UpgradeType.AttackRangeMoveSpeed:
-                description = "Дальность атаки +15%\nСкорость бега -3%";
+                description = "Дальность атаки +15%\nСкорость бега\n-3%";
                 break;
 
             case UpgradeType.RegenLuck:
@@ -655,7 +692,7 @@ public class Shop : MonoBehaviour
                 break;
 
             case UpgradeType.LuckRegen:
-                description = "Удача +40\nРегенерация -15%";
+                description = "Удача +40\nРегенерация\n-15%";
                 break;
 
             case UpgradeType.PickupRadiusAttackSpeed:
@@ -671,7 +708,7 @@ public class Shop : MonoBehaviour
                 break;
 
             case UpgradeType.MaxHpCritChanceMove:
-                description = "Здоровье +10%\nШанс крита +5%\nСкорость передвижения  -5%";
+                description = "Здоровье +10%\nШанс крита +5%\nСкорость передвижения\n-5%";
                 break;
 
             case UpgradeType.AttackSpeedLuck:
@@ -679,7 +716,7 @@ public class Shop : MonoBehaviour
                 break;
 
             case UpgradeType.LifestealPickupRadius:
-                description = "Вампиризм +15%\nРадиус подбора -15%";
+                description = "Вампиризм +15%\nРадиус подбора\n-15%";
                 break;
 
             case UpgradeType.CritDamageDamageArmor:
@@ -687,7 +724,7 @@ public class Shop : MonoBehaviour
                 break;
 
             case UpgradeType.AttackSpeedCritChancePickup:
-                description = "Скорость атаки +15%\nШанс крита +3%\nРадиус подбора  -10%";
+                description = "Скорость атаки +15%\nШанс крита +3%\nРадиус подбора\n-10%";
                 break;
 
             case UpgradeType.DamageMaxHpArmor:
@@ -822,7 +859,7 @@ public class Shop : MonoBehaviour
             case UpgradeType.AttackSpeedDamageCritMove:
                 float attackSpeedIncrease1 = 0.15f;
                 float damageIncrease1 = 0.05f;
-                float critDamageIncrease1 =5f;
+                float critDamageIncrease1 = 5f;
                 float moveSpeedIncrease1 = -0.10f;
 
                 foreach (var weapon in playerWeapons)
@@ -850,11 +887,11 @@ public class Shop : MonoBehaviour
                 float maxHealthIncrease3 = 0.3f;
                 int armorIncrease3 = 20;
                 float moveSpeedIncrease3 = -0.10f;
-         
+
                 playerHealth.IncreaseMaxHealth(maxHealthIncrease3);
                 playerHealth.IncreaseArmor(armorIncrease3);
                 playerMovement.IncreaseMoveSpeed(moveSpeedIncrease3);
-                
+
                 break;
 
             case UpgradeType.AttackSpeedHp:
@@ -1100,7 +1137,7 @@ public class Shop : MonoBehaviour
                 break;
 
             case UpgradeType.Damage:
-                float damageIncrease9 =0.15f;
+                float damageIncrease9 = 0.15f;
                 foreach (var weapon in playerWeapons) // Применяем к каждому оружию
                 {
                     weapon.IncreaseDamage(damageIncrease9);
@@ -1116,7 +1153,7 @@ public class Shop : MonoBehaviour
                 break;
 
             case UpgradeType.AttackSpeed:
-                float attackSpeedIncrease9 =0.20f;
+                float attackSpeedIncrease9 = 0.20f;
                 foreach (var weapon in playerWeapons)
                 {
                     weapon.IncreaseAttackSpeed(attackSpeedIncrease9);
@@ -1176,7 +1213,7 @@ public class Shop : MonoBehaviour
 
             case UpgradeType.Luck:
                 float luckIncrease9 = 20;
-                playerHealth.IncreaseLuck((int)luckIncrease9);;
+                playerHealth.IncreaseLuck((int)luckIncrease9); ;
                 break;
         }
     }
