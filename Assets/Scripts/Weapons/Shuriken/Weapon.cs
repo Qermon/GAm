@@ -6,7 +6,6 @@ public abstract class Weapon : MonoBehaviour
 {
     [Header("Weapon Stats")]
     public float damage = 10f; // Пример начального урона
-    public float baseDamage; 
     public float criticalDamage = 20f; // Урон при критическом ударе
     public float criticalChance = 0.1f; // Шанс критического удара (10%)
     public float attackSpeed; // Скорость атаки
@@ -35,13 +34,9 @@ public abstract class Weapon : MonoBehaviour
     {
         attackTimer = 0f; // Устанавливаем таймер атаки
 
-        damage = baseDamage;
+        // Сохраняем базовые значения скорости и дальности атаки
         attackSpeed = baseAttackSpeed; // Установить начальную скорость при запуске
         attackRange = baseAttackRange;
-    }
-    public bool IsActive()
-    {
-        return this.enabled;
     }
 
     public virtual void Attack()
@@ -73,7 +68,7 @@ public abstract class Weapon : MonoBehaviour
 
     public void IncreaseDamage(float percentage)
     {
-        float increaseAmount = baseDamage * percentage; // Вычисляем увеличение урона на основе процента
+        float increaseAmount = damage * percentage; // Вычисляем увеличение урона на основе процента
         damage += increaseAmount; // Увеличиваем текущий урон
     }
 
