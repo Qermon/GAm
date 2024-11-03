@@ -461,20 +461,35 @@ public class WaveManager : MonoBehaviour
 
     public void EndWave()
     {
+        // Уничтожаем всех врагов с тегом "Enemy"
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        foreach (var enemy in enemies)
+        {
+            Destroy(enemy);
+        }
+
+        // Уничтожаем все снаряды с тегом "Projectile"
+        GameObject[] projectiles = GameObject.FindGameObjectsWithTag("Projectile");
+        foreach (var projectile in projectiles)
+        {
+            Destroy(projectile);
+        }
+
+        // Останавливаем другие баффы для всех оружий
         foreach (var weapon in FindObjectsOfType<Weapon>())
         {
-
             weapon.CritChanceWave(); // Останавливаем другие баффы
         }
 
         foreach (var weapon in FindObjectsOfType<Weapon>())
         {
-
             weapon.CritDamageWave(); // Останавливаем другие баффы
         }
+
         MovePlayerToCenter();
         RemoveAllEXPObjects();
     }
+
 
     private void RemoveAllEXPObjects()
     {
@@ -533,9 +548,9 @@ public class WaveManager : MonoBehaviour
         waveConfigs.Add(6, new WaveConfig(50f, new List<EnemySpawn>
     {
         new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(260 + 26 * 1.5f)),
-        new EnemySpawn(deathPrefabs[0], 10),
+        new EnemySpawn(deathPrefabs[0], 3),
         new EnemySpawn(wizardPrefabs[0], 3),
-        new EnemySpawn(samuraiPrefabs[0], 7)
+        new EnemySpawn(samuraiPrefabs[0], 9)
     }));
 
         // Волна 7
@@ -545,7 +560,7 @@ public class WaveManager : MonoBehaviour
         new EnemySpawn(archerPrefabs[0], 2),
         new EnemySpawn(wizardPrefabs[0], 5),
         new EnemySpawn(boomPrefabs[0], 5),
-        new EnemySpawn(samuraiPrefabs[0], 8)
+        new EnemySpawn(samuraiPrefabs[0], 10)
     }));
 
         // Волна 8
@@ -555,7 +570,7 @@ public class WaveManager : MonoBehaviour
         new EnemySpawn(samuraiPrefabs[0], 10),
         new EnemySpawn(boomPrefabs[0], 5),
         new EnemySpawn(healerPrefabs[0], 2),
-        new EnemySpawn(deathPrefabs[0], 15),
+        new EnemySpawn(deathPrefabs[0], 3),
         new EnemySpawn(wizardPrefabs[0], 5),
         new EnemySpawn(archerPrefabs[0], 5)
     }));
@@ -566,7 +581,7 @@ public class WaveManager : MonoBehaviour
         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
-        new EnemySpawn(deathPrefabs[0], 15),
+        new EnemySpawn(deathPrefabs[0], 4),
         new EnemySpawn(wizardPrefabs[0], 5),
         new EnemySpawn(archerPrefabs[0], 2),
         new EnemySpawn(buffMobPrefabs[0], 2)
@@ -578,7 +593,7 @@ public class WaveManager : MonoBehaviour
          new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
-        new EnemySpawn(deathPrefabs[0], 15),
+        new EnemySpawn(deathPrefabs[0], 5),
         new EnemySpawn(wizardPrefabs[0], 5),
         new EnemySpawn(archerPrefabs[0], 2),
         new EnemySpawn(buffMobPrefabs[0], 2)
@@ -590,7 +605,7 @@ public class WaveManager : MonoBehaviour
         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
-        new EnemySpawn(deathPrefabs[0], 15),
+        new EnemySpawn(deathPrefabs[0], 10),
         new EnemySpawn(wizardPrefabs[0], 5),
         new EnemySpawn(archerPrefabs[0], 2),
         new EnemySpawn(buffMobPrefabs[0], 2)

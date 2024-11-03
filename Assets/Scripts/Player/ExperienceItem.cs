@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class ExperienceItem : MonoBehaviour
 {
-    public int experienceAmount = 5; // Количество опыта, которое получит игрок
+    public int experienceAmount = 3; // Количество опыта, которое получит игрок
+    public int goldAmount = 1;
     public float baseMoveSpeed = 1f; // Начальная скорость
     public float maxMoveSpeed = 5f; // Максимальная скорость
     public float acceleration = 0.5f; // Ускорение
@@ -39,6 +40,13 @@ public class ExperienceItem : MonoBehaviour
             // Проверяем, достиг ли опыт игрока
             if (Vector3.Distance(transform.position, player.position) < 0.1f)
             {
+                // Начисляем золото игроку
+                PlayerGold playerGold = player.GetComponent<PlayerGold>();
+                if (playerGold != null)
+                {
+                    playerGold.AddGold(goldAmount);
+                }
+
                 PlayerLevelUp playerScript = player.GetComponent<PlayerLevelUp>();
                 if (playerScript != null)
                 {

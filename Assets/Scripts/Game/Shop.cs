@@ -499,7 +499,7 @@ public class Shop : MonoBehaviour
         for (int i = 0; i < upgrades.Count; i++)
         {
             buffButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = $"{upgrades[i].type}";
-            buffCostTexts[i].text = $"Cost: {upgrades[i].cost}";
+            buffCostTexts[i].text = $"{upgrades[i].cost}";
 
             // Устанавливаем иконку на пустую иконку
             if (emptyIcons[i] != null && upgrades[i].upgradeSprite != null)

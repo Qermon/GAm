@@ -276,12 +276,7 @@ public class Enemy : MonoBehaviour
             playerHealth.HealOnKill((int)maxHealth); // Восстанавливаем здоровье игроку
         }
 
-        // Начисляем золото игроку
-        PlayerGold playerGold = player.GetComponent<PlayerGold>();
-        if (playerGold != null)
-        {
-            playerGold.AddGold(goldAmount);
-        }
+      
 
         SpawnExperience();
 
