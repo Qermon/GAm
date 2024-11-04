@@ -27,13 +27,13 @@ public class PlayerSelectionManager : MonoBehaviour
 
     public void SpawnPlayer1()
     {
-        // SpawnPlayer(playerPrefab1);
+        SpawnPlayer(playerPrefab1);
         playerSelectionPanel.SetActive(false);
     }
 
     public void SpawnPlayer2()
     {
-        // SpawnPlayer(playerPrefab2);
+        //SpawnPlayer(playerPrefab2);
         playerSelectionPanel.SetActive(false);
     }
 

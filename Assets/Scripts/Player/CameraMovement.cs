@@ -1,18 +1,30 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
-    public Transform target;
     public Vector3 offset;
+    private Transform target;
 
-
-
+    void Start()
+    {
+        
+    }
 
     void Update()
     {
-        transform.position = target.position + offset;
-    }
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            target = player.transform;
+        }
+        else
+        {
+            Debug.LogWarning("»грок с тегом 'Player' не найден на сцене.");
+        }
 
+        if (target != null)
+        {
+            transform.position = target.position + offset;
+        }
+    }
 }
