@@ -27,19 +27,19 @@ public class PlayerSelectionManager : MonoBehaviour
 
     public void SpawnPlayer1()
     {
-        SpawnPlayer(playerPrefab1);
+        // SpawnPlayer(playerPrefab1);
         playerSelectionPanel.SetActive(false);
     }
 
     public void SpawnPlayer2()
     {
-        SpawnPlayer(playerPrefab2);
+        // SpawnPlayer(playerPrefab2);
         playerSelectionPanel.SetActive(false);
     }
 
     public void SpawnPlayer3()
     {
-        SpawnPlayer(playerPrefab3);
+        // SpawnPlayer(playerPrefab3);
         playerSelectionPanel.SetActive(false);
     }
 
@@ -49,11 +49,11 @@ public class PlayerSelectionManager : MonoBehaviour
         Debug.Log("Спавн игрока: " + playerPrefab.name);
 
         // Обновление состояния игрока и интерфейса
-        experienceBarImage?.FindPlayer();
-        waveManager?.FindPlayer();
-        shop.StartForPlayer();
-        levelUpMenu.FindAllObjects();
-        
+        //experienceBarImage?.FindPlayer();
+        // waveManager?.FindPlayer();
+        //  shop.StartForPlayer();
+        //  levelUpMenu.FindAllObjects();
+
     }
 }
 
