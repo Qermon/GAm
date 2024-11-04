@@ -18,7 +18,6 @@ public class CursorManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked; // Блокируем курсор в центре экрана (опционально)
     }
     
-
     public void ShowCursor()
     {
         Cursor.visible = true; // Показываем курсор

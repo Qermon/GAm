@@ -58,8 +58,6 @@ public class LevelUpMenu : MonoBehaviour
     private List<Weapon> playerWeapons; // Список оружий
     private int waveNumber; // Переменная для хранения текущей волны
 
-
-
     private void Start()
     {
         cursorManager = FindObjectOfType<CursorManager>();
@@ -68,7 +66,6 @@ public class LevelUpMenu : MonoBehaviour
         shop = FindObjectOfType<Shop>();
         playerWeapons = new List<Weapon>(FindObjectsOfType<Weapon>()); // Получаем все оружия в игре
         waveManager = FindObjectOfType<WaveManager>(); // Ищем WaveManager в сцене
-
 
         levelUpPanel.SetActive(false);
         foreach (Image icon in upgradeIcons)
@@ -92,10 +89,7 @@ public class LevelUpMenu : MonoBehaviour
         DisplayUpgradeOptions(selectedUpgrades);
     }
 
-    
-
-
-    private List<UpgradeOption> GetRandomUpgrades(int count)
+        private List<UpgradeOption> GetRandomUpgrades(int count)
     {
         List<UpgradeOption> availableOptions = new List<UpgradeOption>(upgradeOptions);
         List<UpgradeOption> selectedUpgrades = new List<UpgradeOption>();
@@ -118,8 +112,6 @@ public class LevelUpMenu : MonoBehaviour
         return selectedUpgrades;
     }
 
-
-    // Метод для получения случайного улучшения с учетом редкости
     // Метод для получения случайного улучшения с учетом редкости
     private UpgradeOption GetRandomUpgradeByRarity(List<UpgradeOption> availableOptions)
     {

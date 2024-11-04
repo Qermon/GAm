@@ -42,26 +42,43 @@ public class PlayerHealth : MonoBehaviour
     private CircleCollider2D collectionRadius; // Ссылка на триггер-коллайдер для сбора предметов
     void Start()
     {
+
         baseMaxHealth = maxHealth;
         // Инициализация текущего здоровья
         currentHealth = maxHealth;
         shieldAmount = 0;
         shieldPercent = 0.25f; // 25% от максимального здоровья
-        healthBar.SetMaxHealth((int)maxHealth);
-        healthBar.SetHealth((int)currentHealth);
         pickupRadius = basePickupRadius;
 
         collectionRadius = gameObject.AddComponent<CircleCollider2D>();
         collectionRadius.isTrigger = true;
         collectionRadius.radius = pickupRadius;
 
+        healthBar = FindObjectOfType<HealthBar>();
         if (healthBar == null)
         {
-            Debug.LogError("HealthBar reference is missing on PlayerHealth!");
+            Debug.LogError("HealthBar не найден на сцене!");
         }
+        else
+        {
+            healthBar.SetMaxHealth((int)maxHealth);
+            healthBar.SetHealth((int)currentHealth);
+        }
+
+        GameObject barrierObj = GameObject.Find("BarrierImage");
+        if (barrierObj != null)
+        {
+            barrierImage = barrierObj.GetComponent<Image>();
+        }
+        else
+        {
+            Debug.LogWarning("BarrierImage не найден на сцене!");
+        }
+
 
         UpdateBarrierUI(); // Инициализация отображения барьера
     }
+
 
     // Метод для увеличения регенерации здоровья
     public void IncreaseHealthRegen(float percentage)
@@ -86,8 +103,6 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log($"Максимальное здоровье увеличено на {increaseAmount}. Новое максимальное здоровье: {maxHealth}. Текущее здоровье: {currentHealth}");
     }
 
-
-
     // Метод для увеличения вампиризма
     public void IncreaseLifesteal(float percentage)
     {
@@ -102,8 +117,6 @@ public class PlayerHealth : MonoBehaviour
         investment += amount; // Увеличиваем инвестиции
         Debug.Log($"Инвестиции увеличены на {amount}. Текущие инвестиции: {investment}");
     }
-
-
 
     // Метод для увеличения удачи
     public void IncreaseLuck(int amount)
@@ -132,16 +145,11 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log($"Радиус сбора увеличен на {increaseAmount}. Новый радиус сбора: {pickupRadius}");
     }
 
-
-
-
-
     public void AddLifesteal(int amount)
     {
         lifesteal += amount;
     }
 
-    // Метод для восстановления здоровья при убийстве врага
     // Метод для восстановления здоровья при убийстве врага
     public void HealOnKill(int enemyHealth)
     {
@@ -151,7 +159,6 @@ public class PlayerHealth : MonoBehaviour
 
         TryApplyShieldOnKill(); // Пытаемся добавить щит с 5% шансом
     }
-
 
     public float CalculateInvestmentBonus(float currentGold)
     {
@@ -167,8 +174,6 @@ public class PlayerHealth : MonoBehaviour
 
         return totalBonusGold;
     }
-
-
 
     // Метод для активации щита в начале каждой волны
     public void ActivateShield()
@@ -195,7 +200,6 @@ public class PlayerHealth : MonoBehaviour
     }
 
     // Метод для обновления полоски барьера
-
     public void UpdateBarrierUI()
     {
         if (barrierImage != null)
@@ -279,7 +283,6 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log($"Получен урон: {damageToTake}, Уменьшенный урон: {reducedDamage}, Оставшийся щит: {shieldAmount}");
     }
 
-
     public void AddShield(int additionalShield)
     {
         shieldAmount += additionalShield;
@@ -325,7 +328,6 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    // Регистрация регенерации
     public void StartHealthRegen()
     {
         Debug.Log("Попытка запустить регенерацию.");
@@ -364,8 +366,6 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-
-
     // Остановить регенерацию
     public void StopHealthRegen()
     {
@@ -380,8 +380,6 @@ public class PlayerHealth : MonoBehaviour
 
         }
     }
-
-
 
     public void IncreaseDefense(int amount)
     {
@@ -402,7 +400,6 @@ public class PlayerHealth : MonoBehaviour
 
         Debug.Log($"Щит обновлён: текущий щит = {shieldAmount} (из них {Mathf.FloorToInt(shieldFromHealth)} от максимального здоровья на основе {shieldBuffCount} баффов)");
     }
-
     public void ActivateShieldOnKillBuff()
     {
         shieldOnKillBuffActive = true;
@@ -467,6 +464,4 @@ public class PlayerHealth : MonoBehaviour
             }
         }
     }
-
-
 }

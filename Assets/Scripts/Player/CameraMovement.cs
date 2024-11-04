@@ -17,10 +17,6 @@ public class CameraMovement : MonoBehaviour
         {
             target = player.transform;
         }
-        else
-        {
-            Debug.LogWarning("»грок с тегом 'Player' не найден на сцене.");
-        }
 
         if (target != null)
         {

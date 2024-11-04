@@ -48,7 +48,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 25
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 0
   alphaUsage: 1
@@ -106,6 +106,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Windows Store Apps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -115,7 +128,7 @@ TextureImporter:
         serializedVersion: 2
         x: 50
         y: 0
-        width: 36
+        width: 37
         height: 79
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -136,7 +149,7 @@ TextureImporter:
         serializedVersion: 2
         x: 178
         y: 0
-        width: 36
+        width: 37
         height: 79
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -178,7 +191,7 @@ TextureImporter:
         serializedVersion: 2
         x: 434
         y: 0
-        width: 36
+        width: 37
         height: 79
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -199,7 +212,7 @@ TextureImporter:
         serializedVersion: 2
         x: 562
         y: 0
-        width: 36
+        width: 37
         height: 79
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -220,7 +233,7 @@ TextureImporter:
         serializedVersion: 2
         x: 690
         y: 0
-        width: 36
+        width: 37
         height: 79
       alignment: 0
       pivot: {x: 0, y: 0}

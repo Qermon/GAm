@@ -18,15 +18,14 @@ GameObject:
   - component: {fileID: 627897726361031410}
   - component: {fileID: 3258110454824777920}
   - component: {fileID: 8590598387824566894}
-  - component: {fileID: 1648659018026388352}
-  - component: {fileID: 2105262064387290539}
-  - component: {fileID: 2099705765554538091}
-  - component: {fileID: 5044915729649091814}
-  - component: {fileID: 259601661171876051}
-  - component: {fileID: 161387962217798954}
-  - component: {fileID: 5664741620210508709}
-  - component: {fileID: 8771536940863880463}
-  - component: {fileID: 7057570953917372787}
+  - component: {fileID: 5462228483326110195}
+  - component: {fileID: -5970295666377975519}
+  - component: {fileID: -8139316214431637186}
+  - component: {fileID: -7339366680887852699}
+  - component: {fileID: -3932432305122830326}
+  - component: {fileID: -4544038301811308478}
+  - component: {fileID: 4303593082725958616}
+  - component: {fileID: -9078481875499614431}
   m_Layer: 6
   m_Name: Player 1
   m_TagString: Player
@@ -43,7 +42,7 @@ Transform:
   m_GameObject: {fileID: 337047382079684104}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 18.09, y: -12.67, z: 0}
+  m_LocalPosition: {x: 17.250772, y: -12.70192, z: 0}
   m_LocalScale: {x: 0.1546239, y: 0.14359303, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -94,7 +93,7 @@ SpriteRenderer:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 0
+  m_DrawMode: 1
   m_Size: {x: 1.44, y: 3.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
@@ -164,10 +163,10 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.44, y: 3.16}
+    oldSize: {x: 0.37, y: 0.79}
     newSize: {x: 1.44, y: 3.16}
     adaptiveTilingThreshold: 0.5
-    drawMode: 0
+    drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
@@ -282,198 +281,7 @@ MonoBehaviour:
   currentExperience: 0
   experienceToNextLevel: 100
   levelText: {fileID: 0}
---- !u!114 &1648659018026388352
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 337047382079684104}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a5b73ad93f0d10442af13d46ed2b801b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  levelUpPanel: {fileID: 0}
-  upgradeIcons:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  upgradeButtons:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  upgradeTexts:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  raritySprites:
-  - {fileID: -244678900, guid: eb8cc85f95978f041b639faf8ebc3dd9, type: 3}
-  - {fileID: -723171432, guid: 27b9e654ccc683545a4b7cdec3a91bd9, type: 3}
-  - {fileID: -2064874400, guid: fdd21e672bad0354684b51c33e325b59, type: 3}
-  rarityImages:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  upgradeOptions:
-  - upgradeName: CommonDMG
-    upgradeSprite: {fileID: 21300000, guid: c74c70bf4df59014582f0cb5089ccdcc, type: 3}
-    upgradeType: 0
-    upgradeRarity: 0
-  - upgradeName: UncommonDMG
-    upgradeSprite: {fileID: 21300000, guid: 989cd706fca4937498ad2f2322bb6fc3, type: 3}
-    upgradeType: 0
-    upgradeRarity: 1
-  - upgradeName: RareDMG
-    upgradeSprite: {fileID: 21300000, guid: d5af1eb9732c9684ea2532f66889b97e, type: 3}
-    upgradeType: 0
-    upgradeRarity: 2
-  - upgradeName: CommonCritDMG
-    upgradeSprite: {fileID: 21300000, guid: 96816f455971007459c743f463cf67f7, type: 3}
-    upgradeType: 1
-    upgradeRarity: 0
-  - upgradeName: UncommonCritDMG
-    upgradeSprite: {fileID: 21300000, guid: 40ae44bcec97e054f9634b32fcc39646, type: 3}
-    upgradeType: 1
-    upgradeRarity: 1
-  - upgradeName: RareCritDMG
-    upgradeSprite: {fileID: 21300000, guid: b6d6e568dafd7c94b88ccd66a3886d26, type: 3}
-    upgradeType: 1
-    upgradeRarity: 2
-  - upgradeName: CommonCritChance
-    upgradeSprite: {fileID: 21300000, guid: 6071b5605494ba9408e4e33f08b8fefc, type: 3}
-    upgradeType: 3
-    upgradeRarity: 0
-  - upgradeName: UncommonCritChance
-    upgradeSprite: {fileID: 21300000, guid: 4c0c755a123006d4aa3da2909fec1e4c, type: 3}
-    upgradeType: 3
-    upgradeRarity: 1
-  - upgradeName: RareCritChance
-    upgradeSprite: {fileID: 21300000, guid: 822430cf9c09b884fb2e9f96b4c53870, type: 3}
-    upgradeType: 3
-    upgradeRarity: 2
-  - upgradeName: CommonAttackSpeed
-    upgradeSprite: {fileID: 21300000, guid: 2bd04317bfc8ef0469976fe306fb9261, type: 3}
-    upgradeType: 2
-    upgradeRarity: 0
-  - upgradeName: UncommonAttackSpeed
-    upgradeSprite: {fileID: 21300000, guid: e2111bf893e402144879b632ca035349, type: 3}
-    upgradeType: 2
-    upgradeRarity: 1
-  - upgradeName: RareAttackSpeed
-    upgradeSprite: {fileID: 21300000, guid: e6742842ef4411f4fa9ec19d46cb813c, type: 3}
-    upgradeType: 2
-    upgradeRarity: 2
-  - upgradeName: CommonAttackRange
-    upgradeSprite: {fileID: 21300000, guid: aac84b41a649e934eb0742fe30bde6e1, type: 3}
-    upgradeType: 4
-    upgradeRarity: 0
-  - upgradeName: UncommonAttackRange
-    upgradeSprite: {fileID: 21300000, guid: c36f48dec8ec3f549a9d013e0bc21dc1, type: 3}
-    upgradeType: 4
-    upgradeRarity: 1
-  - upgradeName: RareAttackRange
-    upgradeSprite: {fileID: 21300000, guid: 62f212f4c0a50f2478caee2cbb70aaea, type: 3}
-    upgradeType: 4
-    upgradeRarity: 2
-  - upgradeName: CommonMaxHP
-    upgradeSprite: {fileID: 21300000, guid: d49e4e377da235941bc4195d543a1bb8, type: 3}
-    upgradeType: 5
-    upgradeRarity: 0
-  - upgradeName: UncommonMaxHP
-    upgradeSprite: {fileID: 21300000, guid: 2cd6613a52461f4478803db4b739c684, type: 3}
-    upgradeType: 5
-    upgradeRarity: 1
-  - upgradeName: RareMaxHP
-    upgradeSprite: {fileID: 21300000, guid: 7717c17bc16763a4796a815b1316529f, type: 3}
-    upgradeType: 5
-    upgradeRarity: 2
-  - upgradeName: CommonArmor
-    upgradeSprite: {fileID: 21300000, guid: 94fbb32e4b18b334197a1767f726bbdc, type: 3}
-    upgradeType: 6
-    upgradeRarity: 0
-  - upgradeName: UncommonArmor
-    upgradeSprite: {fileID: 21300000, guid: c1f4f3692249c3140a5e41ed56b09304, type: 3}
-    upgradeType: 6
-    upgradeRarity: 1
-  - upgradeName: RareArmor
-    upgradeSprite: {fileID: 21300000, guid: 8723bea54943d2b48a504b516d918d8d, type: 3}
-    upgradeType: 6
-    upgradeRarity: 2
-  - upgradeName: CommonHPRegen
-    upgradeSprite: {fileID: 21300000, guid: 9725daeb11bdefd41ab2fd9748f93217, type: 3}
-    upgradeType: 7
-    upgradeRarity: 0
-  - upgradeName: UncommonHPRegen
-    upgradeSprite: {fileID: 21300000, guid: cdc5dde0885ea1045aa015f615924f56, type: 3}
-    upgradeType: 7
-    upgradeRarity: 1
-  - upgradeName: RareHPRegen
-    upgradeSprite: {fileID: 21300000, guid: 0e6fdd8d4c00f364cb706bb840602510, type: 3}
-    upgradeType: 7
-    upgradeRarity: 2
-  - upgradeName: CommonLifesteal
-    upgradeSprite: {fileID: 21300000, guid: d5e4b2f06f38fd340a3347ce8186d041, type: 3}
-    upgradeType: 8
-    upgradeRarity: 0
-  - upgradeName: UncommonLifesteal
-    upgradeSprite: {fileID: 21300000, guid: 44758a7c95df8ea49b2245bb87dca23a, type: 3}
-    upgradeType: 8
-    upgradeRarity: 1
-  - upgradeName: RareLifesteal
-    upgradeSprite: {fileID: 21300000, guid: ac28a37b31a8012478ab44519d16e4d7, type: 3}
-    upgradeType: 8
-    upgradeRarity: 2
-  - upgradeName: CommonMoveSpeed
-    upgradeSprite: {fileID: 21300000, guid: 3e3f12019b8d3d7458acffadd81458c2, type: 3}
-    upgradeType: 11
-    upgradeRarity: 0
-  - upgradeName: UncommonMoveSpeed
-    upgradeSprite: {fileID: 21300000, guid: b9c96eccf8069314faaf08247a611ce8, type: 3}
-    upgradeType: 11
-    upgradeRarity: 1
-  - upgradeName: RareMoveSpeed
-    upgradeSprite: {fileID: 21300000, guid: 841dca9dfe6444e49a86cf3331a8d272, type: 3}
-    upgradeType: 11
-    upgradeRarity: 2
-  - upgradeName: CommonPickupRadius
-    upgradeSprite: {fileID: 21300000, guid: e78a376914dd2d341b7673b07461406b, type: 3}
-    upgradeType: 10
-    upgradeRarity: 0
-  - upgradeName: UncommonPickupRadius
-    upgradeSprite: {fileID: 21300000, guid: dc4e1fa7e4ef2e94ab1800ea0b06a14d, type: 3}
-    upgradeType: 10
-    upgradeRarity: 1
-  - upgradeName: RarePickupRadius
-    upgradeSprite: {fileID: 21300000, guid: 614e29b061e928c4bbd6f5e18baff576, type: 3}
-    upgradeType: 10
-    upgradeRarity: 2
-  - upgradeName: CommonInvestmant
-    upgradeSprite: {fileID: 21300000, guid: 5dd8fae3606dbff4f9b76473c7ae515c, type: 3}
-    upgradeType: 9
-    upgradeRarity: 0
-  - upgradeName: UncommonInvestmant
-    upgradeSprite: {fileID: 21300000, guid: a293304d24db9bc46a9794ce770e4c80, type: 3}
-    upgradeType: 9
-    upgradeRarity: 1
-  - upgradeName: RareInvestment
-    upgradeSprite: {fileID: 21300000, guid: 8c0e699202c3e654f8c8aa6f3b1d8c43, type: 3}
-    upgradeType: 9
-    upgradeRarity: 2
-  - upgradeName: CommonLuck
-    upgradeSprite: {fileID: 21300000, guid: 1fa217a61cdf15748a0f9595c3482b0f, type: 3}
-    upgradeType: 12
-    upgradeRarity: 0
-  - upgradeName: UncommonLuck
-    upgradeSprite: {fileID: 21300000, guid: 2acf8162217bbcb49bda983b0fb10024, type: 3}
-    upgradeType: 12
-    upgradeRarity: 1
-  - upgradeName: RareLuck
-    upgradeSprite: {fileID: 21300000, guid: d7ee4ff286451e6468a72040f1edaa9a, type: 3}
-    upgradeType: 12
-    upgradeRarity: 2
-  waveManager: {fileID: 0}
---- !u!114 &2105262064387290539
+--- !u!114 &5462228483326110195
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -498,7 +306,7 @@ MonoBehaviour:
   projectilePrefab: {fileID: 7954318771495121027, guid: 3f4748c9054797b4b951bab67ccbe048, type: 3}
   projectileLifetime: 3
   numberOfProjectiles: 3
---- !u!114 &2099705765554538091
+--- !u!114 &-5970295666377975519
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -522,7 +330,7 @@ MonoBehaviour:
   projectileSpeed: 5
   fireBallPrefab: {fileID: 1214236203580795921, guid: 3552c2bf2a5630c46be6b92f892d25bf, type: 3}
   projectileLifetime: 5
---- !u!114 &5044915729649091814
+--- !u!114 &-8139316214431637186
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -548,7 +356,7 @@ MonoBehaviour:
   speed: 3
   returnSpeed: 5
   maxDistance: 3
---- !u!114 &259601661171876051
+--- !u!114 &-7339366680887852699
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -572,7 +380,7 @@ MonoBehaviour:
   projectileSpeed: 0
   shurikenPrefab: {fileID: 3029241081560625099, guid: d96c0236ade09f54a9e217d4d124ee6d, type: 3}
   shurikenCount: 4
---- !u!114 &161387962217798954
+--- !u!114 &-3932432305122830326
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -595,10 +403,10 @@ MonoBehaviour:
   rotationSpeed: 0
   projectileSpeed: 0
   knifePrefab: {fileID: 5092583050195389615, guid: 8c0e8a6b3ba889f4f9667886576a175a, type: 3}
-  attackInterval: 2
+  attackInterval: 1
   speed: 5
   maxDistance: 10
---- !u!114 &5664741620210508709
+--- !u!114 &-4544038301811308478
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -623,7 +431,7 @@ MonoBehaviour:
   projectilePrefab: {fileID: 578360187957718639, guid: 8a35528fa7e0d1340b027632e57154cb, type: 3}
   maxBounces: 10
   bounceDamageReduction: 0.1
---- !u!114 &8771536940863880463
+--- !u!114 &4303593082725958616
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -647,7 +455,7 @@ MonoBehaviour:
   projectileSpeed: 4
   projectilePrefab: {fileID: 1469391300657170324, guid: 20232e6c4c21e3a4f8b6111440bbc476, type: 3}
   projectileLifetime: 2
---- !u!114 &7057570953917372787
+--- !u!114 &-9078481875499614431
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

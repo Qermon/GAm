@@ -11,6 +11,17 @@ public class PlayerLevelUp : MonoBehaviour
 
     void Start()
     {
+        // Поиск объекта с именем "levelText" и получение TMP_Text компонента
+        GameObject levelTextObject = GameObject.Find("levelText");
+        if (levelTextObject != null)
+        {
+            levelText = levelTextObject.GetComponent<TMP_Text>();
+        }
+        else
+        {
+            Debug.LogError("Объект с именем 'levelText' не найден на сцене! Убедитесь, что он существует.");
+        }
+
         UpdateLevel(); // Инициализируем уровень в начале
     }
 

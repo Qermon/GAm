@@ -13,6 +13,18 @@ public class PlayerGold : MonoBehaviour
     void Start()
     {
         playerHealth = FindObjectOfType<PlayerHealth>(); // Получаем ссылку на PlayerHealth
+
+        // Поиск объекта с именем "GoldPlayer" и получение TMP_Text компонента
+        GameObject goldPlayerObject = GameObject.Find("GoldPlayer");
+        if (goldPlayerObject != null)
+        {
+            goldText = goldPlayerObject.GetComponent<TMP_Text>();
+        }
+        else
+        {
+            Debug.LogError("Объект с именем 'GoldPlayer' не найден на сцене! Убедитесь, что он существует.");
+        }
+
         UpdateGoldDisplay(); // Инициализируем отображение золота в начале
     }
 
@@ -26,13 +38,12 @@ public class PlayerGold : MonoBehaviour
     // Начисление бонуса после закрытия магазина
     public void AddWaveInvestmentBonus()
     {
-        // Проверяем, было ли золото уже начислено за эту волну
         if (!bonusGivenForWave)
         {
             if (playerHealth != null)
             {
-                float bonusGold = playerHealth.CalculateInvestmentBonus(currentGold); // Рассчитываем бонусное золото
-                AddGold(Mathf.FloorToInt(bonusGold)); // Добавляем его к текущему золоту
+                float bonusGold = playerHealth.CalculateInvestmentBonus(currentGold);
+                AddGold(Mathf.FloorToInt(bonusGold));
                 Debug.Log($"Бонусное золото за инвестиции: {bonusGold}");
             }
             else
@@ -40,7 +51,6 @@ public class PlayerGold : MonoBehaviour
                 Debug.LogError("PlayerHealth не найден!");
             }
 
-            // Устанавливаем флаг, чтобы не начислять золото снова
             bonusGivenForWave = true;
         }
     }
@@ -48,13 +58,13 @@ public class PlayerGold : MonoBehaviour
     // Метод для закрытия магазина
     public void OnShopClosed()
     {
-        AddWaveInvestmentBonus(); // Начисляем бонус за инвестиции после закрытия магазина
+        AddWaveInvestmentBonus();
     }
 
     // Метод для начала новой волны
     public void OnNewWaveStarted()
     {
-        bonusGivenForWave = false; // Сбрасываем флаг для новой волны
+        bonusGivenForWave = false;
     }
 
     // Метод для покупки в магазине
@@ -62,24 +72,23 @@ public class PlayerGold : MonoBehaviour
     {
         if (currentGold >= price)
         {
-            currentGold -= price; // Уменьшаем золото
-            UpdateGoldDisplay(); // Обновляем отображение золота
+            currentGold -= price;
+            UpdateGoldDisplay();
             Debug.Log($"Предмет куплен за {price} золота.");
-            return true; // Покупка успешна
+            return true;
         }
         else
         {
             Debug.Log("Недостаточно золота для покупки.");
-            return false; // Недостаточно золота
+            return false;
         }
     }
 
     public void UpdateGoldDisplay()
     {
-        // Обновляем текст золота в UI только если ссылка на текст существует
         if (goldText != null)
         {
-            goldText.text ="" + currentGold;
+            goldText.text = "" + currentGold;
         }
         else
         {

@@ -47,9 +47,20 @@ public class WaveManager : MonoBehaviour
 
 
     private Dictionary<int, WaveConfig> waveConfigs;
-
+    
     void Start()
     {
+        // Найти объект игрока на сцене и сохранить его ссылку
+        PlayerHealth playerObject = FindObjectOfType<PlayerHealth>(); // Предполагается, что ваш класс игрока называется Player
+        if (playerObject != null)
+        {
+            player = playerObject.transform; // Сохраняем трансформ игрока
+        }
+        else
+        {
+            Debug.LogWarning("Игрок не найден на сцене!");
+        }
+
         weaponSelectionManager = FindObjectOfType<WeaponSelectionManager>(); // Присваиваем weaponSelectionManager
         playerHealth = FindObjectOfType<PlayerHealth>(); // Инициализируйте ссылку
 
@@ -61,6 +72,7 @@ public class WaveManager : MonoBehaviour
             return;
         }
 
+        EndWave();
         StartWave();
     }
 

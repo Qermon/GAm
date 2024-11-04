@@ -12,11 +12,12 @@ public class PlayerSelectionManager : MonoBehaviour
     private Shop shop;
     private LevelUpMenu levelUpMenu;
     private PlayerGold playerGold;
-    // Ссылка на WaveManager
     private WaveManager waveManager;
+    private WeaponSelectionManager weaponSelectionManager;
 
     void Start()
     {
+        weaponSelectionManager = FindObjectOfType<WeaponSelectionManager>();
         playerGold = FindObjectOfType <PlayerGold>();
         levelUpMenu = FindAnyObjectByType<LevelUpMenu>();
         shop = FindAnyObjectByType <Shop>();
@@ -33,13 +34,13 @@ public class PlayerSelectionManager : MonoBehaviour
 
     public void SpawnPlayer2()
     {
-        //SpawnPlayer(playerPrefab2);
+        SpawnPlayer(playerPrefab2);
         playerSelectionPanel.SetActive(false);
     }
 
     public void SpawnPlayer3()
     {
-        // SpawnPlayer(playerPrefab3);
+        SpawnPlayer(playerPrefab3);
         playerSelectionPanel.SetActive(false);
     }
 
@@ -48,12 +49,15 @@ public class PlayerSelectionManager : MonoBehaviour
         GameObject playerInstance = Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity);
         Debug.Log("Спавн игрока: " + playerPrefab.name);
 
-        // Обновление состояния игрока и интерфейса
-        //experienceBarImage?.FindPlayer();
-        // waveManager?.FindPlayer();
-        //  shop.StartForPlayer();
-        //  levelUpMenu.FindAllObjects();
+        StartGame();
+    }
 
+    private void StartGame()
+    {   
+        weaponSelectionManager.enabled = true;
+        waveManager.enabled = true;
+        shop.enabled = true;
+        levelUpMenu.enabled = true;
     }
 }
 

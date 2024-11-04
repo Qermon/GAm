@@ -42,8 +42,8 @@ Transform:
   m_GameObject: {fileID: 4792543018983292698}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 18.363604, y: -13.24768, z: 0}
-  m_LocalScale: {x: 0.1446239, y: 0.143593, z: 1}
+  m_LocalPosition: {x: 16.873, y: -12.714, z: 0}
+  m_LocalScale: {x: 0.1546239, y: 0.143593, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -89,12 +89,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 100
-  m_Sprite: {fileID: 663009643, guid: 2807b3bd88502a2499b056203b13a765, type: 3}
+  m_Sprite: {fileID: 894875974, guid: 2e5fb7d246d0ca34a84e15fc8a235b1f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 1
-  m_Size: {x: 2.5, y: 3.16}
+  m_Size: {x: 3, y: 3.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -163,14 +163,14 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.59, y: 0.81}
-    newSize: {x: 2.5, y: 3.16}
+    oldSize: {x: 0.77, y: 0.81}
+    newSize: {x: 3, y: 3.16}
     adaptiveTilingThreshold: 0.5
     drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.7617188, y: 2.664135}
+  m_Size: {x: 0.624167, y: 2.664135}
   m_EdgeRadius: 0
 --- !u!114 &3450705274269273974
 MonoBehaviour:
@@ -403,6 +403,7 @@ MonoBehaviour:
   rotationSpeed: 0
   projectileSpeed: 0
   knifePrefab: {fileID: 5092583050195389615, guid: 8c0e8a6b3ba889f4f9667886576a175a, type: 3}
+  attackInterval: 1
   speed: 5
   maxDistance: 10
 --- !u!114 &1205125801706943876
