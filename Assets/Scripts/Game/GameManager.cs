@@ -47,9 +47,7 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        // Логика для запуска игры
-        Debug.Log("Game has started!");
-        waveManager.StartWave(); // Запускаем первую волну
+
     }
 
 

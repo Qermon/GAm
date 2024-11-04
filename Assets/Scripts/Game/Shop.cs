@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
+using System.Collections;
 
 public class Shop : MonoBehaviour
 {
@@ -148,6 +149,41 @@ public class Shop : MonoBehaviour
         GenerateUpgrades();
         float moveSpeed = playerMovement.moveSpeed * 200;
     }
+
+    public void RestartScript()
+    {
+        // Очищаем текущие баффы и обновляем интерфейс
+        upgrades.Clear();
+        existingBuffs.Clear();
+
+        // Сбрасываем стоимость обновления
+        currentRefreshCost = 7;
+
+        // Инициализируем панель магазина, скрывая ее
+        shopPanel.SetActive(false);
+
+        // Обновляем список оружия, здоровья и другие зависимости
+        cursorManager = FindObjectOfType<CursorManager>();
+        playerWeapons = new List<Weapon>(FindObjectsOfType<Weapon>());
+        waveManager = FindObjectOfType<WaveManager>();
+        playerHealth = FindObjectOfType<PlayerHealth>();
+        playerMovement = FindObjectOfType<PlayerMovement>();
+        playerGold = FindObjectOfType<PlayerGold>();
+
+        // Сбрасываем бонусы к характеристикам
+        totalAttackSpeedBonus = 0f;
+        totalAttackRangeBonus = 0f;
+        totalPickupRadiusBonus = 0f;
+        totalLifestealBonus = 0f;
+        totalRegenBonus = 0f;
+
+        // Генерируем новые баффы и обновляем UI
+        GenerateUpgrades();
+        UpdateUpgradeUI();
+        UpdatePlayerStats();
+        UpdateRefreshButton();
+    }
+
 
     // Обновляет состояние кнопки и отображение стоимости
     void UpdateRefreshButton()

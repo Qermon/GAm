@@ -25,6 +25,8 @@ public class WaveManager : MonoBehaviour
     public int maxWaves = 30;
 
     private bool spawningWave = false;
+    private bool isSpawningActive = true; // Флаг для контроля спавна врагов
+
     private float timeStartedWave;
     private float waveDuration;
 
@@ -75,6 +77,60 @@ public class WaveManager : MonoBehaviour
         EndWave();
         StartWave();
     }
+
+    public void RestartScript()
+    {
+        isSpawningActive = false;
+
+        PlayerHealth playerObject = FindObjectOfType<PlayerHealth>(); // Получаем объект игрока
+        if (playerObject != null)
+        {
+            player = playerObject.transform; // Сохраняем трансформ игрока
+        }
+        else
+        {
+            Debug.LogWarning("Игрок не найден на сцене!");
+        }
+
+        playerHealth = FindObjectOfType<PlayerHealth>(); // Инициализируем ссылку на здоровье игрока
+
+        // Уничтожаем всех активных врагов и очищаем список
+        foreach (GameObject enemy in activeEnemies)
+        {
+            Destroy(enemy); // Уничтожаем каждого активного врага
+        }
+        activeEnemies.Clear(); // Очищаем список активных врагов
+
+        // Проверяем, идет ли волна и останавливаем корутины спавна, если это так
+        if (isWaveInProgress)
+        {
+            StopAllCoroutines(); // Остановите все корутины, связанные со спавном
+            EndWave(); // Завершите текущую волну
+        }
+
+        // Сбрасываем параметры
+        waveNumber = 0; // Сбрасываем номер волны
+        isWaveInProgress = false; // Обновляем состояние волны
+        spawningWave = false; // Останавливаем спавн
+
+        // Сбрасываем множители характеристик
+        damageMultiplier = 1.2f;
+        healthMultiplier = 1.4f;
+        speedMultiplier = 0.5f;
+        projectile = 1.2f;
+
+        // Перемещаем игрока в центр карты
+        MovePlayerToCenter();
+
+        // Инициализируем конфигурации волн заново
+        InitializeWaves();
+
+        // Запускаем новую волну
+        StartCoroutine(StartNextWave()); // Измените на вызов StartNextWave, чтобы убедиться, что волна начинается заново
+    }
+
+
+
 
     void Update()
     {
@@ -144,7 +200,6 @@ public class WaveManager : MonoBehaviour
         if (waveNumber <= 20 && waveNumber > 10)
         {
             UpdateEnemyStats();
-            UpdateEnemyStats();
         }
 
         if (!spawningWave)
@@ -159,7 +214,9 @@ public class WaveManager : MonoBehaviour
                 }
             }
 
+            isSpawningActive = true;
             StartCoroutine(SpawnWave());
+
 
         }
     }
@@ -190,7 +247,7 @@ public class WaveManager : MonoBehaviour
             }
 
             // Основной цикл спавна врагов
-            while (Time.time - timeStartedWave < spawnTimeLimit)
+            while (Time.time - timeStartedWave < spawnTimeLimit && isSpawningActive)
             {
                 for (int i = 0; i < totalEnemyTypes; i++)
                 {
@@ -210,6 +267,7 @@ public class WaveManager : MonoBehaviour
 
                 yield return null; // Ждем следующий кадр
             }
+
             // Ждем оставшееся время до завершения волны
             while (Time.time - timeStartedWave < waveDuration)
             {
@@ -231,7 +289,6 @@ public class WaveManager : MonoBehaviour
         playerHealth.barrierActivatedThisWave = false;
     }
 
-
     // Метод для спавна крестика и моба
     private IEnumerator SpawnCrossAndEnemy(Vector3 spawnPosition, GameObject enemyPrefab)
     {
@@ -241,6 +298,14 @@ public class WaveManager : MonoBehaviour
         // Ждем 1.75 секунды перед спавном моба
         yield return new WaitForSeconds(1.75f);
 
+        // Проверяем, активен ли спавн
+        if (!isSpawningActive)
+        {
+            // Удаляем крестик, если спавн был отключен
+            Destroy(cross);
+            yield break; // Завершаем корутину, не спавня моба
+        }
+
         // Удаляем крестик перед спавном моба
         Destroy(cross);
 
@@ -248,8 +313,6 @@ public class WaveManager : MonoBehaviour
         GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
         AddEnemy(enemy);
     }
-
-
 
     private void UpdateEnemyStats()
     {

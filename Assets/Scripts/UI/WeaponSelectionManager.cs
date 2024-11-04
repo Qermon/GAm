@@ -88,6 +88,22 @@ public class WeaponSelectionManager : MonoBehaviour
         videoImage.gameObject.SetActive(false); // Скрыть видео в начале
     }
 
+    public void RestartScript()
+    {
+        // Очищаем список выбранных оружий
+        selectedWeapons.Clear();
+
+        // Очищаем контейнеры для изображений навыков
+        foreach (Image skillContainer in skillImageContainers)
+        {
+            skillContainer.sprite = null; // Убираем изображение
+            skillContainer.gameObject.SetActive(false); // Делаем контейнер невидимым
+        }
+
+    }
+
+
+
     public void OpenWeaponSelection()
     {
         List<WeaponOption> availableWeapons = GetRandomWeapons(3);

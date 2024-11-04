@@ -54,11 +54,20 @@ public class PlayerSelectionManager : MonoBehaviour
 
     private void StartGame()
     {   
-        weaponSelectionManager.enabled = true;
-        waveManager.enabled = true;
-        shop.enabled = true;
-        levelUpMenu.enabled = true;
+        if (weaponSelectionManager.enabled == false && waveManager.enabled == false && shop.enabled == false && levelUpMenu.enabled == false)
+        {
+            weaponSelectionManager.enabled = true;
+            waveManager.enabled = true;
+            shop.enabled = true;
+            levelUpMenu.enabled = true;
+        }
+        else
+        {
+            weaponSelectionManager.RestartScript();
+            waveManager.RestartScript();
+            shop.RestartScript();
+            levelUpMenu.RestartScript();
+            experienceBarImage.RestartSkript();
+        }
     }
 }
-
-

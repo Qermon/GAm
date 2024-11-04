@@ -38,11 +38,11 @@ public class PlayerHealth : MonoBehaviour
     public bool barrierActivatedThisWave = false;
 
     private bool healthRegenPerWaveActive = false;
-
+    private MainMenu mainMenu;
     private CircleCollider2D collectionRadius; // Ссылка на триггер-коллайдер для сбора предметов
     void Start()
     {
-
+        mainMenu = FindObjectOfType<MainMenu>();
         baseMaxHealth = maxHealth;
         // Инициализация текущего здоровья
         currentHealth = maxHealth;
@@ -316,8 +316,10 @@ public class PlayerHealth : MonoBehaviour
     }
     private IEnumerator Die()
     {
+
         Debug.Log("Player died!");
         gameObject.SetActive(false);
+        mainMenu.ShowMenuAfterDeath();
         yield return null;
     }
     void OnCollisionEnter2D(Collision2D collision)

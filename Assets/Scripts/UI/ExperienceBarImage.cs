@@ -11,6 +11,13 @@ public class ExperienceBarImage : MonoBehaviour
         StartCoroutine(FindPlayerCoroutine()); // Запускаем корутину для поиска игрока
     }
 
+    public void RestartSkript()
+    {
+        GameObject playerObject = GameObject.FindWithTag("Player"); 
+        playerLevelUp = playerObject.GetComponent<PlayerLevelUp>();
+        
+    }
+
     private System.Collections.IEnumerator FindPlayerCoroutine()
     {
         // Ждём, пока игрок появится на сцене

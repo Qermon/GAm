@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public enum UpgradeType
 {
@@ -52,10 +53,10 @@ public class LevelUpMenu : MonoBehaviour
     public WaveManager waveManager;
     private CursorManager cursorManager;
     
-    private PlayerMovement playerMovement;
-    private PlayerHealth playerHealth;
+    public PlayerMovement playerMovement;
+    public PlayerHealth playerHealth;
     private Shop shop;
-    private List<Weapon> playerWeapons; // Список оружий
+    public List<Weapon> playerWeapons; // Список оружий
     private int waveNumber; // Переменная для хранения текущей волны
 
     private void Start()
@@ -73,6 +74,22 @@ public class LevelUpMenu : MonoBehaviour
             icon.gameObject.SetActive(false);
         }
     }
+    public void RestartScript()
+    {
+        cursorManager = FindObjectOfType<CursorManager>();
+        playerMovement = FindObjectOfType<PlayerMovement>();
+        playerHealth = FindObjectOfType<PlayerHealth>();
+        shop = FindObjectOfType<Shop>();
+        playerWeapons = new List<Weapon>(FindObjectsOfType<Weapon>()); // Получаем все оружия в игре
+        waveManager = FindObjectOfType<WaveManager>(); // Ищем WaveManager в сцене
+
+        levelUpPanel.SetActive(false);
+        foreach (Image icon in upgradeIcons)
+        {
+            icon.gameObject.SetActive(false);
+        }
+    }
+
 
     public void OpenLevelUpMenu()
     {

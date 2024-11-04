@@ -242,7 +242,7 @@ MonoBehaviour:
   healthBar: {fileID: 0}
   barrierImage: {fileID: 0}
   defense: 0
-  investment: 0
+  investment: 90
   lifesteal: 0.002
   baseLifesteal: 0.002
   basePickupRadius: 5

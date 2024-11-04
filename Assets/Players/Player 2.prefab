@@ -245,9 +245,9 @@ MonoBehaviour:
   investment: 0
   lifesteal: 0.002
   baseLifesteal: 0.002
-  basePickupRadius: 5
-  pickupRadius: 5
-  luck: 0
+  basePickupRadius: 6
+  pickupRadius: 6
+  luck: 30
   shieldAmount: 0
   maxShieldAmount: 0
   barrierActivatedThisWave: 1

@@ -4,9 +4,11 @@ public class MainMenu : MonoBehaviour
 {
     public CanvasGroup mainMenuPanel; // CanvasGroup для панели меню
     public GameObject canvasHero;
+    private CursorManager cursorManager;
 
     private void Start()
     {
+        cursorManager = FindObjectOfType<CursorManager>();
         // Показать панель при запуске игры
         mainMenuPanel.alpha = 1;
         mainMenuPanel.interactable = true;
@@ -24,7 +26,7 @@ public class MainMenu : MonoBehaviour
 
         // Открываем панель CanvasHero
         canvasHero.SetActive(true);
-
+        Time.timeScale = 1f; // Возобновляем игру
     }
 
     // Метод для кнопки "Настройки" (пока пустой)
@@ -38,5 +40,15 @@ public class MainMenu : MonoBehaviour
     {
         Application.Quit(); // Завершение игры
         Debug.Log("Игра завершена.");
+    }
+
+    // Метод для показа меню после смерти игрока
+    public void ShowMenuAfterDeath()
+    {
+        cursorManager.ShowCursor();
+        mainMenuPanel.alpha = 1; // Показываем панель меню
+        mainMenuPanel.interactable = true;
+        mainMenuPanel.blocksRaycasts = true;
+        Time.timeScale = 0f; // Останавливаем игру
     }
 }
