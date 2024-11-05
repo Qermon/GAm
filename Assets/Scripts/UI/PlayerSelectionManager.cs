@@ -56,6 +56,7 @@ public class PlayerSelectionManager : MonoBehaviour
     {   
         if (weaponSelectionManager.enabled == false && waveManager.enabled == false && shop.enabled == false && levelUpMenu.enabled == false)
         {
+            experienceBarImage.enabled = true;
             weaponSelectionManager.enabled = true;
             waveManager.enabled = true;
             shop.enabled = true;
@@ -63,11 +64,11 @@ public class PlayerSelectionManager : MonoBehaviour
         }
         else
         {
+            experienceBarImage.RestartSkript();
             weaponSelectionManager.RestartScript();
             waveManager.RestartScript();
             shop.RestartScript();
             levelUpMenu.RestartScript();
-            experienceBarImage.RestartSkript();
         }
     }
 }

@@ -15,7 +15,7 @@ public class ExperienceBarImage : MonoBehaviour
     {
         GameObject playerObject = GameObject.FindWithTag("Player"); 
         playerLevelUp = playerObject.GetComponent<PlayerLevelUp>();
-        
+        UpdateExperienceBar();
     }
 
     private System.Collections.IEnumerator FindPlayerCoroutine()

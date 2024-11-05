@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PauseMenu : MonoBehaviour
 {
-    public GameObject pausePanel;
+    public GameObject pauseMenu; // Панель меню паузы
     private Shop shop;
     private LevelUpMenu levelUpMenu;
     private WaveManager waveManager;
@@ -12,10 +12,15 @@ public class PauseMenu : MonoBehaviour
     private MainMenu mainMenu;
     private CursorManager cursorManager;
     public CanvasGroup pauseMenuPanel; // CanvasGroup для панели меню
+    private PlayerSelectionManager playerSelectionManager;
+    private GameManager gameManager;
     private bool isPaused = false;
+
 
     private void Start()
     {
+        gameManager = FindObjectOfType<GameManager>();
+        playerSelectionManager = FindObjectOfType<PlayerSelectionManager>();
         cursorManager = FindObjectOfType<CursorManager>();
         mainMenu = FindObjectOfType<MainMenu>();
         weaponSelectionManager = FindObjectOfType<WeaponSelectionManager>();
@@ -23,55 +28,33 @@ public class PauseMenu : MonoBehaviour
         shop = FindAnyObjectByType<Shop>();
         waveManager = FindObjectOfType<WaveManager>();
 
-        // Прячем панель паузы в начале игры
-        pauseMenuPanel.alpha = 0;
-        pauseMenuPanel.interactable = false;
-        pauseMenuPanel.blocksRaycasts = false;
     }
 
-    private void Update()
+    void Update()
     {
-        // Обработка нажатия клавиши ESC
+        // Проверяем, нажата ли клавиша ESC и открыты ли панели
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (isPaused)
+            Debug.Log("ESC нажата, проверяем панели");
+            if (!IsAnyPanelOpen())
             {
-                ResumeGame();
+                Debug.Log("Панели не открыты, переключаем паузу");
+                if (isPaused)
+                {
+                    ResumeGame();
+                }
+                else
+                {
+                    PauseGame();
+                }
             }
             else
             {
-                PauseGame();
+                Debug.Log("Открыта одна или несколько панелей, пауза не активируется");
             }
         }
+
     }
-
-    public void PauseGame()
-    {
-        // Показать панель паузы
-        pauseMenuPanel.alpha = 1;
-        pauseMenuPanel.interactable = true;
-        pauseMenuPanel.blocksRaycasts = true;
-        pausePanel.SetActive(true);
-        cursorManager.ShowCursor();
-
-        Time.timeScale = 0f; // Остановить время
-        isPaused = true;
-    }
-
-    public void ResumeGame()
-    {
-        // Скрыть панель паузы
-        pauseMenuPanel.alpha = 0;
-        pauseMenuPanel.interactable = false;
-        pauseMenuPanel.blocksRaycasts = false;
-        pausePanel.SetActive(false);
-        cursorManager.HideCursor();
-
-        Time.timeScale = 1f; // Возобновить время
-        isPaused = false;
-    }
-
-    // Метод для кнопки "Играть"
     public void OnPlayButtonPressed()
     {
         ResumeGame();
@@ -86,22 +69,41 @@ public class PauseMenu : MonoBehaviour
     // Метод для кнопки "Выход"
     public void OnExitButtonPressed()
     {
-        EndGame();
-        Debug.Log("Игра завершена.");
+        gameManager.RestartGame();
     }
 
-    private void EndGame()
+    public void PauseGame()
     {
-        ResumeGame();
+        cursorManager.ShowCursor();
+        isPaused = true;
+        Time.timeScale = 0f; // Останавливаем время
+        pauseMenu.SetActive(true); // Показываем панель меню паузы
+    }
 
-        pausePanel.SetActive(false);
+    public void ResumeGame()
+    {
+        cursorManager.HideCursor();
+        isPaused = false;
+        Time.timeScale = 1f; // Возобновляем время
+        pauseMenu.SetActive(false); // Скрываем панель меню паузы
+    }
+    private bool IsAnyPanelOpen()
+    {
+        // Проверяем состояние каждой панели
+        bool isShopOpen = shop.shopPanel.activeSelf;
+        bool isMainMenuOpen = mainMenu.canvasHero.activeSelf;
+        bool isLevelUpMenuOpen = levelUpMenu.levelUpPanel.activeSelf;
+        bool isPlayerSelectionOpen = playerSelectionManager.playerSelectionPanel.activeSelf;
+        bool isWeaponSelectionOpen = weaponSelectionManager.weaponSelectionPanel.activeSelf;
 
-        // Удаляем персонажа
-        var player = FindObjectOfType<PlayerHealth>();
-        if (player != null)
-        {
-            Destroy(player.gameObject);
-        }
-      
+        // Выводим в консоль состояние каждой панели для отладки
+        Debug.Log($"Shop Open: {isShopOpen}");
+        Debug.Log($"Main Menu Open: {isMainMenuOpen}");
+        Debug.Log($"Level Up Menu Open: {isLevelUpMenuOpen}");
+        Debug.Log($"Player Selection Open: {isPlayerSelectionOpen}");
+        Debug.Log($"Weapon Selection Open: {isWeaponSelectionOpen}");
+
+        // Если хотя бы одна панель открыта, возвращаем true
+        return isShopOpen || isMainMenuOpen || isLevelUpMenuOpen || isPlayerSelectionOpen || isWeaponSelectionOpen;
     }
 }

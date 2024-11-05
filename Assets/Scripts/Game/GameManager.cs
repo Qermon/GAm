@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
     public TMP_Text waveNumberText;
     private static GameManager instance; // Синглтон для доступа из других классов
     private MainMenu mainMenu;
+    private bool isPaused = false; // Переменная для отслеживания состояния паузы
+    private CursorManager cursorManager;
 
     void Awake()
     {
@@ -28,6 +30,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        cursorManager = FindObjectOfType<CursorManager>();
         mainMenu = FindObjectOfType<MainMenu>();
         waveManager = FindObjectOfType<WaveManager>();
         nextWaveTimerText = GameObject.Find("NextWaveTimerText")?.GetComponent<TMP_Text>();
@@ -70,6 +73,7 @@ public class GameManager : MonoBehaviour
         }
         // Обновление UI текстов
         UpdateWaveUI();
+
     }
 
     public void StartGame()
@@ -107,6 +111,7 @@ public class GameManager : MonoBehaviour
     {
         // Перезагружаем текущую сцену
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        cursorManager.ShowCursor();
     }
     public void RestartGameWithDelay()
     {
@@ -122,6 +127,4 @@ public class GameManager : MonoBehaviour
         // Перезагружаем текущую сцену
         RestartGame();
     }
-
-
 }
