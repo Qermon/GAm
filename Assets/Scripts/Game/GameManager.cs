@@ -1,5 +1,8 @@
 using TMPro; // Используем TextMeshPro
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using System.Collections;
+
 
 public class GameManager : MonoBehaviour
 {
@@ -7,7 +10,7 @@ public class GameManager : MonoBehaviour
     public TMP_Text nextWaveTimerText; // Ссылка на текст для таймера следующей волны
     public TMP_Text waveNumberText;
     private static GameManager instance; // Синглтон для доступа из других классов
-
+    private MainMenu mainMenu;
 
     void Awake()
     {
@@ -23,11 +26,20 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
-
     void Start()
     {
-        // Здесь можно инициализировать игру
+        mainMenu = FindObjectOfType<MainMenu>();
+        waveManager = FindObjectOfType<WaveManager>();
+        nextWaveTimerText = GameObject.Find("NextWaveTimerText")?.GetComponent<TMP_Text>();
+        waveNumberText = GameObject.Find("WaveNumberText")?.GetComponent<TMP_Text>();
+
+        // Проверяем, найдены ли тексты
+        if (nextWaveTimerText == null || waveNumberText == null)
+        {
+            Debug.LogError("Не удалось найти один или оба текстовых объекта для номера волны или таймера волны.");
+        }
+
+        // Инициализация игры
         waveManager = FindObjectOfType<WaveManager>(); // Найти WaveManager на сцене
         if (waveManager != null)
         {
@@ -35,21 +47,35 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("WaveManager not found! Make sure it's present in the scene.");
+            Debug.LogError("WaveManager не найден! Убедитесь, что он присутствует на сцене.");
         }
     }
 
     void Update()
     {
+        if (mainMenu == null)
+        {
+            mainMenu = FindObjectOfType<MainMenu>();
+        }
+
+            if (waveManager == null)
+        {
+            waveManager = FindObjectOfType<WaveManager>();
+        }
+
+            if (nextWaveTimerText == null || waveNumberText == null)
+        {
+            nextWaveTimerText = GameObject.Find("NextWaveTimerText")?.GetComponent<TMP_Text>();
+            waveNumberText = GameObject.Find("WaveNumberText")?.GetComponent<TMP_Text>();
+        }
         // Обновление UI текстов
         UpdateWaveUI();
     }
 
     public void StartGame()
     {
-
+        // Логика для старта игры
     }
-
 
     void UpdateWaveUI()
     {
@@ -72,12 +98,30 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
     public static GameManager GetInstance()
     {
         return instance; // Возвращаем текущий экземпляр GameManager
     }
 
-    // Вы можете добавить другие методы для управления состоянием игры,
-    // например, для паузы, перезапуска и т.д.
+    public void RestartGame()
+    {
+        // Перезагружаем текущую сцену
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+    public void RestartGameWithDelay()
+    {
+        StartCoroutine(RestartGameCoroutine());
+        Debug.Log("Перезапуск");
+    }
+
+    private IEnumerator RestartGameCoroutine()
+    {
+        // Ждем 2 секунды
+        yield return new WaitForSeconds(2f);
+
+        // Перезагружаем текущую сцену
+        RestartGame();
+    }
+
+
 }

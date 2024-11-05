@@ -36,12 +36,15 @@ public class PlayerHealth : MonoBehaviour
 
     private bool barrierOnLowHealthBuffActive = false; // Флаг активности баффа
     public bool barrierActivatedThisWave = false;
+    private bool isDead = false; // Переменная для отслеживания состояния смерти
 
     private bool healthRegenPerWaveActive = false;
     private MainMenu mainMenu;
+    private CursorManager cursorManager;
     private CircleCollider2D collectionRadius; // Ссылка на триггер-коллайдер для сбора предметов
     void Start()
     {
+        cursorManager = FindObjectOfType<CursorManager>();
         mainMenu = FindObjectOfType<MainMenu>();
         baseMaxHealth = maxHealth;
         // Инициализация текущего здоровья
@@ -233,6 +236,8 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        if (isDead) return; // Если персонаж уже мертв, выходим из метода
+
         int damageToTake = damage;
         CheckHealth(); // Проверяем текущее здоровье
 
@@ -276,7 +281,7 @@ public class PlayerHealth : MonoBehaviour
         if (currentHealth <= 0)
         {
             currentHealth = 0;
-            StartCoroutine(Die());
+            Die();
         }
 
         healthBar.SetHealth(currentHealth);
@@ -314,13 +319,12 @@ public class PlayerHealth : MonoBehaviour
         shieldAmount = Mathf.Max(shieldAmount, 0); // Убедитесь, что shieldAmount не меньше 0
 
     }
-    private IEnumerator Die()
+    private void Die()
     {
-
-        Debug.Log("Player died!");
+        isDead = true; // Устанавливаем, что персонаж мертв
+        cursorManager.ShowCursor();
+        GameManager.GetInstance().RestartGameWithDelay();
         gameObject.SetActive(false);
-        mainMenu.ShowMenuAfterDeath();
-        yield return null;
     }
     void OnCollisionEnter2D(Collision2D collision)
     {
