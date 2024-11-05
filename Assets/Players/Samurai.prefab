@@ -27,7 +27,7 @@ GameObject:
   - component: {fileID: 7761931963760183635}
   - component: {fileID: 5004405432405638982}
   m_Layer: 6
-  m_Name: Player 3
+  m_Name: Samurai
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42,8 +42,8 @@ Transform:
   m_GameObject: {fileID: 4792543018983292698}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 16.459991, y: -12.737092, z: 0}
-  m_LocalScale: {x: 0.1446239, y: 0.143593, z: 1}
+  m_LocalPosition: {x: 16.873, y: -12.714, z: 0}
+  m_LocalScale: {x: 0.1546239, y: 0.143593, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -89,12 +89,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 100
-  m_Sprite: {fileID: -507097142, guid: 2807b3bd88502a2499b056203b13a765, type: 3}
+  m_Sprite: {fileID: 894875974, guid: 2e5fb7d246d0ca34a84e15fc8a235b1f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 1
-  m_Size: {x: 2.5, y: 3.16}
+  m_Size: {x: 3, y: 3.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -159,12 +159,12 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.061712354, y: -0.2889477}
+  m_Offset: {x: 0.07166222, y: -0.21693182}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.57, y: 0.82}
-    newSize: {x: 2.5, y: 3.16}
+    oldSize: {x: 0.77, y: 0.81}
+    newSize: {x: 3, y: 3.16}
     adaptiveTilingThreshold: 0.5
     drawMode: 1
     adaptiveTiling: 0
@@ -211,7 +211,7 @@ Animator:
   m_GameObject: {fileID: 4792543018983292698}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 30ce22154d51a084b9ce34731bd55173, type: 2}
+  m_Controller: {fileID: 9100000, guid: af8c993aaa0d7614c8c3776a0eb81ae2, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -234,8 +234,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be02320f2ab232d4e8f8f4d258fe22b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  baseMaxHealth: 100
+  maxHealth: 130
+  baseMaxHealth: 130
   currentHealth: 0
   regen: 0.005
   baseRegen: 0.005
@@ -245,9 +245,9 @@ MonoBehaviour:
   investment: 90
   lifesteal: 0.002
   baseLifesteal: 0.002
-  basePickupRadius: 5
-  pickupRadius: 5
-  luck: 0
+  basePickupRadius: 7
+  pickupRadius: 7
+  luck: 30
   shieldAmount: 0
   maxShieldAmount: 0
   barrierActivatedThisWave: 1

@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
     private MainMenu mainMenu;
     private bool isPaused = false; // Переменная для отслеживания состояния паузы
     private CursorManager cursorManager;
+    public GameObject chestPanel; // Панель сундука в UI
+    
 
     void Awake()
     {
@@ -113,6 +115,19 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         cursorManager.ShowCursor();
     }
+
+    public void RestartGameOrChest()
+    {
+        if (waveManager.waveNumber < 5)
+        {
+            RestartGameWithDelay();
+        }
+        else
+        {
+            chestPanel.SetActive(true);
+        }
+    }
+
     public void RestartGameWithDelay()
     {
         StartCoroutine(RestartGameCoroutine());

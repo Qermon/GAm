@@ -113,19 +113,19 @@ TextureImporter:
       name: artbreeder-image-2024-11-03T12_44_57.550Z-removebg-preview_0
       rect:
         serializedVersion: 2
-        x: 116
-        y: 19
-        width: 254
-        height: 462
+        x: 312
+        y: 52
+        width: 669
+        height: 1226
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4e92a29f2f78e7143b7cad5e0b4e432e
-      internalID: 1733147593
+      spriteID: 9f8eb471125b2e348ad99930a3e8fb60
+      internalID: 2141785046
       vertices: []
       indices: 
       edges: []
@@ -141,7 +141,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      artbreeder-image-2024-11-03T12_44_57.550Z-removebg-preview_0: 1733147593
+      artbreeder-image-2024-11-03T12_44_57.550Z-removebg-preview_0: 2141785046
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

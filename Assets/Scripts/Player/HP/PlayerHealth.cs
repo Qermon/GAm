@@ -42,8 +42,11 @@ public class PlayerHealth : MonoBehaviour
     private MainMenu mainMenu;
     private CursorManager cursorManager;
     private CircleCollider2D collectionRadius; // Ссылка на триггер-коллайдер для сбора предметов
+    private WaveManager waveManager;
+
     void Start()
     {
+        waveManager = FindObjectOfType<WaveManager>();
         cursorManager = FindObjectOfType<CursorManager>();
         mainMenu = FindObjectOfType<MainMenu>();
         baseMaxHealth = maxHealth;
@@ -234,6 +237,12 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log($"Текущее значение барьера: {shieldAmount}, Максимальное значение барьера: {maxShieldAmount}");
     }
 
+    public void MaxHpEndWave()
+    {
+        currentHealth = maxHealth;
+        UpdateHealthUI();
+    }    
+
     public void TakeDamage(int damage)
     {
         if (isDead) return; // Если персонаж уже мертв, выходим из метода
@@ -323,7 +332,7 @@ public class PlayerHealth : MonoBehaviour
     {
         isDead = true; // Устанавливаем, что персонаж мертв
         cursorManager.ShowCursor();
-        GameManager.GetInstance().RestartGameWithDelay();
+        GameManager.GetInstance().RestartGameOrChest();
         gameObject.SetActive(false);
     }
     void OnCollisionEnter2D(Collision2D collision)

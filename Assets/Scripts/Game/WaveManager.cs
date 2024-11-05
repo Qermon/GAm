@@ -561,6 +561,7 @@ public class WaveManager : MonoBehaviour
             weapon.CritDamageWave(); // Останавливаем другие баффы
         }
 
+        playerHealth.MaxHpEndWave();
         MovePlayerToCenter();
         RemoveAllEXPObjects();
     }

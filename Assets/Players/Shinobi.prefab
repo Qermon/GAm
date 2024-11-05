@@ -27,7 +27,7 @@ GameObject:
   - component: {fileID: 4303593082725958616}
   - component: {fileID: -9078481875499614431}
   m_Layer: 6
-  m_Name: Player 1
+  m_Name: Shinobi
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -184,7 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74e97ddfcf52b3a439f38a8e1295bbdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 1.2
+  moveSpeed: 1.3
   moveDir: {x: 0, y: 0}
   lastHorizontalVector: 0
   lastVerticalVector: 0
@@ -235,13 +235,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  baseMaxHealth: 0
+  baseMaxHealth: 100
   currentHealth: 0
   regen: 0.005
   baseRegen: 0.005
   healthBar: {fileID: 0}
   barrierImage: {fileID: 0}
-  defense: 30
+  defense: 40
   investment: 0
   lifesteal: 0.002
   baseLifesteal: 0.002
@@ -293,8 +293,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 195a935a21f2e11469dfa5da7a7a7656, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 20
-  baseDamage: 20
+  damage: 25
+  baseDamage: 25
   criticalDamage: 10
   criticalChance: 0.1
   attackSpeed: 0.7
@@ -318,8 +318,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f717ede821df2e44bbe47cb963408292, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 70
-  baseDamage: 70
+  damage: 75
+  baseDamage: 75
   criticalDamage: 35
   criticalChance: 0.05
   attackSpeed: 0.33
@@ -342,8 +342,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51c30d2b6aab01044b7168c82df5e46c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 24
-  baseDamage: 24
+  damage: 29
+  baseDamage: 29
   criticalDamage: 22
   criticalChance: 0.12
   attackSpeed: 0.9
@@ -368,8 +368,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b07ccc19d39313c44aceee40016da0b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 24
-  baseDamage: 24
+  damage: 29
+  baseDamage: 29
   criticalDamage: 5
   criticalChance: 0.08
   attackSpeed: 1
@@ -392,8 +392,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef2c5f62c6a0be44bae089e52b6a18bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 35
-  baseDamage: 35
+  damage: 40
+  baseDamage: 40
   criticalDamage: 33
   criticalChance: 0.18
   attackSpeed: 0.5
@@ -418,8 +418,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d96df22641768a14581b6db3c5a51400, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 24
-  baseDamage: 24
+  damage: 29
+  baseDamage: 29
   criticalDamage: 15
   criticalChance: 0.03
   attackSpeed: 1.5
@@ -443,8 +443,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e049adf427b9384e8db55dab9c188bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 20
-  baseDamage: 20
+  damage: 25
+  baseDamage: 25
   criticalDamage: 25
   criticalChance: 0.07
   attackSpeed: 1.3
@@ -467,8 +467,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6acd7150a104484bac00dd849bbd510, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 25
-  baseDamage: 25
+  damage: 30
+  baseDamage: 30
   criticalDamage: 20
   criticalChance: 0.01
   attackSpeed: 1.2
