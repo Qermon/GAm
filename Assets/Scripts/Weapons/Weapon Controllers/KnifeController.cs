@@ -5,7 +5,6 @@ using UnityEngine;
 public class KnifeController : Weapon
 {
     public GameObject knifePrefab; // Префаб кинжала
-    public float attackInterval = 1.0f; // Интервал между атаками
     public float speed = 10f; // Скорость кинжала
     public float maxDistance = 5f; // Максимальное расстояние полета
 
@@ -19,7 +18,7 @@ public class KnifeController : Weapon
     {
         while (true)
         {
-            yield return new WaitForSeconds(attackInterval); // Ждем перед следующим броском
+            yield return new WaitForSeconds(1 / attackSpeed); // Интервал между атаками, зависит от атакспида
             if (IsEnemyInRange()) // Проверяем, есть ли враги в радиусе атаки
             {
                 ShootKnife();

@@ -30,10 +30,10 @@ public class WaveManager : MonoBehaviour
     private float timeStartedWave;
     private float waveDuration;
 
-    private float damageMultiplier = 1.2f;
-    private float healthMultiplier = 1.4f;
+    public float damageMultiplier = 1.15f;
+    public float healthMultiplier = 1.25f;
     public float speedMultiplier = 0.5f;
-    private float projectile = 1.2f;
+    public float projectile = 1.2f;
 
     public Transform player; // Ссылка на объект игрока
     public Vector2 centerOfMap = new Vector2(18.5f, -12.5f); // Координаты центра карты
@@ -666,7 +666,7 @@ public class WaveManager : MonoBehaviour
         // Волна 10
         waveConfigs.Add(10, new WaveConfig(60f, new List<EnemySpawn>
     {
-         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(290 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 5),
@@ -678,7 +678,7 @@ public class WaveManager : MonoBehaviour
         // Волна 11
         waveConfigs.Add(11, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(300 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 10),
@@ -690,7 +690,7 @@ public class WaveManager : MonoBehaviour
         // Волна 12
         waveConfigs.Add(12, new WaveConfig(60f, new List<EnemySpawn>
     {
-            new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+            new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(320 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -702,7 +702,7 @@ public class WaveManager : MonoBehaviour
         // Волна 13
         waveConfigs.Add(13, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -714,7 +714,7 @@ public class WaveManager : MonoBehaviour
         // Волна 14
         waveConfigs.Add(14, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),

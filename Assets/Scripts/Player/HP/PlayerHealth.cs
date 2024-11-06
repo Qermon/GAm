@@ -332,7 +332,7 @@ public class PlayerHealth : MonoBehaviour
     {
         isDead = true; // Устанавливаем, что персонаж мертв
         cursorManager.ShowCursor();
-        GameManager.GetInstance().RestartGameOrChest();
+        GameManager.GetInstance().RestartGameWithDelay();
         gameObject.SetActive(false);
     }
     void OnCollisionEnter2D(Collision2D collision)

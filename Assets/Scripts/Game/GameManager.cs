@@ -100,7 +100,7 @@ public class GameManager : MonoBehaviour
                 nextWaveTimerText.text = Mathf.Ceil(timeUntilNext).ToString();
             }
 
-            waveNumberText.text = "Wave: " + waveManager.GetWaveNumber();
+            waveNumberText.text = "Волна: " + waveManager.GetWaveNumber();
         }
     }
 
@@ -114,18 +114,6 @@ public class GameManager : MonoBehaviour
         // Перезагружаем текущую сцену
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         cursorManager.ShowCursor();
-    }
-
-    public void RestartGameOrChest()
-    {
-        if (waveManager.waveNumber < 5)
-        {
-            RestartGameWithDelay();
-        }
-        else
-        {
-            chestPanel.SetActive(true);
-        }
     }
 
     public void RestartGameWithDelay()

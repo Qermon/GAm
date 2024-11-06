@@ -14,11 +14,13 @@ public class PauseMenu : MonoBehaviour
     public CanvasGroup pauseMenuPanel; // CanvasGroup для панели меню
     private PlayerSelectionManager playerSelectionManager;
     private GameManager gameManager;
+    private SettingsPanelController settingsPanelController;
     private bool isPaused = false;
 
 
     private void Start()
     {
+        settingsPanelController = FindObjectOfType<SettingsPanelController>();
         gameManager = FindObjectOfType<GameManager>();
         playerSelectionManager = FindObjectOfType<PlayerSelectionManager>();
         cursorManager = FindObjectOfType<CursorManager>();
@@ -95,6 +97,7 @@ public class PauseMenu : MonoBehaviour
         bool isLevelUpMenuOpen = levelUpMenu.levelUpPanel.activeSelf;
         bool isPlayerSelectionOpen = playerSelectionManager.playerSelectionPanel.activeSelf;
         bool isWeaponSelectionOpen = weaponSelectionManager.weaponSelectionPanel.activeSelf;
+        bool isSettingPanelController = settingsPanelController.settingsPanel.activeSelf;
 
         // Выводим в консоль состояние каждой панели для отладки
         Debug.Log($"Shop Open: {isShopOpen}");
@@ -102,8 +105,9 @@ public class PauseMenu : MonoBehaviour
         Debug.Log($"Level Up Menu Open: {isLevelUpMenuOpen}");
         Debug.Log($"Player Selection Open: {isPlayerSelectionOpen}");
         Debug.Log($"Weapon Selection Open: {isWeaponSelectionOpen}");
+        Debug.Log($"Weapon Selection Open: {isSettingPanelController}");
 
         // Если хотя бы одна панель открыта, возвращаем true
-        return isShopOpen || isMainMenuOpen || isLevelUpMenuOpen || isPlayerSelectionOpen || isWeaponSelectionOpen;
+        return isShopOpen || isMainMenuOpen || isLevelUpMenuOpen || isPlayerSelectionOpen || isWeaponSelectionOpen || isSettingPanelController;
     }
 }

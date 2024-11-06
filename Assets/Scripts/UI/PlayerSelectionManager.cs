@@ -14,7 +14,18 @@ public class PlayerSelectionManager : MonoBehaviour
     public TextMeshProUGUI heroNameText; // Текст для отображения имени героя
     public Button confirmButton; // Кнопка подтверждения выбора
 
+    // Кнопки для выбора персонажа
+    public Button button1;
+    public Button button2;
+    public Button button3;
+
+    public Color activeColor = new Color(1f, 1f, 1f, 1f); // Полная непрозрачность
+    public Color inactiveColor = new Color(1f, 1f, 1f, 0.5f); // Полупрозрачность
+
     private GameObject selectedPlayerPrefab;
+    private GameObject[] playerPrefabs;
+    private Button[] buttons;
+
     private ExperienceBarImage experienceBarImage;
     private PlayerLevelUp playerLevelUp;
     private Shop shop;
@@ -22,9 +33,11 @@ public class PlayerSelectionManager : MonoBehaviour
     private PlayerGold playerGold;
     private WaveManager waveManager;
     private WeaponSelectionManager weaponSelectionManager;
+    private MainMenu mainMenu;
 
     void Start()
     {
+        mainMenu = FindObjectOfType<MainMenu>();
         weaponSelectionManager = FindObjectOfType<WeaponSelectionManager>();
         playerGold = FindObjectOfType<PlayerGold>();
         levelUpMenu = FindAnyObjectByType<LevelUpMenu>();
@@ -33,19 +46,49 @@ public class PlayerSelectionManager : MonoBehaviour
         experienceBarImage = FindObjectOfType<ExperienceBarImage>();
         waveManager = FindObjectOfType<WaveManager>();
 
-        // По умолчанию выбран первый игрок
-        selectedPlayerPrefab = playerPrefab1;
+        // Список префабов персонажей
+        playerPrefabs = new GameObject[] { playerPrefab1, playerPrefab2, playerPrefab3 };
+        buttons = new Button[] { button1, button2, button3 };
+
+        // Загружаем выбранного персонажа при старте или выбираем первого по умолчанию
+        LoadPlayerSelection();
+
+        // По умолчанию показываем характеристики выбранного персонажа
         DisplayPlayerStats(selectedPlayerPrefab);
-        confirmButton.interactable = false; // Блокируем кнопку подтверждения, пока не выберем другого игрока
+
+        // Кнопка подтверждения всегда активна
+        confirmButton.interactable = true;
+
+        // Устанавливаем обработчики на кнопки
+        button1.onClick.AddListener(() => OnPlayerButtonClick(playerPrefab1, 1));
+        button2.onClick.AddListener(() => OnPlayerButtonClick(playerPrefab2, 2));
+        button3.onClick.AddListener(() => OnPlayerButtonClick(playerPrefab3, 3));
     }
 
-    public void OnPlayerButtonClick(GameObject playerPrefab)
+    // Выбор персонажа
+    public void OnPlayerButtonClick(GameObject playerPrefab, int playerId)
     {
         selectedPlayerPrefab = playerPrefab;
         DisplayPlayerStats(selectedPlayerPrefab);
-        confirmButton.interactable = true; // Разблокируем кнопку подтверждения
+
+        // Сохраняем выбор персонажа
+        PlayerPrefs.SetInt("SelectedPlayer", playerId);
+        PlayerPrefs.Save(); // Сохраняем изменения
+
+        // Обновляем цвет кнопок
+        UpdateButtonColors();
     }
 
+    // Подсветка кнопок в зависимости от выбора персонажа
+    void UpdateButtonColors()
+    {
+        for (int i = 0; i < playerPrefabs.Length; i++)
+        {
+            buttons[i].GetComponent<Image>().color = (playerPrefabs[i] == selectedPlayerPrefab) ? activeColor : inactiveColor;
+        }
+    }
+
+    // Подтверждение выбора персонажа
     public void OnConfirmSelection()
     {
         if (selectedPlayerPrefab != null)
@@ -55,25 +98,19 @@ public class PlayerSelectionManager : MonoBehaviour
         }
     }
 
+    // Отображение характеристик выбранного персонажа
     private void DisplayPlayerStats(GameObject playerPrefab)
     {
-        // Устанавливаем имя героя
         heroNameText.text = playerPrefab.name; // Убедитесь, что у вашего префаба установлено имя
 
-        // Получаем компоненты здоровья и оружия
         PlayerHealth playerHealth = playerPrefab.GetComponent<PlayerHealth>();
         Weapon[] playerWeapons = playerPrefab.GetComponentsInChildren<Weapon>();
         PlayerMovement playerMovement = playerPrefab.GetComponent<PlayerMovement>();
 
-        // Инициализируем переменные для расчета средних значений
-        float totalDamage = 0f;
-        float totalCritDamage = 0f;
-        float totalCritChance = 0f;
-        float totalAttackSpeed = 0f;
-        float totalAttackRange = 0f;
+        // Суммируем характеристики всех оружий
+        float totalDamage = 0f, totalCritDamage = 0f, totalCritChance = 0f, totalAttackSpeed = 0f, totalAttackRange = 0f;
         int weaponCount = playerWeapons.Length;
 
-        // Суммируем характеристики всех оружий
         foreach (Weapon weapon in playerWeapons)
         {
             totalDamage += weapon.damage;
@@ -83,17 +120,13 @@ public class PlayerSelectionManager : MonoBehaviour
             totalAttackRange += weapon.attackRange;
         }
 
-        // Вычисляем средние значения
         float avgDamage = weaponCount > 0 ? totalDamage / weaponCount : 0f;
         float avgCritDamage = weaponCount > 0 ? totalCritDamage / weaponCount : 0f;
         float avgCritChance = weaponCount > 0 ? totalCritChance / weaponCount : 0f;
         float avgAttackSpeed = weaponCount > 0 ? totalAttackSpeed / weaponCount : 0f;
         float avgAttackRange = weaponCount > 0 ? totalAttackRange / weaponCount : 0f;
 
-        // Формируем текст для отображения всех характеристик
-        string statsInfo = "";
-
-        statsInfo += $"Здоровье: {(int)playerHealth.baseMaxHealth}\n";
+        string statsInfo = $"Здоровье: {(int)playerHealth.baseMaxHealth}\n";
         statsInfo += $"Урон: {(int)avgDamage}\n";
         statsInfo += $"Крит. урон: {(int)avgCritDamage}\n";
         statsInfo += $"Крит. шанс: {(int)(avgCritChance * 100)}%\n";
@@ -107,13 +140,12 @@ public class PlayerSelectionManager : MonoBehaviour
         statsInfo += $"Инвестиции: {(int)playerHealth.investment}\n";
         statsInfo += $"Удача: {(int)playerHealth.luck}\n";
 
-        // Обновляем текст в окне характеристик
         statsText.text = statsInfo;
 
-        // Показываем окно характеристик
         statsWindow.SetActive(true);
     }
 
+    // Спавн выбранного персонажа
     private void SpawnPlayer(GameObject playerPrefab)
     {
         GameObject playerInstance = Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity);
@@ -140,5 +172,21 @@ public class PlayerSelectionManager : MonoBehaviour
             shop.RestartScript();
             levelUpMenu.RestartScript();
         }
+    }
+
+    // Загрузка сохраненного выбора персонажа
+    void LoadPlayerSelection()
+    {
+        int selectedPlayerId = PlayerPrefs.GetInt("SelectedPlayer", 1); // По умолчанию выбираем первого персонажа
+        selectedPlayerPrefab = playerPrefabs[selectedPlayerId - 1]; // Индексы PlayerPrefs начинаются с 1
+
+        // Обновляем цвета кнопок
+        UpdateButtonColors();
+    }
+
+    public void Exit()
+    {
+        mainMenu.mainMenu.SetActive(true);
+        playerSelectionPanel.SetActive(false);
     }
 }

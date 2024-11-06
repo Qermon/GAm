@@ -5,27 +5,23 @@ public class MainMenu : MonoBehaviour
     public CanvasGroup mainMenuPanel; // CanvasGroup для панели меню
     public GameObject canvasHero;
     private CursorManager cursorManager;
-    private InventoryUIManager inventoryUIManager;
+    private SettingsPanelController settingsPanelController;
+    public GameObject mainMenu;
 
     private void Start()
     {
-        inventoryUIManager = FindObjectOfType<InventoryUIManager>();
+        
+        settingsPanelController = FindObjectOfType<SettingsPanelController>();
         cursorManager = FindObjectOfType<CursorManager>();
         // Показать панель при запуске игры
-        mainMenuPanel.alpha = 1;
-        mainMenuPanel.interactable = true;
-        mainMenuPanel.blocksRaycasts = true;
+        mainMenu.SetActive(true);
         Time.timeScale = 0f; // Останавливаем игру при открытии меню
     }
 
     // Метод для кнопки "Играть"
     public void OnPlayButtonPressed()
     {
-        // Прячем панель меню
-        mainMenuPanel.alpha = 0;
-        mainMenuPanel.interactable = false;
-        mainMenuPanel.blocksRaycasts = false;
-
+        mainMenu.SetActive(false);
         // Открываем панель CanvasHero
         canvasHero.SetActive(true);
         Time.timeScale = 1f; // Возобновляем игру
@@ -33,13 +29,13 @@ public class MainMenu : MonoBehaviour
 
     public void OnInventoryButtonPressed()
     {
-        inventoryUIManager.inventoryPanel.SetActive(true);
+
     }    
 
     // Метод для кнопки "Настройки" (пока пустой)
     public void OnSettingsButtonPressed()
     {
-        Debug.Log("Настройки будут добавлены позже.");
+        settingsPanelController.settingsPanel.SetActive(true); // Скрываем панель
     }
 
     // Метод для кнопки "Выход"
