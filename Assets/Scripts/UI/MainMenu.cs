@@ -5,9 +5,11 @@ public class MainMenu : MonoBehaviour
     public CanvasGroup mainMenuPanel; // CanvasGroup для панели меню
     public GameObject canvasHero;
     private CursorManager cursorManager;
+    private InventoryUIManager inventoryUIManager;
 
     private void Start()
     {
+        inventoryUIManager = FindObjectOfType<InventoryUIManager>();
         cursorManager = FindObjectOfType<CursorManager>();
         // Показать панель при запуске игры
         mainMenuPanel.alpha = 1;
@@ -28,6 +30,11 @@ public class MainMenu : MonoBehaviour
         canvasHero.SetActive(true);
         Time.timeScale = 1f; // Возобновляем игру
     }
+
+    public void OnInventoryButtonPressed()
+    {
+        inventoryUIManager.inventoryPanel.SetActive(true);
+    }    
 
     // Метод для кнопки "Настройки" (пока пустой)
     public void OnSettingsButtonPressed()

@@ -1,54 +1,69 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ItemInitializer : MonoBehaviour
 {
-    public List<Item> allItems; // Список для хранения всех предметов
+    public Sprite[] bootsIcons;
+    public Sprite[] chestplateIcons;
+    public Sprite[] glovesIcons;
+    public Sprite[] helmetIcons;
+    public Sprite[] pantsIcons;
+    public Sprite[] weaponIcons;
 
-    private void Start()
+    public InventoryManager inventoryManager;
+
+    void Start()
     {
+        InitializeRandomItems();
         InitializeItems();
     }
 
-    private void InitializeItems()
+    void InitializeItems()
     {
-        // Создание предметов для каждого типа
-        for (int i = 1; i <= 3; i++)
-        {
-            allItems.Add(CreateItem($"boots_{i}", ItemType.Boots));
-        }
-        for (int i = 1; i <= 5; i++)
-        {
-            allItems.Add(CreateItem($"chestplate_{i}", ItemType.Chestplate));
-        }
-        for (int i = 1; i <= 8; i++)
-        {
-            allItems.Add(CreateItem($"gloves_{i}", ItemType.Gloves));
-        }
-        for (int i = 1; i <= 7; i++)
-        {
-            allItems.Add(CreateItem($"helmet_{i}", ItemType.Helmet));
-        }
-        for (int i = 1; i <= 3; i++)
-        {
-            allItems.Add(CreateItem($"pants_{i}", ItemType.Pants));
-        }
-        for (int i = 1; i <= 4; i++)
-        {
-            allItems.Add(CreateItem($"weapon_{i}", ItemType.Weapon));
-        }
+        // Добавление предметов в инвентарь
+        inventoryManager.AddItem(new Item("Boots 1", ItemType.Boots, bootsIcons[0], ItemStatType.Defense, 5));
+        inventoryManager.AddItem(new Item("Chestplate 1", ItemType.Chestplate, chestplateIcons[0], ItemStatType.Defense, 10));
+        inventoryManager.AddItem(new Item("Gloves 1", ItemType.Gloves, glovesIcons[0], ItemStatType.Agility, 3));
+        inventoryManager.AddItem(new Item("Helmet 1", ItemType.Helmet, helmetIcons[0], ItemStatType.Health, 15));
+        inventoryManager.AddItem(new Item("Pants 1", ItemType.Pants, pantsIcons[0], ItemStatType.Defense, 7));
+        inventoryManager.AddItem(new Item("Weapon 1", ItemType.Weapon, weaponIcons[0], ItemStatType.Attack, 20));
+
+        // Обновляем UI после того, как предметы добавлены
+        inventoryManager.UpdateUI();
     }
 
-    private Item CreateItem(string name, ItemType itemType)
+    void InitializeRandomItems()
     {
-        Item item = new Item
-        {
-            itemName = name,
-            itemType = itemType,
-            icon = Resources.Load<Sprite>($"Icons/{itemType}/{name}"),
-            itemValue = 1 // Установите значение или другие характеристики, если необходимо
-        };
+        // Добавляем случайные предметы в инвентарь
 
-        return item;
+        // Случайный предмет для ботинок
+        AddRandomItem(ItemType.Boots, bootsIcons, ItemStatType.Defense);
+
+        // Случайный предмет для бронежилета
+        AddRandomItem(ItemType.Chestplate, chestplateIcons, ItemStatType.Defense);
+
+        // Случайный предмет для перчаток
+        AddRandomItem(ItemType.Gloves, glovesIcons, ItemStatType.Agility);
+
+        // Случайный предмет для шлема
+        AddRandomItem(ItemType.Helmet, helmetIcons, ItemStatType.Health);
+
+        // Случайный предмет для штанов
+        AddRandomItem(ItemType.Pants, pantsIcons, ItemStatType.Defense);
+
+        // Случайный предмет для оружия
+        AddRandomItem(ItemType.Weapon, weaponIcons, ItemStatType.Attack);
+    }
+
+    // Метод для создания случайного предмета
+    void AddRandomItem(ItemType itemType, Sprite[] itemIcons, ItemStatType statType)
+    {
+        // Выбираем случайный индекс иконки
+        int randomIndex = Random.Range(0, itemIcons.Length);
+
+        // Создаем новый случайный предмет с случайным значением
+        int randomValue = Random.Range(1, 21); // Случайное значение для характеристики (например, от 1 до 20)
+
+        // Добавляем предмет в инвентарь
+        inventoryManager.AddItem(new Item($"{itemType} {randomIndex + 1}", itemType, itemIcons[randomIndex], statType, randomValue));
     }
 }

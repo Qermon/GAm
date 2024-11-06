@@ -1,62 +1,66 @@
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 public class ChestManager : MonoBehaviour
 {
-    public GameObject chestPanel; // Панель с кнопкой сундука
-    public Button openChestButton; // Кнопка открытия сундука
-    public InventoryUIManager inventoryUIManager; // Ссылка на ваш инвентарный менеджер
-    public WaveManager waveManager; // Ссылка на WaveManager
+    public GameObject chestPanel;
+    public Button openChestButton;
+    public InventoryUIManager inventoryUIManager;
+    public WaveManager waveManager;
 
     void Start()
     {
         waveManager = FindObjectOfType<WaveManager>();
         openChestButton.onClick.AddListener(OpenChest);
-        chestPanel.SetActive(false); // Делаем панель невидимой в начале
+        chestPanel.SetActive(false);
     }
 
     public void ShowChestPanel()
     {
-        chestPanel.SetActive(true); // Показываем панель сундука
+        chestPanel.SetActive(true);
     }
 
     private void OpenChest()
     {
-        Item newItem = GenerateRandomItem(); // Генерируем новый предмет
-        inventoryUIManager.AddItemToInventory(newItem); // Добавляем предмет в инвентарь
-        InventoryManager.Instance.AddItemToInventory(newItem);
-        chestPanel.SetActive(false); // Закрываем панель сундука
+        Item newItem = GenerateRandomItem();
+        chestPanel.SetActive(false);
 
-        GameManager.GetInstance().RestartGameWithDelay(); // Перезапускаем игру
+        GameManager.GetInstance().RestartGameWithDelay();
     }
-
 
     private Item GenerateRandomItem()
     {
-        // Логика генерации случайного предмета
         ItemType randomType = (ItemType)Random.Range(0, System.Enum.GetValues(typeof(ItemType)).Length);
-        Sprite randomIcon = LoadRandomIcon(randomType); // Получаем случайную иконку для предмета
+        Sprite randomIcon = LoadRandomIcon(randomType);
 
-        return new Item
-        {
-            itemName = randomType.ToString(),
-            itemType = randomType,
-            icon = randomIcon, // Используем случайную иконку
-            itemValue = Random.Range(1, 100) // Пример случайного значения
-        };
+        // Случайная характеристика и её значение в зависимости от волны
+        ItemStatType statType = (ItemStatType)Random.Range(0, System.Enum.GetValues(typeof(ItemStatType)).Length);
+        int wave = waveManager.waveNumber;
+        int statValue = GetStatValueForWave(statType, wave);
+
+        return new Item(randomType.ToString(), randomType, randomIcon, statType, statValue);
+    }
+
+    private int GetStatValueForWave(ItemStatType statType, int wave)
+    {
+        // Определяем значение баффа в зависимости от волны (например, от 3 до 7 для волны 5)
+        int minValue = wave / 2;
+        int maxValue = wave + 2;
+        return Random.Range(minValue, maxValue);
     }
 
     private Sprite LoadRandomIcon(ItemType itemType)
     {
-        string path = $"Icons/{itemType}"; // Путь к папке с иконками
-        Sprite[] icons = Resources.LoadAll<Sprite>(path); // Загружаем все спрайты из папки
+        string path = $"Icons/{itemType}";
+        Sprite[] icons = Resources.LoadAll<Sprite>(path);
 
         if (icons.Length > 0)
         {
-            int randomIndex = Random.Range(0, icons.Length); // Выбор случайного индекса
-            return icons[randomIndex]; // Возвращаем случайную иконку
+            int randomIndex = Random.Range(0, icons.Length);
+            return icons[randomIndex];
         }
 
-        return null; // Если иконки не найдены, возвращаем null
+        return null;
     }
 }

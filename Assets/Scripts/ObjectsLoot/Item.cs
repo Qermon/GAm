@@ -1,22 +1,41 @@
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 [System.Serializable]
 public class Item
 {
     public string itemName;
-    public ItemType itemType; // Тип предмета (например, нагрудник, шлем и т.д.)
-    public Sprite icon; // Добавляем поле для иконки
-    public int itemValue; // Значение или другие характеристики предмета
+    public ItemType itemType;
+    public Sprite icon;
+    public ItemStatType statType; // Тип характеристики предмета
+    public int itemValue; // Значение для повышения характеристики (например, +5 урона)
+
+    // Конструктор для создания предмета
+    public Item(string name, ItemType type, Sprite icon, ItemStatType statType, int itemValue)
+    {
+        itemName = name;
+        itemType = type;
+        this.icon = icon;
+        this.statType = statType;
+        this.itemValue = itemValue;
+    }
 }
+
 
 public enum ItemType
 {
+    Helmet,
     Chestplate,
     Pants,
-    Gloves,
-    Helmet,
     Boots,
-    Weapon
+    Weapon,
+    Gloves
 }
+
+public enum ItemStatType
+{
+    Health,
+    Attack,
+    Defense,
+    Agility
+}
+
