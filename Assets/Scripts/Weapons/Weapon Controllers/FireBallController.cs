@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ public class FireBallController : Weapon
         ResetAttackTimer();
     }
 
-    protected override void Update()
+    public override void Update()
     {
         base.Update();
 
@@ -42,8 +43,36 @@ public class FireBallController : Weapon
             fireBall.tag = "Weapon"; // Устанавливаем тег
             FireBall fireBallScript = fireBall.AddComponent<FireBall>(); // Добавляем компонент для логики снаряда
             fireBallScript.Initialize(nearestEnemy.transform.position, projectileSpeed, projectileLifetime, this); // Передаем параметры
+
+            // Настраиваем звук огненного шара
+            AudioSource audioSource = fireBall.GetComponent<AudioSource>();
+            if (audioSource != null)
+            {
+                audioSource.spatialBlend = 0f; // 2D звук
+                audioSource.minDistance = 1f; // Минимальное расстояние для звука
+                audioSource.maxDistance = 15f; // Максимальное расстояние для звука
+
+                // Вычисляем угол между направлением снаряда и правой стороной игрока
+                Vector3 directionToEnemy = nearestEnemy.transform.position - transform.position;
+                float angle = Vector3.SignedAngle(Vector3.right, directionToEnemy, Vector3.forward);
+
+                // Нормализуем угол для панорамы от -1 до 1
+                float pan;
+                if (angle >= -90 && angle <= 90)
+                {
+                    pan = Mathf.InverseLerp(-90f, 90f, angle); // Справа от игрока: 0 до 1
+                }
+                else
+                {
+                    pan = -Mathf.InverseLerp(90f, 270f, Mathf.Abs(angle)); // Слева от игрока: 0 до -1
+                }
+
+                audioSource.panStereo = pan; // Устанавливаем панораму звука
+                audioSource.Play(); // Проигрываем звук
+            }
         }
     }
+
 
     private GameObject FindNearestEnemy()
     {
@@ -67,6 +96,7 @@ public class FireBallController : Weapon
         return nearestEnemy; // Возвращаем ближайшего врага
     }
 }
+
 
 public class FireBall : MonoBehaviour
 {
@@ -96,7 +126,6 @@ public class FireBall : MonoBehaviour
         Destroy(gameObject, lifetime); // Уничтожаем снаряд через lifetime секунд
     }
 
-
     private void Update()
     {
         // Двигаем снаряд по направлению
@@ -118,7 +147,6 @@ public class FireBall : MonoBehaviour
             }
         }
     }
-
 
     // Проверка, можно ли атаковать врага (учитывая время последней атаки)
     private bool CanAttackEnemy(GameObject enemy)
@@ -147,3 +175,4 @@ public class FireBall : MonoBehaviour
         }
     }
 }
+

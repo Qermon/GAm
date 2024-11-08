@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8310163170549732737}
   - component: {fileID: 5820852160046957949}
   - component: {fileID: 7466128492686286753}
+  - component: {fileID: 4468717036769413834}
   m_Layer: 3
   m_Name: Character_sheet_0
   m_TagString: Enemy
@@ -29,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 16.7037, y: -7.9268, z: 0}
-  m_LocalScale: {x: 0.6184, y: 0.6556, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -147,4 +148,31 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.96
+  m_Radius: 0.90683866
+--- !u!114 &4468717036769413834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2062581547840455366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e6cbda08a2e29a4999ccd1ae71c3224, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  goldAmount: 1
+  maxHealth: 1000
+  currentHealth: 1000
+  enemyMoveSpeed: 1
+  damage: 0
+  attackRange: 0.1
+  attackCooldown: 1
+  experienceItemPrefab: {fileID: 0}
+  experienceAmount: 20
+  baseMaxHealth: 1000
+  baseEnemyMoveSpeed: 1
+  baseDamage: 10
+  damageTextPrefab: {fileID: 8397397958086147261, guid: 9a0ed8fe11e949a49b3e3baa590f73e0, type: 3}
+  canvas: {fileID: 0}
+  bloodEffectPrefab: {fileID: 3705117576596526473, guid: e5a7816d5d4589e4d8e44c4d9123ae14, type: 3}

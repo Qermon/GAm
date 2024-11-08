@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 /// <summary>
@@ -8,6 +9,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed;
+    public float baseMoveSpeed;
     Rigidbody2D rb;
 
     [HideInInspector]
@@ -65,7 +67,7 @@ public class PlayerMovement : MonoBehaviour
     // Метод для увеличения скорости движения
     public void IncreaseMoveSpeed(float percentage)
     {
-        float increaseAmount = moveSpeed * percentage;
+        float increaseAmount = baseMoveSpeed * percentage;
         moveSpeed += increaseAmount;// Увеличиваем скорость движения
         Debug.Log($"Скорость движения увеличена на {increaseAmount}%. Новая скорость: {moveSpeed}");
     }

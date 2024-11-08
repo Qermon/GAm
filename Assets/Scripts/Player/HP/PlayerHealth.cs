@@ -31,8 +31,8 @@ public class PlayerHealth : MonoBehaviour
     public float maxShieldAmount = 0; // Для отслеживания предыдущего значения щита
 
     private bool shieldOnKillBuffActive = false; // Флаг активности баффа
-    private const float shieldChance = 0.05f; // 5% шанс
-    private const float shieldPercentage = 0.1f; // 10% от макс. здоровья
+    private const float shieldChance = 0.01f; // 5% шанс
+    private const float shieldPercentage = 0.05f; // 10% от макс. здоровья
 
     private bool barrierOnLowHealthBuffActive = false; // Флаг активности баффа
     public bool barrierActivatedThisWave = false;
@@ -44,8 +44,26 @@ public class PlayerHealth : MonoBehaviour
     private CircleCollider2D collectionRadius; // Ссылка на триггер-коллайдер для сбора предметов
     private WaveManager waveManager;
 
+    public AudioSource damageSound;  // Ссылка на компонент AudioSource для звука урона
+
     void Start()
     {
+        // Найти объект с названием "Урон" и получить его компонент AudioSource
+        GameObject damageSoundObject = GameObject.Find("Урон");
+        if (damageSoundObject != null)
+        {
+            damageSound = damageSoundObject.GetComponent<AudioSource>();
+            if (damageSound == null)
+            {
+                Debug.LogError("На объекте 'Урон' отсутствует компонент AudioSource!");
+            }
+        }
+        else
+        {
+            Debug.LogError("Объект 'Урон' не найден на сцене!");
+        }
+        GameObject waveManagerObject = GameObject.FindGameObjectWithTag("WaveManager");
+
         waveManager = FindObjectOfType<WaveManager>();
         cursorManager = FindObjectOfType<CursorManager>();
         mainMenu = FindObjectOfType<MainMenu>();
@@ -245,6 +263,18 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        // Останавливаем предыдущий звук, если он проигрывается
+        if (damageSound.isPlaying)
+        {
+            damageSound.Stop();
+        }
+
+        // Проигрываем звук урона
+        if (damageSound != null)
+        {
+            damageSound.Play();
+        }
+
         if (isDead) return; // Если персонаж уже мертв, выходим из метода
 
         int damageToTake = damage;
@@ -270,6 +300,9 @@ public class PlayerHealth : MonoBehaviour
         float damageReduction = Mathf.Min(defense / 10 * 0.04f, 0.8f);
         int reducedDamage = Mathf.RoundToInt(damageToTake * (1 - damageReduction));
         currentHealth -= reducedDamage;
+
+        
+
 
         // Проверка на запуск регенерации после получения урона
         if (currentHealth < maxHealth)

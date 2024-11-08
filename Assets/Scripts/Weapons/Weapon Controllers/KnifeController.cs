@@ -35,37 +35,66 @@ public class KnifeController : Weapon
             GameObject spawnedKnife = Instantiate(knifePrefab, transform.position, Quaternion.identity);
             KnifeBehaviour knifeBehaviour = spawnedKnife.AddComponent<KnifeBehaviour>(); // Добавляем поведение кинжала
             knifeBehaviour.Initialize(directionToEnemy, speed, (int)CalculateDamage(), transform, maxDistance, this); // Устанавливаем параметры
+
+            // Получаем AudioSource из префаба кинжала
+            AudioSource audioSource = spawnedKnife.GetComponent<AudioSource>();
+            if (audioSource != null)
+            {
+                audioSource.spatialBlend = 0f; // 2D звук
+                audioSource.minDistance = 1f; // Минимальное расстояние для звука
+                audioSource.maxDistance = 15f; // Максимальное расстояние для звука
+
+                // Вычисляем угол между направлением снаряда и правой стороной игрока (по оси X)
+                float angle = Vector3.SignedAngle(Vector3.right, directionToEnemy, Vector3.forward);
+
+                // Нормализуем угол для панорамы: от -1 (лево) до 1 (право)
+                float pan;
+                if (angle >= -90 && angle <= 90)
+                {
+                    pan = Mathf.InverseLerp(-90f, 90f, angle); // Справа от игрока: 0 до 1
+                }
+                else
+                {
+                    pan = -Mathf.InverseLerp(90f, 270f, Mathf.Abs(angle)); // Слева от игрока: 0 до -1
+                }
+
+                audioSource.panStereo = pan; // Устанавливаем панораму звука
+                audioSource.Play(); // Проигрываем звук
+            }
         }
     }
 
+
+
+
     private GameObject FindEnemyWithMostHealth()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly")); // Находим всех врагов в радиусе атаки
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
         GameObject strongestEnemy = null;
         float highestHealth = -1;
 
         foreach (Collider2D enemy in enemies)
         {
             Enemy enemyScript = enemy.GetComponent<Enemy>();
-            if (enemyScript != null && enemyScript.currentHealth > highestHealth) // Используем currentHealth
+            if (enemyScript != null && enemyScript.currentHealth > highestHealth)
             {
-                highestHealth = enemyScript.currentHealth; // Запоминаем здоровье врага
-                strongestEnemy = enemy.gameObject; // Запоминаем врага с наибольшим здоровьем
+                highestHealth = enemyScript.currentHealth;
+                strongestEnemy = enemy.gameObject;
             }
         }
-        return strongestEnemy; // Возвращаем врага с наибольшим здоровьем
+        return strongestEnemy;
     }
 
     private bool IsEnemyInRange()
     {
         Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
-        return enemies.Length > 0; // Если есть хотя бы один враг в радиусе атаки, возвращаем true
+        return enemies.Length > 0;
     }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange); // Рисуем радиус атаки в редакторе
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }
 
@@ -121,7 +150,6 @@ public class KnifeBehaviour : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
 
     public void Initialize(Vector3 newDirection, float knifeSpeed, int knifeDamage, Transform playerTransform, float maxDistance, Weapon weapon)
     {

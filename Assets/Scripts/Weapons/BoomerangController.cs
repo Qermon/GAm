@@ -11,6 +11,7 @@ public class BoomerangController : Weapon
 
     private new void Start()
     {
+        base.Start();
         StartCoroutine(ShootBoomerangs()); // Запускаем корутину для броска бумерангов
     }
 
@@ -35,10 +36,13 @@ public class BoomerangController : Weapon
             bool isCriticalHit = finalDamage > damage;
 
             GameObject spawnedBoomerang = Instantiate(boomerangPrefab, transform.position, Quaternion.identity);
+            spawnedBoomerang.name = "Boomerang"; // Назначаем имя объекту
+
             BoomerangBehaviour boomerangBehaviour = spawnedBoomerang.AddComponent<BoomerangBehaviour>(); // Добавляем поведение бумеранга
             boomerangBehaviour.Initialize(directionToEnemy, speed, (int)finalDamage, isCriticalHit, transform, returnSpeed, maxDistance); // Передаем значения
         }
     }
+
 
     private GameObject FindClosestEnemy()
     {
@@ -59,6 +63,7 @@ public class BoomerangController : Weapon
     }
 }
 
+
 public class BoomerangBehaviour : MonoBehaviour
 {
     private Vector3 direction; // Направление движения бумеранга
@@ -73,6 +78,8 @@ public class BoomerangBehaviour : MonoBehaviour
     private Vector3 startPosition; // Начальная позиция бумеранга
     private float distanceTraveled; // Пройденное расстояние
 
+    private AudioSource audioSource; // Источник звука для бумеранга
+
     // Словарь для отслеживания времени последней атаки по каждому врагу
     private static Dictionary<GameObject, float> lastAttackTimes = new Dictionary<GameObject, float>();
     private float attackCooldown = 0.3f; // Время между атаками по одному и тому же врагу (0.3 секунды)
@@ -81,7 +88,20 @@ public class BoomerangBehaviour : MonoBehaviour
     {
         startPosition = transform.position; // Устанавливаем начальную позицию
         Destroy(gameObject, 5f); // Уничтожаем бумеранг через 5 секунд, если не вернулся
+
+        // Получаем AudioSource на бумеранге
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource != null)
+        {
+            // Настройка панорамы звука в зависимости от направления
+            float pan = Mathf.Clamp(direction.x, -0.4f, 0.4f); // -1 для левого, 1 для правого
+            audioSource.panStereo = pan; // Устанавливаем панораму в AudioSource
+
+            // Воспроизведение звука
+            audioSource.Play();
+        }
     }
+
 
     private void Update()
     {
@@ -135,6 +155,14 @@ public class BoomerangBehaviour : MonoBehaviour
         player = playerTransform;
         this.returnSpeed = returnSpeed;
         this.maxDistance = maxDistance;
+
+        // Настройка панорамы для звука
+        if (audioSource != null)
+        {
+            // Применяем панораму на основе направления движения
+            float pan = Mathf.Clamp(direction.x, -1f, 1f); // Если влево, то -1, если вправо, то 1
+            audioSource.panStereo = pan;
+        }
     }
 
     // Метод для проверки, можем ли мы атаковать врага (на основе времени последней атаки)

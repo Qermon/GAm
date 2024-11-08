@@ -57,14 +57,24 @@ public class FireProjectile : MonoBehaviour
     private bool isCriticalHit;
     private Weapon weapon;
 
+    private AudioSource audioSource; // Источник звука для снаряда
+    private Vector3 direction; // Направление движения снаряда
+
     public void Initialize(FireStrike weapon, float damage)
     {
         this.weapon = weapon; // Сохраняем ссылку на оружие
         initialDamage = damage;
-        FindNearestEnemyDirection();
-        StartCoroutine(DestroyAfterLifetime(3f));
-    }
 
+        // Получаем компонент AudioSource и настраиваем его
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource != null)
+        {
+            audioSource.Play(); // Воспроизводим звук при запуске снаряда
+        }
+
+        FindNearestEnemyDirection();
+        StartCoroutine(DestroyAfterLifetime(3f)); // Уничтожаем снаряд через 3 секунды
+    }
 
     private void FindNearestEnemyDirection()
     {
@@ -72,7 +82,7 @@ public class FireProjectile : MonoBehaviour
         if (enemies.Length > 0)
         {
             Transform nearestEnemy = enemies[0].transform;
-            Vector3 direction = (nearestEnemy.position - transform.position).normalized;
+            direction = (nearestEnemy.position - transform.position).normalized;
             StartCoroutine(MoveProjectile(direction));
             RotateTowardsDirection(direction);
         }
@@ -87,6 +97,14 @@ public class FireProjectile : MonoBehaviour
         while (true)
         {
             transform.position += direction * projectileSpeed * Time.deltaTime;
+
+            // Обновляем панораму звука в зависимости от направления
+            if (audioSource != null)
+            {
+                float pan = Mathf.Clamp(direction.x, -0.4f, 0.4f); // Если влево, то -1, если вправо, то 1
+                audioSource.panStereo = pan;
+            }
+
             yield return null;
         }
     }
@@ -119,7 +137,6 @@ public class FireProjectile : MonoBehaviour
 
         enemy.TakeDamage((int)damageToDeal, isCriticalHit); // Наносим урон с учетом критического удара
     }
-
 
     private IEnumerator ApplyBurningEffect(Enemy enemy)
     {

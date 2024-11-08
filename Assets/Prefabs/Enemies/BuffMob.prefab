@@ -122,15 +122,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goldAmount: 5
-  maxHealth: 364.952
+  maxHealth: 180
   currentHealth: 0
-  enemyMoveSpeed: 0.7139999
-  damage: 41.472004
+  enemyMoveSpeed: 0.7
+  damage: 40
   attackRange: 0.1
   attackCooldown: 1
   experienceItemPrefab: {fileID: 7339687537489862264, guid: 37d17279e3b5acf408b484acf115939c, type: 3}
   experienceAmount: 20
-  baseMaxHealth: 95
+  baseMaxHealth: 90
   baseEnemyMoveSpeed: 0.7
   baseDamage: 20
   damageTextPrefab: {fileID: 8397397958086147261, guid: 9a0ed8fe11e949a49b3e3baa590f73e0, type: 3}

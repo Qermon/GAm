@@ -76,6 +76,8 @@ public class BleedProjectile : MonoBehaviour
     private bool isCriticalHit;
     private Weapon weapon;
 
+    private AudioSource audioSource; // Источник звука для снаряда
+
     public void Initialize(BleedStrike weapon, Vector3 targetPosition, float lifetime, float bleedDuration, float slowEffect, float initialDamage, float criticalDamage)
     {
         this.projectileLifetime = lifetime;
@@ -91,6 +93,14 @@ public class BleedProjectile : MonoBehaviour
         isCriticalHit = randomValue < weapon.criticalChance; // Условие для критического удара
 
         direction = (targetPosition - transform.position).normalized;
+
+        // Получаем компонент AudioSource и настраиваем его
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource != null)
+        {
+            audioSource.Play(); // Воспроизводим звук сразу при появлении снаряда
+        }
+
         StartCoroutine(DestroyAfterLifetime());
     }
 
@@ -102,6 +112,13 @@ public class BleedProjectile : MonoBehaviour
         // Поворачиваем снаряд в направлении движения
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+
+        // Обновляем панораму звука в зависимости от направления
+        if (audioSource != null)
+        {
+            float pan = Mathf.Clamp(direction.x, -0.4f, 0.4f); // Если влево, то -1, если вправо, то 1
+            audioSource.panStereo = pan;
+        }
     }
 
     private IEnumerator DestroyAfterLifetime()
@@ -141,8 +158,6 @@ public class BleedProjectile : MonoBehaviour
         // Запускаем эффект кровотечения
         StartCoroutine(ApplyBleedEffect(enemy));
     }
-
-
 
     private IEnumerator ApplyBleedEffect(Enemy enemy)
     {

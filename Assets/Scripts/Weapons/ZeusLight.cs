@@ -4,42 +4,89 @@ using System.Collections.Generic;
 
 public class ZeusLight : Weapon
 {
-    public GameObject projectilePrefab; // Префаб снаряда
-    public int maxBounces = 5; // Количество отскоков
-    public float bounceDamageReduction = 0.1f; // Процент уменьшения урона на каждом отскоке
+    public GameObject projectilePrefab;
+    public int maxBounces = 5;
+    public float bounceDamageReduction = 0.1f;
+
+    public override void Update()
+    {
+        base.Update(); // Если нужно вызвать родительский метод
+       
+    
+    // Обновляем панораму звука каждый кадр, пока снаряд в движении
+        AudioSource audioSource = GetComponent<AudioSource>();
+        if (audioSource != null)
+        {
+            Vector3 directionToProjectile = transform.position - Camera.main.transform.position;
+            float angle = Vector3.SignedAngle(Vector3.right, directionToProjectile, Vector3.forward);
+            float pan = Mathf.InverseLerp(-90f, 90f, angle);
+            audioSource.panStereo = pan;
+        }
+
+        // Ваше обычное обновление снаряда
+    }
+
 
     protected override void Start()
     {
         base.Start();
-        StartCoroutine(LaunchProjectileCoroutine()); // Запускаем корутину для стрельбы
+        StartCoroutine(LaunchProjectileCoroutine());
     }
 
     private IEnumerator LaunchProjectileCoroutine()
     {
-        while (true) // Бесконечный цикл для постоянного спавна снарядов
+        while (true)
         {
-            LaunchProjectile(); // Спавним снаряд
-            yield return new WaitForSeconds(1f / attackSpeed); // Ждем интервал, определяемый attackSpeed
+            LaunchProjectile();
+            yield return new WaitForSeconds(1f / attackSpeed);
         }
     }
 
     private void LaunchProjectile()
     {
         GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
-        projectile.tag = "Weapon"; // Устанавливаем тег для снаряда
-        projectile.AddComponent<ZeusProjectile>().Initialize(this, maxBounces, bounceDamageReduction); // Инициализируем снаряд
+        projectile.tag = "Weapon";
+        projectile.AddComponent<ZeusProjectile>().Initialize(this, maxBounces, bounceDamageReduction);
+
+        // Получаем AudioSource из префаба снаряда
+        AudioSource audioSource = projectile.GetComponent<AudioSource>();
+        if (audioSource != null)
+        {
+            audioSource.spatialBlend = 1f; // 3D звук
+            audioSource.minDistance = 1f; // Минимальное расстояние для звука
+            audioSource.maxDistance = 15f; // Максимальное расстояние для звука
+
+            // Вычисляем направление от игрока к снаряду
+            Vector3 directionToProjectile = projectile.transform.position - transform.position;
+
+            // Находим угол между направлением снаряда и направлением взгляда игрока
+            float angle = Vector3.SignedAngle(Vector3.right, directionToProjectile, Vector3.forward);
+
+            // Нормализуем угол для панорамы от -1 до 1
+            float pan = Mathf.Clamp(Mathf.InverseLerp(-90f, 90f, angle), -1f, 1f); // Нормализация угла для панорамы от -1 до 1
+
+            // Устанавливаем панораму звука
+            audioSource.panStereo = pan;
+
+            // Настройка громкости
+            audioSource.volume = 1f;
+
+            // Проигрываем звук
+            audioSource.Play();
+        }
     }
+
 
     private bool IsEnemyInRange()
     {
         Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
-        return enemies.Length > 0; // Если есть хотя бы один враг в радиусе атаки, возвращаем true
+        return enemies.Length > 0;
     }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, attackRange); // Рисуем радиус атаки
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }
 

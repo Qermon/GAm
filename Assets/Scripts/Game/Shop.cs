@@ -644,7 +644,7 @@ public class Shop : MonoBehaviour
                 break;
 
             case UpgradeType.ShieldOnKill:
-                description = "Шанс <color=green>5%</color> получить барьер при убийстве врага, <color=green>10%</color> от макс. здоровья";
+                description = "Шанс <color=green>1%</color> получить барьер при убийстве врага, <color=green>5%</color> от макс. здоровья";
                 break;
 
             case UpgradeType.BarrierOnLowHealth:

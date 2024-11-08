@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+
 public class WaveManager : MonoBehaviour
 {
     public Shop shop;
@@ -15,6 +16,7 @@ public class WaveManager : MonoBehaviour
     public GameObject[] boomPrefabs;      // Префабы бомбардировщиков
     public GameObject[] healerPrefabs;    // Префабы лекарей
     public GameObject[] buffMobPrefabs;   // Префабы бафферов
+    public GameObject[] bossPrefabs;
     public GameObject[] ArchersArrow;
     public GameObject[] WitchsProjectile;
     public Transform[] spawnPoints;       // Точки спауна
@@ -30,10 +32,10 @@ public class WaveManager : MonoBehaviour
     private float timeStartedWave;
     private float waveDuration;
 
-    public float damageMultiplier = 1.15f;
-    public float healthMultiplier = 1.25f;
-    public float speedMultiplier = 0.5f;
-    public float projectile = 1.2f;
+    public float damageMultiplier;
+    public float healthMultiplier;
+    public float speedMultiplier ;
+    public float projectile;
 
     public Transform player; // Ссылка на объект игрока
     public Vector2 centerOfMap = new Vector2(18.5f, -12.5f); // Координаты центра карты
@@ -49,7 +51,7 @@ public class WaveManager : MonoBehaviour
 
 
     private Dictionary<int, WaveConfig> waveConfigs;
-    
+
     void Start()
     {
         // Найти объект игрока на сцене и сохранить его ссылку
@@ -113,12 +115,6 @@ public class WaveManager : MonoBehaviour
         isWaveInProgress = false; // Обновляем состояние волны
         spawningWave = false; // Останавливаем спавн
 
-        // Сбрасываем множители характеристик
-        damageMultiplier = 1.2f;
-        healthMultiplier = 1.4f;
-        speedMultiplier = 0.5f;
-        projectile = 1.2f;
-
         // Перемещаем игрока в центр карты
         MovePlayerToCenter();
 
@@ -128,8 +124,6 @@ public class WaveManager : MonoBehaviour
         // Запускаем новую волну
         StartCoroutine(StartNextWave()); // Измените на вызов StartNextWave, чтобы убедиться, что волна начинается заново
     }
-
-
 
 
     void Update()
@@ -197,8 +191,9 @@ public class WaveManager : MonoBehaviour
 
         }
 
-        if (waveNumber <= 20 && waveNumber > 10)
+        if (waveNumber > 10)
         {
+            UpdateEnemyStats();
             UpdateEnemyStats();
         }
 
@@ -726,7 +721,7 @@ public class WaveManager : MonoBehaviour
         // Волна 15
         waveConfigs.Add(15, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -738,7 +733,7 @@ public class WaveManager : MonoBehaviour
         // Волна 16
         waveConfigs.Add(16, new WaveConfig(60f, new List<EnemySpawn>
     {
-         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -750,7 +745,7 @@ public class WaveManager : MonoBehaviour
         // Волна 17
         waveConfigs.Add(17, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -762,7 +757,7 @@ public class WaveManager : MonoBehaviour
         // Волна 18
         waveConfigs.Add(18, new WaveConfig(60f, new List<EnemySpawn>
     {
-         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -774,9 +769,9 @@ public class WaveManager : MonoBehaviour
         // Волна 19
         waveConfigs.Add(19, new WaveConfig(60f, new List<EnemySpawn>
     {
-         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
-        new EnemySpawn(boomPrefabs[0], 6), // 
+        new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
         new EnemySpawn(wizardPrefabs[0], 5),
         new EnemySpawn(archerPrefabs[0], 2),
@@ -786,7 +781,7 @@ public class WaveManager : MonoBehaviour
         // Волна 20
         waveConfigs.Add(20, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -798,7 +793,7 @@ public class WaveManager : MonoBehaviour
         // Волна 21
         waveConfigs.Add(21, new WaveConfig(60f, new List<EnemySpawn>
     {
-         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -810,7 +805,7 @@ public class WaveManager : MonoBehaviour
         // Волна 22
         waveConfigs.Add(22, new WaveConfig(60f, new List<EnemySpawn>
     {
-         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -822,7 +817,7 @@ public class WaveManager : MonoBehaviour
         // Волна 23
         waveConfigs.Add(23, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+      new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -834,7 +829,7 @@ public class WaveManager : MonoBehaviour
         // Волна 24
         waveConfigs.Add(24, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -846,7 +841,7 @@ public class WaveManager : MonoBehaviour
         // Волна 25
         waveConfigs.Add(25, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+      new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -858,7 +853,7 @@ public class WaveManager : MonoBehaviour
         // Волна 26
         waveConfigs.Add(26, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -870,7 +865,7 @@ public class WaveManager : MonoBehaviour
         // Волна 27
         waveConfigs.Add(27, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+     new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -882,7 +877,7 @@ public class WaveManager : MonoBehaviour
         // Волна 28
         waveConfigs.Add(28, new WaveConfig(60f, new List<EnemySpawn>
     {
-         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+     new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -894,7 +889,7 @@ public class WaveManager : MonoBehaviour
         // Волна 29
         waveConfigs.Add(29, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -906,7 +901,7 @@ public class WaveManager : MonoBehaviour
         // Волна 30
         waveConfigs.Add(30, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),

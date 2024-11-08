@@ -1,54 +1,51 @@
 using UnityEngine;
-using UnityEngine.UI; // Для работы с UI элементами
+using UnityEngine.UI;
 
 public class SettingsPanelController : MonoBehaviour
 {
-    // UI элементы для сложности
     public Button hardButton;
     public Button normalButton;
     public Button easyButton;
 
-    public Color activeColor = new Color(1f, 1f, 1f, 1f); // Полная непрозрачность
-    public Color inactiveColor = new Color(1f, 1f, 1f, 0.5f); // Полупрозрачность
-    private Button selectedButton; // Кнопка, которая была выбрана
+    public Color activeColor = new Color(1f, 1f, 1f, 1f);
+    public Color inactiveColor = new Color(1f, 1f, 1f, 0.5f);
+    private Button selectedButton;
 
-    // Панель настроек
-    public GameObject settingsPanel; // Ссылка на объект панели настроек
+    public GameObject settingsPanel;
 
     private WaveManager waveManager;
 
-    // Применение изменений
+    // Ползунок громкости
+    public Slider volumeSlider;
+
+    // Источники звука для меню и игры
+    public AudioSource menuMusicSource;
+    public AudioSource gameMusicSource;
+
     private void Start()
     {
-        // Инициализация WaveManager
         waveManager = FindObjectOfType<WaveManager>();
-
-        // Загружаем сохраненную сложность
         LoadDifficulty();
 
-        // Устанавливаем обработчики кнопок сложности
         hardButton.onClick.AddListener(() => SelectButton(hardButton, Hard, 1));
         normalButton.onClick.AddListener(() => SelectButton(normalButton, Normal, 2));
         easyButton.onClick.AddListener(() => SelectButton(easyButton, Easy, 3));
+
+        InitializeVolumeSlider();
     }
 
-    // Выбор сложности
     void SelectButton(Button button, System.Action difficultyAction, int difficultyId)
     {
-        // Если выбранная кнопка уже та же, ничего не делаем
         if (selectedButton == button) return;
 
-        // Изменяем выбор на новую кнопку
         selectedButton = button;
         SetButtonTransparency();
-        difficultyAction.Invoke(); // Применяем выбранную сложность
+        difficultyAction.Invoke();
 
-        // Сохраняем выбранную сложность
         PlayerPrefs.SetInt("Difficulty", difficultyId);
-        PlayerPrefs.Save(); // Сохраняем изменения
+        PlayerPrefs.Save();
     }
 
-    // Устанавливаем прозрачность для кнопок
     void SetButtonTransparency()
     {
         hardButton.GetComponent<Image>().color = (selectedButton == hardButton) ? activeColor : inactiveColor;
@@ -56,45 +53,89 @@ public class SettingsPanelController : MonoBehaviour
         easyButton.GetComponent<Image>().color = (selectedButton == easyButton) ? activeColor : inactiveColor;
     }
 
-    // Применение сложности "Hard"
     public void Hard()
     {
-        waveManager.damageMultiplier = 1.2f;
-        waveManager.healthMultiplier = 1.4f;
+        waveManager.damageMultiplier = 20f;
+        waveManager.healthMultiplier = 80f;
         waveManager.speedMultiplier = 0.5f;
-        waveManager.projectile = 1.25f;
+        waveManager.projectile = 1.35f;
+
+        // Сохраняем значения в PlayerPrefs
+        PlayerPrefs.SetFloat("DamageMultiplier", waveManager.damageMultiplier);
+        PlayerPrefs.SetFloat("HealthMultiplier", waveManager.healthMultiplier);
+        PlayerPrefs.SetFloat("SpeedMultiplier", waveManager.speedMultiplier);
+        PlayerPrefs.SetFloat("Projectile", waveManager.projectile);
+        PlayerPrefs.SetInt("Difficulty", 1); // Сохраняем ID сложности
+        PlayerPrefs.Save();
     }
 
-    // Применение сложности "Normal"
     public void Normal()
     {
-        waveManager.damageMultiplier = 1.15f;
-        waveManager.healthMultiplier = 1.25f;
+        waveManager.damageMultiplier = 15f;
+        waveManager.healthMultiplier = 40f;
         waveManager.speedMultiplier = 0.5f;
-        waveManager.projectile = 1.2f;
+        waveManager.projectile = 1.25f;
+
+        // Сохраняем значения в PlayerPrefs
+        PlayerPrefs.SetFloat("DamageMultiplier", waveManager.damageMultiplier);
+        PlayerPrefs.SetFloat("HealthMultiplier", waveManager.healthMultiplier);
+        PlayerPrefs.SetFloat("SpeedMultiplier", waveManager.speedMultiplier);
+        PlayerPrefs.SetFloat("Projectile", waveManager.projectile);
+        PlayerPrefs.SetInt("Difficulty", 2); // Сохраняем ID сложности
+        PlayerPrefs.Save();
     }
 
-    // Применение сложности "Easy"
     public void Easy()
     {
-        waveManager.damageMultiplier = 1.1f;
-        waveManager.healthMultiplier = 1.15f;
+        waveManager.damageMultiplier = 10f;
+        waveManager.healthMultiplier = 25f;
         waveManager.speedMultiplier = 0.5f;
-        waveManager.projectile = 1.13f;
+        waveManager.projectile = 1.2f;
+
+        // Сохраняем значения в PlayerPrefs
+        PlayerPrefs.SetFloat("DamageMultiplier", waveManager.damageMultiplier);
+        PlayerPrefs.SetFloat("HealthMultiplier", waveManager.healthMultiplier);
+        PlayerPrefs.SetFloat("SpeedMultiplier", waveManager.speedMultiplier);
+        PlayerPrefs.SetFloat("Projectile", waveManager.projectile);
+        PlayerPrefs.SetInt("Difficulty", 3); // Сохраняем ID сложности
+        PlayerPrefs.Save();
     }
 
-    // Метод для закрытия панели настроек
+    void LoadSettings()
+    {
+        // Загружаем сохраненные значения из PlayerPrefs
+        if (PlayerPrefs.HasKey("DamageMultiplier"))
+            waveManager.damageMultiplier = PlayerPrefs.GetFloat("DamageMultiplier");
+        if (PlayerPrefs.HasKey("HealthMultiplier"))
+            waveManager.healthMultiplier = PlayerPrefs.GetFloat("HealthMultiplier");
+        if (PlayerPrefs.HasKey("SpeedMultiplier"))
+            waveManager.speedMultiplier = PlayerPrefs.GetFloat("SpeedMultiplier");
+        if (PlayerPrefs.HasKey("Projectile"))
+            waveManager.projectile = PlayerPrefs.GetFloat("Projectile");
+
+        // Загружаем сохраненную сложность
+        if (PlayerPrefs.HasKey("Difficulty"))
+        {
+            int difficulty = PlayerPrefs.GetInt("Difficulty");
+            switch (difficulty)
+            {
+                case 1: Hard(); break;
+                case 2: Normal(); break;
+                case 3: Easy(); break;
+            }
+        }
+    }
+
+
     public void Exit()
     {
-        settingsPanel.SetActive(false); // Скрываем панель
+        settingsPanel.SetActive(false);
     }
 
-    // Загружаем сохраненную сложность
     void LoadDifficulty()
     {
-        int difficultyId = PlayerPrefs.GetInt("Difficulty", 2); // Если сложность не была сохранена, по умолчанию - Normal (2)
+        int difficultyId = PlayerPrefs.GetInt("Difficulty", 2);
 
-        // В зависимости от сохраненной сложности, активируем нужную кнопку
         switch (difficultyId)
         {
             case 1:
@@ -107,5 +148,25 @@ public class SettingsPanelController : MonoBehaviour
                 SelectButton(easyButton, Easy, 3);
                 break;
         }
+    }
+
+    private void InitializeVolumeSlider()
+    {
+        float savedVolume = PlayerPrefs.GetFloat("MusicVolume", 0.1f);
+        volumeSlider.value = savedVolume;
+
+        if (menuMusicSource != null) menuMusicSource.volume = savedVolume;
+        if (gameMusicSource != null) gameMusicSource.volume = savedVolume;
+
+        volumeSlider.onValueChanged.AddListener(SetVolume);
+    }
+
+    private void SetVolume(float volume)
+    {
+        if (menuMusicSource != null) menuMusicSource.volume = volume;
+        if (gameMusicSource != null) gameMusicSource.volume = volume;
+
+        PlayerPrefs.SetFloat("MusicVolume", volume);
+        PlayerPrefs.Save();
     }
 }

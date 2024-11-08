@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class PlayerSelectionManager : MonoBehaviour
 {
@@ -9,18 +10,17 @@ public class PlayerSelectionManager : MonoBehaviour
     public GameObject playerPrefab3;
     public Transform spawnPoint;
     public GameObject playerSelectionPanel;
-    public GameObject statsWindow; // Окно для отображения характеристик
-    public TextMeshProUGUI statsText; // Один текстовый элемент для всех характеристик
-    public TextMeshProUGUI heroNameText; // Текст для отображения имени героя
-    public Button confirmButton; // Кнопка подтверждения выбора
+    public GameObject statsWindow;
+    public TextMeshProUGUI statsText;
+    public TextMeshProUGUI heroNameText;
+    public Button confirmButton;
 
-    // Кнопки для выбора персонажа
     public Button button1;
     public Button button2;
     public Button button3;
 
-    public Color activeColor = new Color(1f, 1f, 1f, 1f); // Полная непрозрачность
-    public Color inactiveColor = new Color(1f, 1f, 1f, 0.5f); // Полупрозрачность
+    public Color activeColor = new Color(1f, 1f, 1f, 1f);
+    public Color inactiveColor = new Color(1f, 1f, 1f, 0.5f);
 
     private GameObject selectedPlayerPrefab;
     private GameObject[] playerPrefabs;
@@ -35,6 +35,15 @@ public class PlayerSelectionManager : MonoBehaviour
     private WeaponSelectionManager weaponSelectionManager;
     private MainMenu mainMenu;
 
+    // Музыкальные источники для меню и игровой музыки
+    public AudioSource menuMusicSource;
+    public AudioSource gameMusicSource;
+    public float transitionDuration = 2f; // Длительность перехода
+
+    public Canvas fadeCanvas;        // Привяжите Canvas с черным экраном
+    public CanvasGroup fadeOverlay;
+    public float fadeDuration = 1f;
+
     void Start()
     {
         mainMenu = FindObjectOfType<MainMenu>();
@@ -46,40 +55,35 @@ public class PlayerSelectionManager : MonoBehaviour
         experienceBarImage = FindObjectOfType<ExperienceBarImage>();
         waveManager = FindObjectOfType<WaveManager>();
 
-        // Список префабов персонажей
         playerPrefabs = new GameObject[] { playerPrefab1, playerPrefab2, playerPrefab3 };
         buttons = new Button[] { button1, button2, button3 };
 
-        // Загружаем выбранного персонажа при старте или выбираем первого по умолчанию
         LoadPlayerSelection();
-
-        // По умолчанию показываем характеристики выбранного персонажа
         DisplayPlayerStats(selectedPlayerPrefab);
 
-        // Кнопка подтверждения всегда активна
         confirmButton.interactable = true;
 
-        // Устанавливаем обработчики на кнопки
         button1.onClick.AddListener(() => OnPlayerButtonClick(playerPrefab1, 1));
         button2.onClick.AddListener(() => OnPlayerButtonClick(playerPrefab2, 2));
         button3.onClick.AddListener(() => OnPlayerButtonClick(playerPrefab3, 3));
+
+        fadeOverlay.alpha = 0f;           // Начальная прозрачность
+        fadeOverlay.interactable = false; // Отключаем взаимодействие по умолчанию
+        fadeCanvas.sortingOrder = 0;      // Устанавливаем низкий порядок отображения по умолчанию
+
     }
 
-    // Выбор персонажа
     public void OnPlayerButtonClick(GameObject playerPrefab, int playerId)
     {
         selectedPlayerPrefab = playerPrefab;
         DisplayPlayerStats(selectedPlayerPrefab);
 
-        // Сохраняем выбор персонажа
         PlayerPrefs.SetInt("SelectedPlayer", playerId);
-        PlayerPrefs.Save(); // Сохраняем изменения
+        PlayerPrefs.Save();
 
-        // Обновляем цвет кнопок
         UpdateButtonColors();
     }
 
-    // Подсветка кнопок в зависимости от выбора персонажа
     void UpdateButtonColors()
     {
         for (int i = 0; i < playerPrefabs.Length; i++)
@@ -88,26 +92,66 @@ public class PlayerSelectionManager : MonoBehaviour
         }
     }
 
-    // Подтверждение выбора персонажа
     public void OnConfirmSelection()
     {
         if (selectedPlayerPrefab != null)
         {
-            SpawnPlayer(selectedPlayerPrefab);
-            playerSelectionPanel.SetActive(false);
+            StartCoroutine(FadeOutThenLoadPlayer());
         }
     }
 
-    // Отображение характеристик выбранного персонажа
+
+    private IEnumerator FadeOutThenLoadPlayer()
+    {
+        // Поднимаем слой для затухания и включаем интерактивность
+        fadeCanvas.sortingOrder = 10;
+        fadeOverlay.interactable = true;
+
+        yield return StartCoroutine(FadeIn());
+        SpawnPlayer(selectedPlayerPrefab);
+        playerSelectionPanel.SetActive(false);
+        yield return StartCoroutine(SwitchToGameMusic());
+        yield return StartCoroutine(FadeOut());
+
+        // Убираем затемнение: возвращаем порядок слоев и отключаем интерактивность
+        fadeCanvas.sortingOrder = 0;
+        fadeOverlay.interactable = false;
+    }
+
+    private IEnumerator SwitchToGameMusic()
+    {
+        // Загружаем сохраненную громкость из настроек
+        float savedVolume = PlayerPrefs.GetFloat("MusicVolume", 0.2f);
+        float elapsedTime = 0f;
+
+        // Убедимся, что игровой источник начнет с нулевой громкости
+        gameMusicSource.volume = 0f;
+        gameMusicSource.Play();
+
+        // Постепенно уменьшайте громкость меню и увеличивайте громкость игры
+        while (elapsedTime < transitionDuration)
+        {
+            menuMusicSource.volume = Mathf.Lerp(savedVolume, 0f, elapsedTime / transitionDuration);
+            gameMusicSource.volume = Mathf.Lerp(0f, savedVolume, elapsedTime / transitionDuration);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Убедитесь, что громкость установлена корректно после завершения
+        menuMusicSource.volume = 0f;
+        gameMusicSource.volume = savedVolume;
+        menuMusicSource.Stop();
+    }
+
     private void DisplayPlayerStats(GameObject playerPrefab)
     {
-        heroNameText.text = playerPrefab.name; // Убедитесь, что у вашего префаба установлено имя
+        heroNameText.text = playerPrefab.name;
 
         PlayerHealth playerHealth = playerPrefab.GetComponent<PlayerHealth>();
         Weapon[] playerWeapons = playerPrefab.GetComponentsInChildren<Weapon>();
         PlayerMovement playerMovement = playerPrefab.GetComponent<PlayerMovement>();
 
-        // Суммируем характеристики всех оружий
         float totalDamage = 0f, totalCritDamage = 0f, totalCritChance = 0f, totalAttackSpeed = 0f, totalAttackRange = 0f;
         int weaponCount = playerWeapons.Length;
 
@@ -145,7 +189,6 @@ public class PlayerSelectionManager : MonoBehaviour
         statsWindow.SetActive(true);
     }
 
-    // Спавн выбранного персонажа
     private void SpawnPlayer(GameObject playerPrefab)
     {
         GameObject playerInstance = Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity);
@@ -156,31 +199,20 @@ public class PlayerSelectionManager : MonoBehaviour
 
     private void StartGame()
     {
-        if (!weaponSelectionManager.enabled && !waveManager.enabled && !shop.enabled && !levelUpMenu.enabled)
-        {
-            experienceBarImage.enabled = true;
-            weaponSelectionManager.enabled = true;
-            waveManager.enabled = true;
-            shop.enabled = true;
-            levelUpMenu.enabled = true;
-        }
-        else
-        {
+      
             experienceBarImage.RestartSkript();
             weaponSelectionManager.RestartScript();
             waveManager.RestartScript();
             shop.RestartScript();
             levelUpMenu.RestartScript();
-        }
+        
     }
 
-    // Загрузка сохраненного выбора персонажа
     void LoadPlayerSelection()
     {
-        int selectedPlayerId = PlayerPrefs.GetInt("SelectedPlayer", 1); // По умолчанию выбираем первого персонажа
-        selectedPlayerPrefab = playerPrefabs[selectedPlayerId - 1]; // Индексы PlayerPrefs начинаются с 1
+        int selectedPlayerId = PlayerPrefs.GetInt("SelectedPlayer", 1);
+        selectedPlayerPrefab = playerPrefabs[selectedPlayerId - 1];
 
-        // Обновляем цвета кнопок
         UpdateButtonColors();
     }
 
@@ -189,4 +221,38 @@ public class PlayerSelectionManager : MonoBehaviour
         mainMenu.mainMenu.SetActive(true);
         playerSelectionPanel.SetActive(false);
     }
+
+
+    public IEnumerator FadeIn()
+    {
+        float elapsedTime = 0f;
+
+        while (elapsedTime < fadeDuration)
+        {
+            fadeOverlay.alpha = Mathf.Lerp(0f, 1f, elapsedTime / fadeDuration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        fadeOverlay.alpha = 1f;
+    }
+
+    public IEnumerator FadeOut()
+    {
+        float elapsedTime = 0f;
+
+        while (elapsedTime < fadeDuration)
+        {
+            fadeOverlay.alpha = Mathf.Lerp(1f, 0f, elapsedTime / fadeDuration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        fadeOverlay.alpha = 0f;
+    }
+
+
+
+
+
 }

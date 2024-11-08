@@ -16,6 +16,7 @@ public class Enemy : MonoBehaviour
     public float attackCooldown = 1f;
     protected bool isDead = false;
 
+
     protected Transform player;
     protected float attackTimer = 0f;
 
@@ -38,6 +39,8 @@ public class Enemy : MonoBehaviour
     public GameObject bloodEffectPrefab; // Добавьте это поле
     private WaveManager waveManager; 
     private float currentSlowEffect = 0f; // Текущее замедление
+  
+
     public bool IsDead
     {
         get { return isDead; }
@@ -45,6 +48,7 @@ public class Enemy : MonoBehaviour
 
     protected virtual void Start()
     {
+        
         mainCamera = Camera.main;
         enemyMoveSpeed = baseEnemyMoveSpeed; // Инициализация текущей скорости
         rb = GetComponent<Rigidbody2D>();
@@ -52,7 +56,7 @@ public class Enemy : MonoBehaviour
 
         currentHealth = maxHealth;
 
-        GameObject waveManagerObject = GameObject.FindGameObjectWithTag("WaveManager");
+       
         
 
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
@@ -68,9 +72,10 @@ public class Enemy : MonoBehaviour
 
     public void UpdateStats(float damageMultiplier, float healthMultiplier, float speedMultiplier)
     {
-        damage *= damageMultiplier;
-        maxHealth *= healthMultiplier;
-        enemyMoveSpeed += baseEnemyMoveSpeed / 100 * speedMultiplier;
+       
+            damage += baseDamage / 100 * damageMultiplier;
+            maxHealth += baseMaxHealth / 100 * healthMultiplier;
+            enemyMoveSpeed += baseEnemyMoveSpeed / 100 * speedMultiplier;
     }
 
     public void RefreshStats()
@@ -189,6 +194,9 @@ public class Enemy : MonoBehaviour
         Debug.Log($"Taking damage: {damage}"); // Отладочное сообщение
         currentHealth -= damage;
         currentHealth = Mathf.Max(currentHealth, 0);
+
+
+      
 
         ShowDamageText(damage, isCriticalHit);
 

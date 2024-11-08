@@ -8,9 +8,29 @@ public class LightningWeapon : Weapon
     public float projectileLifetime = 3f; // Время жизни снаряда
     public int numberOfProjectiles = 3; // Количество молний
 
+    // Уберем ссылку на AudioSource, будем искать его на сцене по имени
+    private AudioSource audioSource; // Источник звука (ссылка на компонент AudioSource на объекте)
+
     protected override void Start()
     {
         base.Start();
+
+        // Пытаемся найти объект с названием "Lighting" на сцене
+        GameObject lightingObject = GameObject.Find("Lighting");
+        if (lightingObject != null)
+        {
+            audioSource = lightingObject.GetComponent<AudioSource>();
+
+            if (audioSource == null)
+            {
+                Debug.LogWarning("Объект 'Lighting' найден, но не имеет компонента AudioSource!");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Объект с именем 'Lighting' не найден на сцене!");
+        }
+
         StartCoroutine(LaunchLightning()); // Запуск корутины атаки
     }
 
@@ -38,6 +58,12 @@ public class LightningWeapon : Weapon
 
         Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
         if (enemies.Length == 0) return; // Если нет врагов, выходим
+
+        // Воспроизводим звук спавна один раз
+        if (audioSource != null)
+        {
+            audioSource.Play(); // Проигрываем звук с текущей громкостью
+        }
 
         for (int i = 0; i < numberOfProjectiles; i++)
         {
@@ -67,6 +93,7 @@ public class LightningWeapon : Weapon
         }
     }
 }
+
 
 public class LightningProjectile : MonoBehaviour
 {

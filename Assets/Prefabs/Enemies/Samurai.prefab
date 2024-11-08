@@ -194,17 +194,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goldAmount: 15
-  maxHealth: 210
+  maxHealth: 300
   currentHealth: 0
-  enemyMoveSpeed: 0.90449995
-  damage: 72
+  enemyMoveSpeed: 0.9
+  damage: 60
   attackRange: 0.1
   attackCooldown: 1
   experienceItemPrefab: {fileID: 7339687537489862264, guid: 37d17279e3b5acf408b484acf115939c, type: 3}
   experienceAmount: 20
   baseMaxHealth: 150
   baseEnemyMoveSpeed: 0.9
-  baseDamage: 60
+  baseDamage: 35
   damageTextPrefab: {fileID: 8397397958086147261, guid: 9a0ed8fe11e949a49b3e3baa590f73e0, type: 3}
   canvas: {fileID: 0}
   bloodEffectPrefab: {fileID: 3705117576596526473, guid: e5a7816d5d4589e4d8e44c4d9123ae14, type: 3}

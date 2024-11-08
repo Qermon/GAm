@@ -28,6 +28,7 @@ public abstract class Weapon : MonoBehaviour
     private bool isCritDamageBuffActive = false; // Флаг, указывающий активен ли бафф
     private float critDamageBuffCount = 0f; // Сколько процентов увеличивается критический урон
 
+
     protected virtual void Start()
     {
         attackTimer = 0f; // Устанавливаем таймер атаки
@@ -103,7 +104,7 @@ public abstract class Weapon : MonoBehaviour
         attackRange += increaseAmount; // Увеличиваем дальность атаки
     }
 
-    protected virtual void Update()
+    public virtual void Update()
     {
         if (attackTimer > 0f)
         {

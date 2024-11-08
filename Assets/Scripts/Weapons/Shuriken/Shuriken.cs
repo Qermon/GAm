@@ -43,7 +43,7 @@ public class Shuriken : Weapon
         Debug.Log("Все сюрикены успешно созданы.");
     }
 
-    protected override void Update()
+    public override void Update()
     {
         base.Update();
 

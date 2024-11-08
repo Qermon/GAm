@@ -11,9 +11,26 @@ public class ExperienceItem : MonoBehaviour
     private bool isAttracted = false; // Флаг, притягивается ли опыт к игроку
     private Transform player; // Ссылка на игрока
 
+    private AudioSource experienceSound; // Ссылка на аудио источник
+
     void Start()
     {
         currentSpeed = baseMoveSpeed; // Устанавливаем начальную скорость
+
+        // Находим объект с названием "Опыт" и получаем компонент AudioSource
+        GameObject experienceObject = GameObject.Find("Опыт");
+        if (experienceObject != null)
+        {
+            experienceSound = experienceObject.GetComponent<AudioSource>();
+            if (experienceSound == null)
+            {
+                Debug.LogError("На объекте 'Опыт' не найден компонент AudioSource!");
+            }
+        }
+        else
+        {
+            Debug.LogError("Объект с названием 'Опыт' не найден на сцене!");
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -51,8 +68,20 @@ public class ExperienceItem : MonoBehaviour
                 if (playerScript != null)
                 {
                     playerScript.GainExperience(experienceAmount);
-                    Destroy(gameObject); // Уничтожаем предмет после того, как опыт собран
                 }
+
+                // Проверяем, что компонент AudioSource существует и проигрываем звук
+                if (experienceSound != null)
+                {
+                    experienceSound.Play();
+                    Debug.Log("Проигрывается звук подбора опыта");
+                }
+                else
+                {
+                    Debug.LogWarning("AudioSource не найден для воспроизведения звука!");
+                }
+
+                Destroy(gameObject); // Уничтожаем предмет после того, как опыт собран
             }
         }
     }
