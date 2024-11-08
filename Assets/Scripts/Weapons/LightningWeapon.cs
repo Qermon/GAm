@@ -8,7 +8,6 @@ public class LightningWeapon : Weapon
     public float projectileLifetime = 3f; // Время жизни снаряда
     public int numberOfProjectiles = 3; // Количество молний
 
-    // Уберем ссылку на AudioSource, будем искать его на сцене по имени
     private AudioSource audioSource; // Источник звука (ссылка на компонент AudioSource на объекте)
 
     protected override void Start()
@@ -88,12 +87,25 @@ public class LightningWeapon : Weapon
             {
                 GameObject projectile = Instantiate(projectilePrefab, spawnPosition, Quaternion.identity);
                 projectile.tag = "Weapon"; // Устанавливаем тег
+
+                // Изменение размера снаряда
+                AdjustProjectileSize(projectile);
+
                 projectile.AddComponent<LightningProjectile>().Initialize(this, projectileLifetime, damage, criticalDamage);
             }
         }
     }
-}
 
+    // Метод для изменения размера снаряда
+    private void AdjustProjectileSize(GameObject projectile)
+    {
+        if (projectile != null)
+        {
+            // Изменяем размер снаряда на основе переменной projectileSize
+            projectile.transform.localScale = new Vector3(projectileSize, projectileSize, 1);
+        }
+    }
+}
 
 public class LightningProjectile : MonoBehaviour
 {

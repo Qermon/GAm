@@ -199,7 +199,6 @@ public class PlayerSelectionManager : MonoBehaviour
 
     private void StartGame()
     {
-      
             experienceBarImage.RestartSkript();
             weaponSelectionManager.RestartScript();
             waveManager.RestartScript();

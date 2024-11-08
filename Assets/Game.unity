@@ -6711,7 +6711,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
       propertyPath: upgradeOptions.Array.size
-      value: 45
+      value: 52
       objectReference: {fileID: 0}
     - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
       propertyPath: buffCostTexts.Array.data[0]
@@ -7130,6 +7130,62 @@ PrefabInstance:
       value: 44
       objectReference: {fileID: 0}
     - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[45].upgradeName
+      value: LightingSize
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[45].upgradeType
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[46].upgradeName
+      value: FireBallSize
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[46].upgradeType
+      value: 46
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[47].upgradeName
+      value: BoomerangSize
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[47].upgradeType
+      value: 47
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[48].upgradeName
+      value: ShurikenSize
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[48].upgradeType
+      value: 48
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[49].upgradeName
+      value: KnifeSize
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[49].upgradeType
+      value: 49
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[50].upgradeName
+      value: FireStrikeSize
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[50].upgradeType
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[51].upgradeName
+      value: BleedStrikeSize
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[51].upgradeType
+      value: 51
+      objectReference: {fileID: 0}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
       propertyPath: upgradeOptions.Array.data[0].upgradeSprite
       value: 
       objectReference: {fileID: 21300000, guid: c423aa71ce510e34ba16f92ba63f3966, type: 3}
@@ -7317,6 +7373,34 @@ PrefabInstance:
       propertyPath: upgradeOptions.Array.data[44].upgradeSprite
       value: 
       objectReference: {fileID: 21300000, guid: 2acf8162217bbcb49bda983b0fb10024, type: 3}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[45].upgradeSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 089eda23402d9c844bf1e1a1ae959f04, type: 3}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[46].upgradeSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 95d9fc591e8f099478630af20c9fbb30, type: 3}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[47].upgradeSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 22d92dbd34439fd4e96ae32cd8f87479, type: 3}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[48].upgradeSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 3149b8a9e744ad34e9fd23e6704a3028, type: 3}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[49].upgradeSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: ed4a74148a70ed94385f98ac2eb2c0ad, type: 3}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[50].upgradeSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: d61908c73aae07446830296f00767b4a, type: 3}
+    - target: {fileID: 7236529638928375436, guid: ff283b67f80ae6742b47a0b39cd6ae12, type: 3}
+      propertyPath: upgradeOptions.Array.data[51].upgradeSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 866d3a0abaaa7204e8d310920107d3e1, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -21191,6 +21275,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -36.402
       objectReference: {fileID: 0}
+    - target: {fileID: 1279249581580224677, guid: 6e46641b52ef9a04e8c610e947da3190, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: c87f854bca3e5294faea9b12f4e7f64d, type: 2}
+    - target: {fileID: 1279249581580224677, guid: 6e46641b52ef9a04e8c610e947da3190, type: 3}
+      propertyPath: m_fontStyle
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1279249581580224677, guid: 6e46641b52ef9a04e8c610e947da3190, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -4584318953538736070, guid: c87f854bca3e5294faea9b12f4e7f64d, type: 2}
+    - target: {fileID: 1279249581580224677, guid: 6e46641b52ef9a04e8c610e947da3190, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1352506409200298435, guid: 6e46641b52ef9a04e8c610e947da3190, type: 3}
       propertyPath: m_Name
       value: Canvas LvLUp
@@ -21289,7 +21389,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3106377101271607548, guid: 6e46641b52ef9a04e8c610e947da3190, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3106377101271607548, guid: 6e46641b52ef9a04e8c610e947da3190, type: 3}
       propertyPath: playerLevelUp

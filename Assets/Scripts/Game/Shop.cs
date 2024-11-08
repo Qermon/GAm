@@ -32,6 +32,7 @@ public class Shop : MonoBehaviour
     private List<Weapon> playerWeapons; // Список оружий
     private Weapon weapon;
     private CursorManager cursorManager;
+    private WeaponSelectionManager weaponSelectionManager;
 
 
     public UpgradeOption[] upgradeOptions; // Массив доступных баффов
@@ -103,6 +104,13 @@ public class Shop : MonoBehaviour
         PickupRadius,    // Радиус сбора
         MoveSpeed,       // Скорость бега
         Luck,
+        ProjectileSizeBuff_Lighting,
+        ProjectileSizeBuff_FireBall,
+        ProjectileSizeBuff_Boomerang,
+        ProjectileSizeBuff_Shuriken,
+        ProjectileSizeBuff_Knife,
+        ProjectileSizeBuff_FireStrike,
+        ProjectileSizeBuff_BleedStrike
     }
 
 
@@ -118,6 +126,7 @@ public class Shop : MonoBehaviour
 
     private void Start()
     {
+        weaponSelectionManager = FindObjectOfType<WeaponSelectionManager>();
         cursorManager = FindObjectOfType<CursorManager>();
         refreshButton.onClick.AddListener(TryRefreshBuffs);
         playerWeapons = new List<Weapon>(FindObjectsOfType<Weapon>()); // Получаем все оружия в игре
@@ -510,22 +519,68 @@ public class Shop : MonoBehaviour
             return null; // Или обработайте случай, когда нет доступных опций
         }
 
+        // Создаем новый список доступных опций, учитывая только активные оружия
+        List<UpgradeOption> filteredOptions = new List<UpgradeOption>();
+
+        foreach (var option in availableOptions)
+        {
+            switch (option.upgradeType)
+            {
+                case UpgradeType.ProjectileSizeBuff_Lighting:
+                    if (weaponSelectionManager.isLightningActive) filteredOptions.Add(option);
+                    break;
+
+                case UpgradeType.ProjectileSizeBuff_FireBall:
+                    if (weaponSelectionManager.isFireBallActive) filteredOptions.Add(option);
+                    break;
+
+                case UpgradeType.ProjectileSizeBuff_Boomerang:
+                    if (weaponSelectionManager.isBoomerangActive) filteredOptions.Add(option);
+                    break;
+
+                case UpgradeType.ProjectileSizeBuff_Shuriken:
+                    if (weaponSelectionManager.isShurikenActive) filteredOptions.Add(option);
+                    break;
+
+                case UpgradeType.ProjectileSizeBuff_Knife:
+                    if (weaponSelectionManager.isKnifeActive) filteredOptions.Add(option);
+                    break;
+
+                case UpgradeType.ProjectileSizeBuff_FireStrike:
+                    if (weaponSelectionManager.isFireStrikeActive) filteredOptions.Add(option);
+                    break;
+
+                case UpgradeType.ProjectileSizeBuff_BleedStrike:
+                    if (weaponSelectionManager.isBleedStrikeActive) filteredOptions.Add(option);
+                    break;
+
+                default:
+                    filteredOptions.Add(option); // Все остальные баффы (если они применимы)
+                    break;
+            }
+        }
+
+        // Если после фильтрации не осталось доступных опций, возвращаем null
+        if (filteredOptions.Count == 0)
+        {
+            return null;
+        }
+
         // Генерация случайного индекса
-        int randomIndex = Random.Range(0, availableOptions.Count);
-        UpgradeOption selectedOption = availableOptions[randomIndex];
+        int randomIndex = Random.Range(0, filteredOptions.Count);
+        UpgradeOption selectedOption = filteredOptions[randomIndex];
 
         // Генерация стоимости апгрейда с учетом увеличения и случайного значения
         float currentCost = CalculateCurrentCost();
         int randomAdjustment = Random.Range(-10, 21); // Случайное значение от -10 до +20
         int finalCost = Mathf.Max(0, (int)(currentCost + randomAdjustment)); // Убедитесь, что стоимость не отрицательная
 
-        // Удаляем выбранный вариант из доступных
-        availableOptions.RemoveAt(randomIndex);
-
         return new Upgrade(selectedOption.upgradeType, finalCost, selectedOption.upgradeSprite);
     }
+
     private float CalculateCurrentCost()
     {
+        // Вычисление стоимости улучшения с учетом базовой стоимости и процента увеличения цены на основе волны
         return baseCost * Mathf.Pow(1 + priceIncreasePercentage, waveManager.waveNumber);
     }
 
@@ -817,6 +872,34 @@ public class Shop : MonoBehaviour
 
             case UpgradeType.Luck:
                 description = "Удача +20";
+                break;
+
+            case UpgradeType.ProjectileSizeBuff_Lighting:
+                description = "Размер снаряда +20% для Lighting";
+                break;
+
+            case UpgradeType.ProjectileSizeBuff_FireBall:
+                description = "Размер снаряда +20% для Lighting";
+                break;
+
+            case UpgradeType.ProjectileSizeBuff_Boomerang:
+                description = "Размер снаряда +20% для Lighting";
+                break;
+
+            case UpgradeType.ProjectileSizeBuff_Shuriken:
+                description = "Размер снаряда +20% для Lighting";
+                break;
+
+            case UpgradeType.ProjectileSizeBuff_Knife:
+                description = "Размер снаряда +20% для Lighting";
+                break;
+
+            case UpgradeType.ProjectileSizeBuff_FireStrike:
+                description = "Размер снаряда +20% для Lighting";
+                break;
+
+            case UpgradeType.ProjectileSizeBuff_BleedStrike:
+                description = "Размер снаряда +20% для Lighting";
                 break;
 
             default:
@@ -1251,6 +1334,76 @@ public class Shop : MonoBehaviour
                 float luckIncrease9 = 20;
                 playerHealth.IncreaseLuck((int)luckIncrease9); ;
                 break;
+
+            case UpgradeType.ProjectileSizeBuff_Lighting:
+                foreach (var weapon in playerWeapons)
+                {
+                    if (weapon.weaponID == "1") // ID - 1 для Lighting
+                    {
+                        weapon.IncreaseProjectileSize(0.20f);
+                    }
+                }
+                break;
+
+            case UpgradeType.ProjectileSizeBuff_FireBall:
+                foreach (var weapon in playerWeapons)
+                {
+                    if (weapon.weaponID == "2") // ID - 2 для FireBall
+                    {
+                        weapon.IncreaseProjectileSize(0.20f);
+                    }
+                }
+                break;
+
+            case UpgradeType.ProjectileSizeBuff_Boomerang:
+                foreach (var weapon in playerWeapons)
+                {
+                    if (weapon.weaponID == "3") // ID - 3 для Boomerang
+                    {
+                        weapon.IncreaseProjectileSize(0.20f);
+                    }
+                }
+                break;
+
+            case UpgradeType.ProjectileSizeBuff_Shuriken:
+                foreach (var weapon in playerWeapons)
+                {
+                    if (weapon.weaponID == "4") // ID - 4 для Shuriken
+                    {
+                        weapon.IncreaseProjectileSize(0.20f);
+                    }
+                }
+                break;
+
+            case UpgradeType.ProjectileSizeBuff_Knife:
+                foreach (var weapon in playerWeapons)
+                {
+                    if (weapon.weaponID == "5") // ID - 5 для Knife
+                    {
+                        weapon.IncreaseProjectileSize(0.20f);
+                    }
+                }
+                break;
+
+            case UpgradeType.ProjectileSizeBuff_FireStrike:
+                foreach (var weapon in playerWeapons)
+                {
+                    if (weapon.weaponID == "7") // ID - 7 для FireStrike
+                    {
+                        weapon.IncreaseProjectileSize(0.20f);
+                    }
+                }
+                break;
+
+            case UpgradeType.ProjectileSizeBuff_BleedStrike:
+                foreach (var weapon in playerWeapons)
+                {
+                    if (weapon.weaponID == "8") // ID - 8 для BleedStrike
+                    {
+                        weapon.IncreaseProjectileSize(0.20f);
+                    }
+                }
+                break;
         }
-    }
+    } 
 }

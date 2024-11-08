@@ -31,6 +31,10 @@ public class Shuriken : Weapon
             shurikens[i].transform.parent = transform; // Сделать игрока родителем
             shurikens[i].transform.localPosition = new Vector3(Mathf.Cos((360f / shurikenCount) * i * Mathf.Deg2Rad) * attackRange,
                                                                 Mathf.Sin((360f / shurikenCount) * i * Mathf.Deg2Rad) * attackRange, 0);
+
+            // Изменение размера снаряда
+            AdjustProjectileSize(shurikens[i]);
+
             Collider2D collider = shurikens[i].AddComponent<BoxCollider2D>();
             collider.isTrigger = true; // Сделать коллайдер триггером
             collider.tag = "Weapon"; // Установить тег для триггера
@@ -41,6 +45,16 @@ public class Shuriken : Weapon
         }
 
         Debug.Log("Все сюрикены успешно созданы.");
+    }
+
+    // Метод для изменения размера снаряда
+    private void AdjustProjectileSize(GameObject shuriken)
+    {
+        if (shuriken != null)
+        {
+            // Изменяем размер каждого снаряда на основе переменной projectileSize
+            shuriken.transform.localScale = new Vector3(projectileSize, projectileSize, 1);
+        }
     }
 
     public override void Update()
@@ -69,6 +83,7 @@ public class Shuriken : Weapon
         Debug.Log("Атака сюрикена выполнена с уроном: " + CalculateDamage());
     }
 }
+
 
 public class ShurikenCollision : MonoBehaviour
 {

@@ -14,12 +14,9 @@ public enum WeaponType
     FireBall,
     Boomerang,
     Shuriken,
-    KillerFog,
     Knife,
     ZeusLight,
     FireStrike,
-    FreezeStrike,
-    PoisonStrike,
     BleedStrike
 }
 
@@ -65,6 +62,15 @@ public class WeaponSelectionManager : MonoBehaviour
     private Weapon weapon;
     private CursorManager cursorManager;
     private HashSet<WeaponType> selectedWeapons = new HashSet<WeaponType>(); // Хранение выбранного оружия
+
+    public bool isLightningActive = false;
+    public bool isFireBallActive = false;
+    public bool isBoomerangActive = false;
+    public bool isShurikenActive = false;
+    public bool isKnifeActive = false;
+    public bool isZeusLightActive = false;
+    public bool isFireStrikeActive = false;
+    public bool isBleedStrikeActive = false;
 
     private void Start()
     {
@@ -299,6 +305,7 @@ public class WeaponSelectionManager : MonoBehaviour
                 if (lightningWeapon != null)
                 {
                     lightningWeapon.enabled = true;
+                    isLightningActive = true; // Устанавливаем активность
                 }
                 break;
 
@@ -307,6 +314,7 @@ public class WeaponSelectionManager : MonoBehaviour
                 if (fireBallController != null)
                 {
                     fireBallController.enabled = true;
+                    isFireBallActive = true; // Устанавливаем активность
                 }
                 break;
 
@@ -315,6 +323,7 @@ public class WeaponSelectionManager : MonoBehaviour
                 if (boomerangController != null)
                 {
                     boomerangController.enabled = true;
+                    isBoomerangActive = true; // Устанавливаем активность
                 }
                 break;
 
@@ -323,6 +332,7 @@ public class WeaponSelectionManager : MonoBehaviour
                 if (shuriken != null)
                 {
                     shuriken.enabled = true;
+                    isShurikenActive = true; // Устанавливаем активность
                 }
                 break;
 
@@ -331,6 +341,7 @@ public class WeaponSelectionManager : MonoBehaviour
                 if (knifeController != null)
                 {
                     knifeController.enabled = true;
+                    isKnifeActive = true; // Устанавливаем активность
                 }
                 break;
 
@@ -339,6 +350,7 @@ public class WeaponSelectionManager : MonoBehaviour
                 if (zeusLight != null)
                 {
                     zeusLight.enabled = true;
+                    isZeusLightActive = true; // Устанавливаем активность
                 }
                 break;
 
@@ -347,6 +359,7 @@ public class WeaponSelectionManager : MonoBehaviour
                 if (fireStrike != null)
                 {
                     fireStrike.enabled = true;
+                    isFireStrikeActive = true; // Устанавливаем активность
                 }
                 break;
 
@@ -355,6 +368,7 @@ public class WeaponSelectionManager : MonoBehaviour
                 if (bleedStrike != null)
                 {
                     bleedStrike.enabled = true;
+                    isBleedStrikeActive = true; // Устанавливаем активность
                 }
                 break;
 
@@ -363,8 +377,7 @@ public class WeaponSelectionManager : MonoBehaviour
                 break;
         }
     }
-
-    public void CloseWeaponSelection()
+        public void CloseWeaponSelection()
     {
         cursorManager.HideCursor();
         videoImage.gameObject.SetActive(false);

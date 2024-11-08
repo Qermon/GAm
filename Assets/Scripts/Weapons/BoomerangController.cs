@@ -38,11 +38,23 @@ public class BoomerangController : Weapon
             GameObject spawnedBoomerang = Instantiate(boomerangPrefab, transform.position, Quaternion.identity);
             spawnedBoomerang.name = "Boomerang"; // Назначаем имя объекту
 
+            // Изменяем размер бумеранга
+            AdjustProjectileSize(spawnedBoomerang);
+
             BoomerangBehaviour boomerangBehaviour = spawnedBoomerang.AddComponent<BoomerangBehaviour>(); // Добавляем поведение бумеранга
             boomerangBehaviour.Initialize(directionToEnemy, speed, (int)finalDamage, isCriticalHit, transform, returnSpeed, maxDistance); // Передаем значения
         }
     }
 
+    // Метод для изменения размера бумеранга
+    private void AdjustProjectileSize(GameObject boomerang)
+    {
+        if (boomerang != null)
+        {
+            // Изменяем размер бумеранга на основе переменной projectileSize
+            boomerang.transform.localScale = new Vector3(projectileSize, projectileSize, 1);
+        }
+    }
 
     private GameObject FindClosestEnemy()
     {

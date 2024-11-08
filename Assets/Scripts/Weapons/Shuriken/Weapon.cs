@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public abstract class Weapon : MonoBehaviour
 {
@@ -17,6 +16,9 @@ public abstract class Weapon : MonoBehaviour
     public float rotationSpeed; // Скорость вращения снарядов
     public float projectileSpeed; // Скорость снарядов
 
+    public float projectileSize; // Размер снаряда (100% — стандартный размер)
+    public float baseProjectileSize;
+
     protected float attackTimer; // Внутренний таймер для контроля атаки
     private Enemy target; // Поле для хранения цели атаки
 
@@ -27,7 +29,7 @@ public abstract class Weapon : MonoBehaviour
     private bool isCritDamageBuffPurchased = false; // Флаг, указывающий был ли куплен бафф
     private bool isCritDamageBuffActive = false; // Флаг, указывающий активен ли бафф
     private float critDamageBuffCount = 0f; // Сколько процентов увеличивается критический урон
-
+    public string weaponID;
 
     protected virtual void Start()
     {
@@ -36,7 +38,9 @@ public abstract class Weapon : MonoBehaviour
         damage = baseDamage;
         attackSpeed = baseAttackSpeed; // Установить начальную скорость при запуске
         attackRange = baseAttackRange;
+        projectileSize = baseProjectileSize;
     }
+
     public bool IsActive()
     {
         return this.enabled;
@@ -66,13 +70,35 @@ public abstract class Weapon : MonoBehaviour
 
         // Передаём урон и информацию о критическом ударе
         target.TakeDamage((int)finalDamage, isCriticalHit);
+
+        // Логика изменения размера снаряда при атаке
+        AdjustProjectileSize();
     }
 
-
-    public virtual void UseWeapon()
+    // Метод для корректировки размера снаряда
+    private void AdjustProjectileSize()
     {
-        Debug.Log("Используется оружие: " + this.GetType().Name);
-        // Логика использования оружия
+        // Предположим, что снаряд это какой-то объект в сцене.
+        // Если у вас есть объект снаряда, вы можете изменить его масштаб:
+        GameObject projectile = CreateProjectile(); // Создаём снаряд (реализуйте метод создания снаряда)
+        if (projectile != null)
+        {
+            projectile.transform.localScale = new Vector3(projectileSize, projectileSize, projectileSize); // Устанавливаем масштаб снаряда
+        }
+    }
+
+    // Пример метода создания снаряда
+    private GameObject CreateProjectile()
+    {
+        // Создаём снаряд, например, используя префаб снаряда.
+        // Здесь вам нужно будет реализовать создание снаряда в зависимости от вашего проекта.
+        return new GameObject("Projectile"); // Простой пример
+    }
+
+    public void IncreaseProjectileSize(float percentage)
+    {
+        float increaseAmount = baseProjectileSize * percentage;
+        projectileSize += increaseAmount; 
     }
 
     public void IncreaseDamage(float percentage)
@@ -159,6 +185,7 @@ public abstract class Weapon : MonoBehaviour
     {
         criticalChance -= percentage; // Уменьшаем шанс критического удара
     }
+
     public void CritChanceWave()
     {
         // Уменьшаем шанс критического удара на количество увеличений
@@ -204,5 +231,4 @@ public abstract class Weapon : MonoBehaviour
         isCritDamageBuffActive = false; // Деактивируем бафф
         critDamageBuffCount = 0f;
     }
-
 }

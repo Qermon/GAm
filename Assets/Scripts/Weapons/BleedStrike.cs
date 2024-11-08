@@ -41,9 +41,21 @@ public class BleedStrike : Weapon
         Vector3 targetPosition = nearestEnemy.transform.position;
         GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
         projectile.tag = "Weapon"; // Устанавливаем тег
+
+        // Устанавливаем размер снаряда
+        AdjustProjectileSize(projectile);
+
         projectile.AddComponent<BleedProjectile>().Initialize(this, targetPosition, projectileLifetime, bleedDuration, slowEffect, damage, criticalDamage);
     }
 
+    // Метод для изменения размера снаряда
+    private void AdjustProjectileSize(GameObject projectile)
+    {
+        if (projectile != null)
+        {
+            projectile.transform.localScale = new Vector3(projectileSize, projectileSize, 1); // Устанавливаем размер
+        }
+    }
 
     private Collider2D FindNearestEnemy()
     {

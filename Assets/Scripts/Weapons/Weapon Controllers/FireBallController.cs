@@ -41,6 +41,10 @@ public class FireBallController : Weapon
             // Создаем огненный шар
             GameObject fireBall = Instantiate(fireBallPrefab, transform.position, Quaternion.identity);
             fireBall.tag = "Weapon"; // Устанавливаем тег
+
+            // Изменяем размер снаряда на основе переменной projectileSize
+            AdjustProjectileSize(fireBall);
+
             FireBall fireBallScript = fireBall.AddComponent<FireBall>(); // Добавляем компонент для логики снаряда
             fireBallScript.Initialize(nearestEnemy.transform.position, projectileSpeed, projectileLifetime, this); // Передаем параметры
 
@@ -73,10 +77,18 @@ public class FireBallController : Weapon
         }
     }
 
+    // Метод для изменения размера снаряда
+    private void AdjustProjectileSize(GameObject fireBall)
+    {
+        if (fireBall != null)
+        {
+            // Изменяем размер снаряда на основе переменной projectileSize
+            fireBall.transform.localScale = new Vector3(projectileSize, projectileSize, 1);
+        }
+    }
 
     private GameObject FindNearestEnemy()
     {
-        // Находим всех врагов в радиусе attackRange на слоях Mobs и MobsFly
         int enemyLayerMask = LayerMask.GetMask("Mobs", "MobsFly");
         Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, enemyLayerMask);
 
@@ -89,14 +101,14 @@ public class FireBallController : Weapon
             if (distance < nearestDistance)
             {
                 nearestDistance = distance;
-                nearestEnemy = enemy.gameObject; // Обновляем ближайшего врага
+                nearestEnemy = enemy.gameObject;
             }
         }
 
-        return nearestEnemy; // Возвращаем ближайшего врага
+        return nearestEnemy;
     }
 }
-
+    
 
 public class FireBall : MonoBehaviour
 {

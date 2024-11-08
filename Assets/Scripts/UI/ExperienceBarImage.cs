@@ -13,7 +13,7 @@ public class ExperienceBarImage : MonoBehaviour
 
     public void RestartSkript()
     {
-        GameObject playerObject = GameObject.FindWithTag("Player"); 
+        GameObject playerObject = GameObject.FindWithTag("Player");
         playerLevelUp = playerObject.GetComponent<PlayerLevelUp>();
         UpdateExperienceBar();
     }
@@ -32,24 +32,24 @@ public class ExperienceBarImage : MonoBehaviour
             yield return new WaitForSeconds(0.5f); // ѕовтор€ем проверку каждые полсекунды
         }
 
+        experienceBarImage.fillAmount = 0f; // ”станавливаем начальное значение полоски в 0
         UpdateExperienceBar(); // ќбновл€ем полоску после нахождени€ игрока
     }
 
     void Update()
     {
-        if (playerLevelUp != null)
-        {
+      
             UpdateExperienceBar(); // ќбновл€ем полоску каждый кадр, если игрок найден
-        }
+      
     }
 
     // ћетод дл€ обновлени€ состо€ни€ полоски
     private void UpdateExperienceBar()
     {
-        // ѕроверка, чтобы избежать ошибок, если playerLevelUp ещЄ не найден
-        if (playerLevelUp != null)
+        if (playerLevelUp != null && playerLevelUp.experienceToNextLevel > 0)
         {
             float fillAmount = (float)playerLevelUp.currentExperience / playerLevelUp.experienceToNextLevel;
+            fillAmount = Mathf.Clamp01(fillAmount); // ќграничиваем значение между 0 и 1
             experienceBarImage.fillAmount = fillAmount;
         }
     }

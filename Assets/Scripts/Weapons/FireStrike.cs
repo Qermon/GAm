@@ -35,7 +35,20 @@ public class FireStrike : Weapon
     {
         GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
         projectile.tag = "Weapon";
+
+        // Устанавливаем размер снаряда
+        AdjustProjectileSize(projectile);
+
         projectile.AddComponent<FireProjectile>().Initialize(this, damage); // Передаем урон в снаряд
+    }
+
+    // Метод для изменения размера снаряда
+    private void AdjustProjectileSize(GameObject projectile)
+    {
+        if (projectile != null)
+        {
+            projectile.transform.localScale = new Vector3(projectileSize, projectileSize, 1); // Устанавливаем размер
+        }
     }
 
     private void OnDrawGizmosSelected()

@@ -33,39 +33,37 @@ public class KnifeController : Weapon
         {
             Vector3 directionToEnemy = (targetEnemy.transform.position - transform.position).normalized; // Получаем направление к врагу
             GameObject spawnedKnife = Instantiate(knifePrefab, transform.position, Quaternion.identity);
+
+            // Изменяем размер кинжала
+            AdjustProjectileSize(spawnedKnife);
+
             KnifeBehaviour knifeBehaviour = spawnedKnife.AddComponent<KnifeBehaviour>(); // Добавляем поведение кинжала
             knifeBehaviour.Initialize(directionToEnemy, speed, (int)CalculateDamage(), transform, maxDistance, this); // Устанавливаем параметры
 
-            // Получаем AudioSource из префаба кинжала
+            // Настройка звука для кинжала
             AudioSource audioSource = spawnedKnife.GetComponent<AudioSource>();
             if (audioSource != null)
             {
-                audioSource.spatialBlend = 0f; // 2D звук
-                audioSource.minDistance = 1f; // Минимальное расстояние для звука
-                audioSource.maxDistance = 15f; // Максимальное расстояние для звука
+                audioSource.spatialBlend = 0f;
+                audioSource.minDistance = 1f;
+                audioSource.maxDistance = 15f;
 
-                // Вычисляем угол между направлением снаряда и правой стороной игрока (по оси X)
                 float angle = Vector3.SignedAngle(Vector3.right, directionToEnemy, Vector3.forward);
-
-                // Нормализуем угол для панорамы: от -1 (лево) до 1 (право)
-                float pan;
-                if (angle >= -90 && angle <= 90)
-                {
-                    pan = Mathf.InverseLerp(-90f, 90f, angle); // Справа от игрока: 0 до 1
-                }
-                else
-                {
-                    pan = -Mathf.InverseLerp(90f, 270f, Mathf.Abs(angle)); // Слева от игрока: 0 до -1
-                }
-
-                audioSource.panStereo = pan; // Устанавливаем панораму звука
-                audioSource.Play(); // Проигрываем звук
+                float pan = angle >= -90 && angle <= 90 ? Mathf.InverseLerp(-90f, 90f, angle) : -Mathf.InverseLerp(90f, 270f, Mathf.Abs(angle));
+                audioSource.panStereo = pan;
+                audioSource.Play();
             }
         }
     }
 
-
-
+    // Метод для изменения размера кинжала
+    private void AdjustProjectileSize(GameObject knife)
+    {
+        if (knife != null)
+        {
+            knife.transform.localScale = new Vector3(projectileSize, projectileSize, 1); // Применяем заданный размер
+        }
+    }
 
     private GameObject FindEnemyWithMostHealth()
     {
@@ -97,6 +95,7 @@ public class KnifeController : Weapon
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }
+
 
 public class KnifeBehaviour : MonoBehaviour
 {
