@@ -188,7 +188,7 @@ public class Shop : MonoBehaviour
     // Обновляет состояние кнопки и отображение стоимости
     void UpdateRefreshButton()
     {
-        refreshCostText.text = currentRefreshCost.ToString() + " Gold";
+        refreshCostText.text = currentRefreshCost.ToString();
 
         // Проверяем, хватает ли золота
         if (playerGold.currentGold >= currentRefreshCost)

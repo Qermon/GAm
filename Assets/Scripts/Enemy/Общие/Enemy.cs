@@ -2,6 +2,7 @@ using System.Buffers.Text;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System; // Для использования типа Action
 
 public class Enemy : MonoBehaviour
 {
@@ -39,8 +40,8 @@ public class Enemy : MonoBehaviour
     public GameObject bloodEffectPrefab; // Добавьте это поле
     private WaveManager waveManager; 
     private float currentSlowEffect = 0f; // Текущее замедление
-  
 
+    public event Action OnDeath; // Событие для оповещения о смерти врага
     public bool IsDead
     {
         get { return isDead; }
@@ -191,7 +192,7 @@ public class Enemy : MonoBehaviour
 
     public virtual void TakeDamage(int damage, bool isCriticalHit)
     {
-        Debug.Log($"Taking damage: {damage}"); // Отладочное сообщение
+
         currentHealth -= damage;
         currentHealth = Mathf.Max(currentHealth, 0);
 
@@ -206,7 +207,7 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            if (Random.Range(0f, 1f) <= 0.2f)
+            if (UnityEngine.Random.Range(0f, 1f) <= 0.2f)
             {
                 GameObject bloodEffectInstance = Instantiate(bloodEffectPrefab, transform.position, Quaternion.identity);
                 BloodEffect bloodEffect = bloodEffectInstance.GetComponent<BloodEffect>();
@@ -287,7 +288,7 @@ public class Enemy : MonoBehaviour
       
 
         SpawnExperience();
-
+        OnDeath?.Invoke();
         Destroy(gameObject);
     }
 

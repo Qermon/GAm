@@ -11,6 +11,7 @@ TagManager:
   - Projectile
   - EXP
   - WaveManager
+  - Camera
   layers:
   - Default
   - TransparentFX

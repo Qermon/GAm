@@ -74,12 +74,9 @@ public class ExperienceItem : MonoBehaviour
                 if (experienceSound != null)
                 {
                     experienceSound.Play();
-                    Debug.Log("Проигрывается звук подбора опыта");
+
                 }
-                else
-                {
-                    Debug.LogWarning("AudioSource не найден для воспроизведения звука!");
-                }
+
 
                 Destroy(gameObject); // Уничтожаем предмет после того, как опыт собран
             }

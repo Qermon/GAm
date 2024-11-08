@@ -9,11 +9,13 @@ public class GameManager : MonoBehaviour
     public WaveManager waveManager; // Ссылка на WaveManager
     public TMP_Text nextWaveTimerText; // Ссылка на текст для таймера следующей волны
     public TMP_Text waveNumberText;
+    public TMP_Text kill;
     private static GameManager instance; // Синглтон для доступа из других классов
     private MainMenu mainMenu;
     private bool isPaused = false; // Переменная для отслеживания состояния паузы
     private CursorManager cursorManager;
     public GameObject chestPanel; // Панель сундука в UI
+    
     
 
     void Awake()
@@ -37,6 +39,7 @@ public class GameManager : MonoBehaviour
         waveManager = FindObjectOfType<WaveManager>();
         nextWaveTimerText = GameObject.Find("NextWaveTimerText")?.GetComponent<TMP_Text>();
         waveNumberText = GameObject.Find("WaveNumberText")?.GetComponent<TMP_Text>();
+        kill = GameObject.Find("Kill")?.GetComponent<TMP_Text>();
 
         // Проверяем, найдены ли тексты
         if (nextWaveTimerText == null || waveNumberText == null)
@@ -72,6 +75,7 @@ public class GameManager : MonoBehaviour
         {
             nextWaveTimerText = GameObject.Find("NextWaveTimerText")?.GetComponent<TMP_Text>();
             waveNumberText = GameObject.Find("WaveNumberText")?.GetComponent<TMP_Text>();
+            kill = GameObject.Find("Kill")?.GetComponent<TMP_Text>();
         }
         // Обновление UI текстов
         UpdateWaveUI();
@@ -87,22 +91,35 @@ public class GameManager : MonoBehaviour
     {
         if (waveManager.GetWaveNumber() > 0) // Убедитесь, что хотя бы одна волна прошла
         {
-            float timeUntilNext = waveManager.GetTimeUntilNextWave();
-
-            // Проверка на отрицательное значение
-            if (timeUntilNext <= 0)
+            if (waveManager.GetWaveNumber() % 3 == 0) // Каждая третья волна
             {
-                nextWaveTimerText.text = "0"; // Устанавливаем текст в "0" если время отрицательное или ноль
+                // Обновление UI с количеством оставшихся убийств
+                int remainingKills = waveManager.killThreshold - waveManager.killCount;
+                nextWaveTimerText.text = remainingKills.ToString();
             }
             else
             {
-                // Обновите UI с использованием timeUntilNext
-                nextWaveTimerText.text = Mathf.Ceil(timeUntilNext).ToString();
+                // Если волна не на убийства — показываем время до следующей волны
+                float timeUntilNext = waveManager.GetTimeUntilNextWave();
+
+                // Проверка на отрицательное значение
+                if (timeUntilNext <= 0)
+                {
+                    nextWaveTimerText.text = "0"; // Устанавливаем текст в "0" если время отрицательное или ноль
+                }
+                else
+                {
+                    // Обновление UI с использованием timeUntilNext
+                    nextWaveTimerText.text = Mathf.Ceil(timeUntilNext).ToString();
+                }
             }
 
             waveNumberText.text = "Волна: " + waveManager.GetWaveNumber();
+            kill.text = waveManager.killCountAll.ToString();
         }
     }
+
+
 
     public static GameManager GetInstance()
     {

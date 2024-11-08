@@ -25,6 +25,9 @@ public class WaveManager : MonoBehaviour
 
     public int waveNumber = 0;
     public int maxWaves = 30;
+    public int killCount; // Счетчик убийств для волны на убийства
+    public int killThreshold; // Порог убийств для завершения волны
+    public int killCountAll;
 
     private bool spawningWave = false;
     private bool isSpawningActive = true; // Флаг для контроля спавна врагов
@@ -48,12 +51,20 @@ public class WaveManager : MonoBehaviour
     private PlayerHealth playerHealth; // Добавьте ссылку на PlayerHealth
     public WeaponSelectionManager weaponSelectionManager; // Ссылка на ваш скрипт выбора оружия
     private List<GameObject> activeEnemies = new List<GameObject>();
-
+    private WaveConfig currentWaveConfig;
 
     private Dictionary<int, WaveConfig> waveConfigs;
 
+
+
     void Start()
     {
+
+        if (waveConfigs != null && waveConfigs.TryGetValue(waveNumber, out currentWaveConfig))
+        {
+            // Обновляем killThreshold для текущей волны
+            UpdateKillThreshold(currentWaveConfig);
+        }
         // Найти объект игрока на сцене и сохранить его ссылку
         PlayerHealth playerObject = FindObjectOfType<PlayerHealth>(); // Предполагается, что ваш класс игрока называется Player
         if (playerObject != null)
@@ -79,6 +90,25 @@ public class WaveManager : MonoBehaviour
         EndWave();
         StartWave();
     }
+
+    // Метод для инициализации или обновления значения killThreshold для текущей волны
+    public void UpdateKillThreshold(WaveConfig waveConfig)
+    {
+        int totalEnemies = 0;
+
+        // Считаем количество мобов, которые будут заспавнены в текущей волне
+        foreach (var spawn in waveConfig.enemiesToSpawn)
+        {
+            totalEnemies += spawn.count;
+        }
+
+        // Логируем, сколько мобов посчитано для текущей волны
+        Debug.Log($"Total enemies for wave: {totalEnemies}");
+
+        // Обновляем killThreshold для текущей волны
+        killThreshold = totalEnemies - 20;
+    }   
+
 
     public void RestartScript()
     {
@@ -136,6 +166,7 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator StartNextWave()
     {
+
         if (isWaveInProgress) yield break; // Если волна уже в процессе, выходим
 
         isWaveInProgress = true; // Устанавливаем флаг
@@ -162,6 +193,10 @@ public class WaveManager : MonoBehaviour
 
     public void StartWave()
     {
+
+        Debug.Log("Начало волны, текущий номер: " + waveNumber);
+        killCount = 0; // Сброс счетчика убийств
+
         Debug.Log("Начало волны, текущий номер: " + waveNumber);
         if (weaponSelectionManager == null)
         {
@@ -218,8 +253,21 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator SpawnWave()
     {
-        spawningWave = true;
+
+
         waveNumber++;
+        if (waveConfigs != null && waveConfigs.TryGetValue(waveNumber, out currentWaveConfig))
+        {
+            UpdateKillThreshold(currentWaveConfig);  // Обновляем killThreshold для текущей волны
+        }
+        else
+        {
+            Debug.LogError($"Конфигурация для волны {waveNumber} не найдена!");
+            yield break;
+        }
+
+        spawningWave = true;
+       
 
         if (waveConfigs != null && waveConfigs.ContainsKey(waveNumber))
         {
@@ -229,20 +277,22 @@ public class WaveManager : MonoBehaviour
 
             List<EnemySpawn> allEnemiesToSpawn = new List<EnemySpawn>(currentWave.enemiesToSpawn);
 
-            float spawnTimeLimit = waveDuration - 7f; // Доступное время для спавна мобов
+            bool isKillWave = (waveNumber % 3 == 0); // Каждая третья волна на убийства
+            float spawnTimeLimit = waveDuration - 7f; // Время для спавна мобов (до 7 секунд до конца волны)
             int totalEnemyTypes = allEnemiesToSpawn.Count;
             int[] enemiesLeftToSpawn = allEnemiesToSpawn.Select(e => e.count).ToArray();
             float[] nextSpawnTime = new float[totalEnemyTypes];
+            killCount = 0; // Сбрасываем счетчик убийств для новой волны
 
             // Рассчитываем интервал спавна для каждого типа врага
             for (int i = 0; i < totalEnemyTypes; i++)
             {
-                allEnemiesToSpawn[i].CalculateSpawnInterval(spawnTimeLimit);
+                allEnemiesToSpawn[i].CalculateSpawnInterval(spawnTimeLimit); // Используем spawnTimeLimit для спавна
                 nextSpawnTime[i] = timeStartedWave + 0.25f; // Первые 2 секунды враги не спавнятся
             }
 
             // Основной цикл спавна врагов
-            while (Time.time - timeStartedWave < spawnTimeLimit && isSpawningActive)
+            while (isSpawningActive)
             {
                 for (int i = 0; i < totalEnemyTypes; i++)
                 {
@@ -260,16 +310,34 @@ public class WaveManager : MonoBehaviour
                     }
                 }
 
+                // Для волн на убийства (каждая третья)
+                if (isKillWave && killCount >= killThreshold)
+                {
+                    break; // Выход из цикла, если убито достаточно мобов
+                }
+
+                // Для волн на время, проверяем, если время волны истекло
+                if (!isKillWave && Time.time - timeStartedWave >= spawnTimeLimit)
+                {
+                    break; // Выход из цикла, если время для спавна мобов истекло
+                }
+
                 yield return null; // Ждем следующий кадр
             }
 
-            // Ждем оставшееся время до завершения волны
-            while (Time.time - timeStartedWave < waveDuration)
+            // Если волна не на убийства, ждем еще 7 секунд после спавна всех мобов
+            if (!isKillWave)
             {
-                yield return null; // Продолжаем ждать до окончания времени волны
+                float timeToEndWave = Time.time + 7f; // Еще 7 секунд до конца волны
+
+                // Ожидаем 7 секунд, прежде чем завершить волну
+                while (Time.time < timeToEndWave && isSpawningActive)
+                {
+                    yield return null; // Ждем 7 секунд
+                }
             }
 
-            // Убираем оставшихся врагов и завершаем волну
+            // Завершаем волну
             RemoveRemainingEnemies();
             EndWave();
             shop.OpenShop();
@@ -283,6 +351,9 @@ public class WaveManager : MonoBehaviour
         StartCoroutine(StartNextWave());
         playerHealth.barrierActivatedThisWave = false;
     }
+
+
+
 
     // Метод для спавна крестика и моба
     private IEnumerator SpawnCrossAndEnemy(Vector3 spawnPosition, GameObject enemyPrefab)
@@ -649,7 +720,7 @@ public class WaveManager : MonoBehaviour
         // Волна 9
         waveConfigs.Add(9, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(280 + 29 * 1.5f)),
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(350 + 29 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 4),
@@ -661,7 +732,7 @@ public class WaveManager : MonoBehaviour
         // Волна 10
         waveConfigs.Add(10, new WaveConfig(60f, new List<EnemySpawn>
     {
-         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(290 + 29 * 1.5f)),
+         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(290 + 30 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 5),
@@ -673,7 +744,7 @@ public class WaveManager : MonoBehaviour
         // Волна 11
         waveConfigs.Add(11, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(300 + 29 * 1.5f)),
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(300 + 31 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 10),
@@ -685,7 +756,7 @@ public class WaveManager : MonoBehaviour
         // Волна 12
         waveConfigs.Add(12, new WaveConfig(60f, new List<EnemySpawn>
     {
-            new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(320 + 29 * 1.5f)),
+            new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(420 + 32 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -697,7 +768,7 @@ public class WaveManager : MonoBehaviour
         // Волна 13
         waveConfigs.Add(13, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 33 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -709,7 +780,7 @@ public class WaveManager : MonoBehaviour
         // Волна 14
         waveConfigs.Add(14, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 34 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -721,7 +792,7 @@ public class WaveManager : MonoBehaviour
         // Волна 15
         waveConfigs.Add(15, new WaveConfig(60f, new List<EnemySpawn>
     {
-       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
+       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(430 + 35 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -733,7 +804,7 @@ public class WaveManager : MonoBehaviour
         // Волна 16
         waveConfigs.Add(16, new WaveConfig(60f, new List<EnemySpawn>
     {
-       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
+       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 36 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -745,7 +816,7 @@ public class WaveManager : MonoBehaviour
         // Волна 17
         waveConfigs.Add(17, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 37 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -757,7 +828,7 @@ public class WaveManager : MonoBehaviour
         // Волна 18
         waveConfigs.Add(18, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(430 + 38 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -769,7 +840,7 @@ public class WaveManager : MonoBehaviour
         // Волна 19
         waveConfigs.Add(19, new WaveConfig(60f, new List<EnemySpawn>
     {
-       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
+       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 39 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -781,7 +852,7 @@ public class WaveManager : MonoBehaviour
         // Волна 20
         waveConfigs.Add(20, new WaveConfig(60f, new List<EnemySpawn>
     {
-       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
+       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 40 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -793,7 +864,7 @@ public class WaveManager : MonoBehaviour
         // Волна 21
         waveConfigs.Add(21, new WaveConfig(60f, new List<EnemySpawn>
     {
-       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
+       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(430 + 41 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -805,7 +876,7 @@ public class WaveManager : MonoBehaviour
         // Волна 22
         waveConfigs.Add(22, new WaveConfig(60f, new List<EnemySpawn>
     {
-        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
+        new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 42 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -817,7 +888,7 @@ public class WaveManager : MonoBehaviour
         // Волна 23
         waveConfigs.Add(23, new WaveConfig(60f, new List<EnemySpawn>
     {
-      new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
+      new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 43 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -829,7 +900,7 @@ public class WaveManager : MonoBehaviour
         // Волна 24
         waveConfigs.Add(24, new WaveConfig(60f, new List<EnemySpawn>
     {
-       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
+       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(430 + 44 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -841,7 +912,7 @@ public class WaveManager : MonoBehaviour
         // Волна 25
         waveConfigs.Add(25, new WaveConfig(60f, new List<EnemySpawn>
     {
-      new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
+      new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 45 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -853,7 +924,7 @@ public class WaveManager : MonoBehaviour
         // Волна 26
         waveConfigs.Add(26, new WaveConfig(60f, new List<EnemySpawn>
     {
-       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
+       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 46 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -865,7 +936,7 @@ public class WaveManager : MonoBehaviour
         // Волна 27
         waveConfigs.Add(27, new WaveConfig(60f, new List<EnemySpawn>
     {
-     new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
+     new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(430 + 47 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -877,7 +948,7 @@ public class WaveManager : MonoBehaviour
         // Волна 28
         waveConfigs.Add(28, new WaveConfig(60f, new List<EnemySpawn>
     {
-     new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
+     new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 48 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -889,7 +960,7 @@ public class WaveManager : MonoBehaviour
         // Волна 29
         waveConfigs.Add(29, new WaveConfig(60f, new List<EnemySpawn>
     {
-       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
+       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 49 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -901,7 +972,7 @@ public class WaveManager : MonoBehaviour
         // Волна 30
         waveConfigs.Add(30, new WaveConfig(60f, new List<EnemySpawn>
     {
-       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(330 + 29 * 1.5f)),
+       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(430 + 50 * 1.5f)),
         new EnemySpawn(samuraiPrefabs[0], 15),
         new EnemySpawn(boomPrefabs[0], 6),
         new EnemySpawn(deathPrefabs[0], 15),
@@ -909,6 +980,25 @@ public class WaveManager : MonoBehaviour
         new EnemySpawn(archerPrefabs[0], 2),
         new EnemySpawn(buffMobPrefabs[0], 2)
     }));
+
+        // Рассчитываем количество мобов для каждой волны
+        foreach (var wave in waveConfigs)
+        {
+            int totalEnemies = 0;
+
+            // Считаем общее количество мобов для текущей волны
+            foreach (var spawn in wave.Value.enemiesToSpawn)
+            {
+                totalEnemies += spawn.count;
+            }
+
+            // Устанавливаем threshold убийств равным общему количеству мобов
+            wave.Value.killThreshold = totalEnemies;  // Обновляем killThreshold для текущей волны
+                                                      // Предположим, у вас есть метод для передачи этого значения в менеджер волн
+                                                      // Обновляем количество мобов для текущей волны
+            UpdateKillThreshold(wave.Value);
+        }
+
     }
 
     public int GetWaveNumber()
@@ -921,8 +1011,22 @@ public class WaveManager : MonoBehaviour
         if (enemy != null && !activeEnemies.Contains(enemy))
         {
             activeEnemies.Add(enemy);
+
+            // Подписываемся на событие OnDeath
+            var enemyComponent = enemy.GetComponent<Enemy>();
+            if (enemyComponent != null)
+            {
+                enemyComponent.OnDeath += () =>
+                {
+                    killCountAll++;
+                    killCount++; // Увеличиваем счетчик убийств при смерти врага
+                    activeEnemies.Remove(enemy);
+                };
+            }
         }
     }
+
+
 
     public float GetTimeUntilNextWave()
     {
@@ -960,11 +1064,15 @@ public class WaveConfig
     public List<EnemySpawn> enemiesToSpawn;
     public float spawnInterval;
 
+    // Публичное поле для изменения killThreshold
+    public int killThreshold;
+
     public WaveConfig(float waveDuration, List<EnemySpawn> enemies)
     {
         this.waveDuration = waveDuration;
         this.enemiesToSpawn = enemies;
         this.spawnInterval = waveDuration / GetTotalEnemies();
+        this.killThreshold = GetTotalEnemies(); // Стартовое значение, но можно изменить позже
     }
 
     private int GetTotalEnemies()
@@ -977,6 +1085,7 @@ public class WaveConfig
         return total;
     }
 }
+
 
 [System.Serializable]
 public class EnemySpawn
