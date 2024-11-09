@@ -2,6 +2,7 @@ using TMPro; // Используем TextMeshPro
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.UI; // Для работы с Image
 
 
 public class GameManager : MonoBehaviour
@@ -14,9 +15,11 @@ public class GameManager : MonoBehaviour
     private MainMenu mainMenu;
     private bool isPaused = false; // Переменная для отслеживания состояния паузы
     private CursorManager cursorManager;
-    public GameObject chestPanel; // Панель сундука в UI
-    
-    
+
+    public Image hpBarImage; // Главное изображение HP-бара
+    public Image hpBarBackgroundImage; // Изображение фона HP-бара
+
+
 
     void Awake()
     {
@@ -47,7 +50,6 @@ public class GameManager : MonoBehaviour
             Debug.LogError("Не удалось найти один или оба текстовых объекта для номера волны или таймера волны.");
         }
 
-        // Инициализация игры
         waveManager = FindObjectOfType<WaveManager>(); // Найти WaveManager на сцене
         if (waveManager != null)
         {
@@ -56,6 +58,24 @@ public class GameManager : MonoBehaviour
         else
         {
             Debug.LogError("WaveManager не найден! Убедитесь, что он присутствует на сцене.");
+        }
+
+
+        GameObject hpBarObject = GameObject.Find("foregroundBoss"); // Здесь "HPBarName" - это имя вашего объекта Image
+        GameObject hpBarObject1 = GameObject.Find("backgroundBoss"); // Здесь "HPBarName" - это имя вашего объекта Image
+
+        if (hpBarObject != null && hpBarObject1 != null)
+        {
+            // Преобразуем его в компонент Image
+            hpBarImage = hpBarObject.GetComponent<Image>();
+            hpBarBackgroundImage = hpBarObject1.GetComponent<Image>();
+
+        }
+
+        if (hpBarImage != null && hpBarBackgroundImage != null)
+        {
+            hpBarImage.gameObject.SetActive(false); // Скрываем HP-бар до 10-й волны
+            hpBarBackgroundImage.gameObject.SetActive(false); // Скрываем фон HP-бара
         }
     }
 
@@ -82,6 +102,18 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public void KilledBoss()
+    {
+        hpBarImage.gameObject.SetActive(false); // Скрываем HP-бар
+        hpBarBackgroundImage.gameObject.SetActive(false); // Скрываем фон HP-бара
+    }
+
+    public void SpawnBoss()
+    {
+        hpBarImage.gameObject.SetActive(true); // Показываем HP-бар
+        hpBarBackgroundImage.gameObject.SetActive(true); // Показываем фон HP-бара
+    }
+
     public void StartGame()
     {
         // Логика для старта игры
@@ -91,7 +123,12 @@ public class GameManager : MonoBehaviour
     {
         if (waveManager.GetWaveNumber() > 0) // Убедитесь, что хотя бы одна волна прошла
         {
-            if (waveManager.GetWaveNumber() % 3 == 0) // Каждая третья волна
+            if (waveManager.GetWaveNumber() == 10)
+            {
+
+                nextWaveTimerText.text = "Босс";
+            }
+            else if (waveManager.GetWaveNumber() % 3 == 0) // Каждая третья волна
             {
                 // Обновление UI с количеством оставшихся убийств
                 int remainingKills = waveManager.killThreshold - waveManager.killCount;

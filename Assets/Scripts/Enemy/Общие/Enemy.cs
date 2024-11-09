@@ -221,6 +221,7 @@ public class Enemy : MonoBehaviour
 
     public virtual void TakeDamage(int damage, bool isCriticalHit, bool isDoubleDamage = false)
     {
+       
 
         currentHealth -= damage;
         currentHealth = Mathf.Max(currentHealth, 0);

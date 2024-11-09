@@ -235,8 +235,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be02320f2ab232d4e8f8f4d258fe22b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 10000
-  baseMaxHealth: 10000
+  maxHealth: 100
+  baseMaxHealth: 100
   currentHealth: 0
   regen: 0.005
   baseRegen: 0.005
@@ -265,7 +265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5c65c7e411aa4a47ad042689de0c22e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentGold: 1000000
+  currentGold: 0
   goldText: {fileID: 0}
 --- !u!114 &4511895755911949268
 MonoBehaviour:

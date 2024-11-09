@@ -20,6 +20,10 @@ public class WaveManager : MonoBehaviour
     public GameObject[] ArchersArrow;
     public GameObject[] WitchsProjectile;
     public Transform[] spawnPoints;       // Точки спауна
+
+    public GameObject currentBoss;  // Для хранения текущего босса
+    public bool bossKilled = false;  // Флаг, который проверяет, убит ли босс
+
     public float spawnRadius = 1f; // Радиус для разброса спавна вокруг точки
     public float timeBetweenWaves = 5f;
 
@@ -40,6 +44,8 @@ public class WaveManager : MonoBehaviour
     public float speedMultiplier ;
     public float projectile;
 
+   
+
     public Transform player; // Ссылка на объект игрока
     public Vector2 centerOfMap = new Vector2(18.5f, -12.5f); // Координаты центра карты
 
@@ -52,6 +58,7 @@ public class WaveManager : MonoBehaviour
     public WeaponSelectionManager weaponSelectionManager; // Ссылка на ваш скрипт выбора оружия
     private List<GameObject> activeEnemies = new List<GameObject>();
     private WaveConfig currentWaveConfig;
+    private GameManager gameManager;
 
     private Dictionary<int, WaveConfig> waveConfigs;
 
@@ -59,7 +66,7 @@ public class WaveManager : MonoBehaviour
 
     void Start()
     {
-
+        gameManager = FindObjectOfType<GameManager>();
         if (waveConfigs != null && waveConfigs.TryGetValue(waveNumber, out currentWaveConfig))
         {
             // Обновляем killThreshold для текущей волны
@@ -124,6 +131,7 @@ public class WaveManager : MonoBehaviour
             Debug.LogWarning("Игрок не найден на сцене!");
         }
 
+        gameManager = FindObjectOfType<GameManager>();
         playerHealth = FindObjectOfType<PlayerHealth>(); // Инициализируем ссылку на здоровье игрока
 
         // Уничтожаем всех активных врагов и очищаем список
@@ -251,10 +259,10 @@ public class WaveManager : MonoBehaviour
         }
     }
 
+
+
     private IEnumerator SpawnWave()
     {
-
-
         waveNumber++;
         if (waveConfigs != null && waveConfigs.TryGetValue(waveNumber, out currentWaveConfig))
         {
@@ -267,90 +275,128 @@ public class WaveManager : MonoBehaviour
         }
 
         spawningWave = true;
-       
 
-        if (waveConfigs != null && waveConfigs.ContainsKey(waveNumber))
+        bool isKillWave = (waveNumber == 10); // Для 10-й волны делаем её на убийство
+
+        // В случае 10-й волны, только один босс
+        if (waveNumber == 10)
         {
             WaveConfig currentWave = waveConfigs[waveNumber];
             waveDuration = currentWave.waveDuration;
             timeStartedWave = Time.time;
+            gameManager.SpawnBoss();
 
             List<EnemySpawn> allEnemiesToSpawn = new List<EnemySpawn>(currentWave.enemiesToSpawn);
 
-            bool isKillWave = (waveNumber % 3 == 0); // Каждая третья волна на убийства
-            float spawnTimeLimit = waveDuration - 7f; // Время для спавна мобов (до 7 секунд до конца волны)
-            int totalEnemyTypes = allEnemiesToSpawn.Count;
-            int[] enemiesLeftToSpawn = allEnemiesToSpawn.Select(e => e.count).ToArray();
-            float[] nextSpawnTime = new float[totalEnemyTypes];
-            killCount = 0; // Сбрасываем счетчик убийств для новой волны
-
-            // Рассчитываем интервал спавна для каждого типа врага
-            for (int i = 0; i < totalEnemyTypes; i++)
+            // Спавним босса
+            if (allEnemiesToSpawn.Count > 0)
             {
-                allEnemiesToSpawn[i].CalculateSpawnInterval(spawnTimeLimit); // Используем spawnTimeLimit для спавна
-                nextSpawnTime[i] = timeStartedWave + 0.25f; // Первые 2 секунды враги не спавнятся
+                EnemySpawn bossSpawn = allEnemiesToSpawn[0];  // Босс всегда первый в списке
+                Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+                Vector2 spawnPosition = spawnPoint.position + (Vector3)Random.insideUnitCircle * spawnRadius;
+
+                currentBoss = Instantiate(bossSpawn.enemyPrefab, spawnPosition, Quaternion.identity);  // Создаем босса
             }
+
+            killCount = 0; // Сбрасываем счетчик убийств для новой волны
 
             // Основной цикл спавна врагов
             while (isSpawningActive)
             {
-                for (int i = 0; i < totalEnemyTypes; i++)
+                if (currentBoss == null && !bossKilled)  // Если босс убит, завершаем волну
                 {
-                    if (enemiesLeftToSpawn[i] > 0 && Time.time >= nextSpawnTime[i])
-                    {
-                        EnemySpawn enemySpawn = allEnemiesToSpawn[i];
-                        Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-                        Vector2 spawnPosition = spawnPoint.position + (Vector3)Random.insideUnitCircle * spawnRadius;
-
-                        // Запуск корутины для спавна крестика и моба
-                        StartCoroutine(SpawnCrossAndEnemy(spawnPosition, enemySpawn.enemyPrefab));
-
-                        enemiesLeftToSpawn[i]--;
-                        nextSpawnTime[i] = Time.time + enemySpawn.spawnInterval; // Используем рассчитанный интервал
-                    }
+                    bossKilled = true;
+                    yield return new WaitForSeconds(2f);
+                    gameManager.KilledBoss();
+                    break;  // Завершаем цикл спавна
                 }
 
-                // Для волн на убийства (каждая третья)
-                if (isKillWave && killCount >= killThreshold)
-                {
-                    break; // Выход из цикла, если убито достаточно мобов
-                }
-
-                // Для волн на время, проверяем, если время волны истекло
-                if (!isKillWave && Time.time - timeStartedWave >= spawnTimeLimit)
-                {
-                    break; // Выход из цикла, если время для спавна мобов истекло
-                }
-
-                yield return null; // Ждем следующий кадр
+                yield return null;  // Ждем следующий кадр
             }
-
-            // Если волна не на убийства, ждем еще 7 секунд после спавна всех мобов
-            if (!isKillWave)
-            {
-                float timeToEndWave = Time.time + 7f; // Еще 7 секунд до конца волны
-
-                // Ожидаем 7 секунд, прежде чем завершить волну
-                while (Time.time < timeToEndWave && isSpawningActive)
-                {
-                    yield return null; // Ждем 7 секунд
-                }
-            }
-
-            // Завершаем волну
-            RemoveRemainingEnemies();
-            EndWave();
-            shop.OpenShop();
         }
         else
         {
-            Debug.LogError("WaveConfig для waveNumber " + waveNumber + " не найден или waveConfigs не инициализировано.");
+            // Обычные волны
+            if (waveConfigs.ContainsKey(waveNumber))
+            {
+                WaveConfig currentWave = waveConfigs[waveNumber];
+                waveDuration = currentWave.waveDuration;
+                timeStartedWave = Time.time;
+
+                List<EnemySpawn> allEnemiesToSpawn = new List<EnemySpawn>(currentWave.enemiesToSpawn);
+                isKillWave = (waveNumber % 3 == 0); // Для волн, которые зависят от убийства
+
+                float spawnTimeLimit = waveDuration - 7f; // Время для спавна мобов (до 7 секунд до конца волны)
+                int totalEnemyTypes = allEnemiesToSpawn.Count;
+                int[] enemiesLeftToSpawn = allEnemiesToSpawn.Select(e => e.count).ToArray();
+                float[] nextSpawnTime = new float[totalEnemyTypes];
+                killCount = 0; // Сбрасываем счетчик убийств для новой волны
+
+                // Рассчитываем интервал спавна для каждого типа врага
+                for (int i = 0; i < totalEnemyTypes; i++)
+                {
+                    allEnemiesToSpawn[i].CalculateSpawnInterval(spawnTimeLimit); // Используем spawnTimeLimit для спавна
+                    nextSpawnTime[i] = timeStartedWave + 0.25f; // Первые 2 секунды враги не спавнятся
+                }
+
+                // Основной цикл спавна врагов
+                while (isSpawningActive)
+                {
+                    for (int i = 0; i < totalEnemyTypes; i++)
+                    {
+                        if (enemiesLeftToSpawn[i] > 0 && Time.time >= nextSpawnTime[i])
+                        {
+                            EnemySpawn enemySpawn = allEnemiesToSpawn[i];
+                            Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+                            Vector2 spawnPosition = spawnPoint.position + (Vector3)Random.insideUnitCircle * spawnRadius;
+
+                            // Запуск корутины для спавна крестика и моба
+                            StartCoroutine(SpawnCrossAndEnemy(spawnPosition, enemySpawn.enemyPrefab));
+
+                            enemiesLeftToSpawn[i]--;
+                            nextSpawnTime[i] = Time.time + enemySpawn.spawnInterval; // Используем рассчитанный интервал
+                        }
+                    }
+
+                    // Для волн на убийства (каждая третья)
+                    if (isKillWave && killCount >= killThreshold)
+                    {
+                        break; // Выход из цикла, если убито достаточно мобов
+                    }
+
+                    // Для волн на время, проверяем, если время волны истекло
+                    if (!isKillWave && Time.time - timeStartedWave >= spawnTimeLimit)
+                    {
+                        break; // Выход из цикла, если время для спавна мобов истекло
+                    }
+
+                    yield return null; // Ждем следующий кадр
+                }
+            }
         }
 
+        // Если волна не на убийства, ждем еще 7 секунд после спавна всех мобов
+        if (!isKillWave)
+        {
+            float timeToEndWave = Time.time + 7f; // Еще 7 секунд до конца волны
+
+            // Ожидаем 7 секунд, прежде чем завершить волну
+            while (Time.time < timeToEndWave && isSpawningActive)
+            {
+                yield return null; // Ждем 7 секунд
+            }
+        }
+
+        // Завершаем волну
+        RemoveRemainingEnemies();
+        EndWave();
+        shop.OpenShop();
         spawningWave = false;
         StartCoroutine(StartNextWave());
         playerHealth.barrierActivatedThisWave = false;
     }
+
+
 
 
 
@@ -650,10 +696,10 @@ public class WaveManager : MonoBehaviour
         waveConfigs = new Dictionary<int, WaveConfig>();
 
         // Волна 1
-        waveConfigs.Add(1, new WaveConfig(205f, new List<EnemySpawn>
+        waveConfigs.Add(1, new WaveConfig(25f, new List<EnemySpawn>
     {
-            new EnemySpawn (bossPrefabs[0], 1),
-       // new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(55 + 21 * 1.5f)),
+           //new EnemySpawn (bossPrefabs[0], 1),
+         new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(55 + 21 * 1.5f)),
 
     }));
 
@@ -733,13 +779,8 @@ public class WaveManager : MonoBehaviour
         // Волна 10
         waveConfigs.Add(10, new WaveConfig(60f, new List<EnemySpawn>
     {
-         new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(290 + 30 * 1.5f)),
-        new EnemySpawn(samuraiPrefabs[0], 15),
-        new EnemySpawn(boomPrefabs[0], 6),
-        new EnemySpawn(deathPrefabs[0], 5),
-        new EnemySpawn(wizardPrefabs[0], 5),
-        new EnemySpawn(archerPrefabs[0], 2),
-        new EnemySpawn(buffMobPrefabs[0], 2)
+         new EnemySpawn(bossPrefabs[0],  1),
+        
     }));
 
         // Волна 11
