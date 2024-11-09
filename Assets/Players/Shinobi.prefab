@@ -307,6 +307,7 @@ MonoBehaviour:
   projectileSpeed: 0
   projectileSize: 0.5
   baseProjectileSize: 0.5
+  weaponID: 1
   projectilePrefab: {fileID: 7954318771495121027, guid: 3f4748c9054797b4b951bab67ccbe048, type: 3}
   projectileLifetime: 3
   numberOfProjectiles: 3
@@ -334,8 +335,10 @@ MonoBehaviour:
   projectileSpeed: 5
   projectileSize: 3.5
   baseProjectileSize: 3.5
+  weaponID: 2
   fireBallPrefab: {fileID: 1214236203580795921, guid: 3552c2bf2a5630c46be6b92f892d25bf, type: 3}
   projectileLifetime: 5
+  stunDuration: 0
 --- !u!114 &-8139316214431637186
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -360,6 +363,7 @@ MonoBehaviour:
   projectileSpeed: 3
   projectileSize: 0.3
   baseProjectileSize: 0.3
+  weaponID: 3
   boomerangPrefab: {fileID: 1227262318394589700, guid: 9f6a07123cb6ba04681b7983e10c4fb8, type: 3}
   speed: 3
   returnSpeed: 5
@@ -388,6 +392,7 @@ MonoBehaviour:
   projectileSpeed: 0
   projectileSize: 7
   baseProjectileSize: 7
+  weaponID: 4
   shurikenPrefab: {fileID: 3029241081560625099, guid: d96c0236ade09f54a9e217d4d124ee6d, type: 3}
   shurikenCount: 4
 --- !u!114 &-3932432305122830326
@@ -414,6 +419,7 @@ MonoBehaviour:
   projectileSpeed: 0
   projectileSize: 0.65
   baseProjectileSize: 0.65
+  weaponID: 5
   knifePrefab: {fileID: 5092583050195389615, guid: 8c0e8a6b3ba889f4f9667886576a175a, type: 3}
   speed: 5
   maxDistance: 10
@@ -441,9 +447,11 @@ MonoBehaviour:
   projectileSpeed: 4
   projectileSize: 1
   baseProjectileSize: 0
+  weaponID: 6
   projectilePrefab: {fileID: 578360187957718639, guid: 8a35528fa7e0d1340b027632e57154cb, type: 3}
   maxBounces: 10
   bounceDamageReduction: 0.1
+  splitChance: 0
 --- !u!114 &4303593082725958616
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -468,8 +476,10 @@ MonoBehaviour:
   projectileSpeed: 4
   projectileSize: 2
   baseProjectileSize: 2
+  weaponID: 7
   projectilePrefab: {fileID: 1469391300657170324, guid: 20232e6c4c21e3a4f8b6111440bbc476, type: 3}
   projectileLifetime: 2
+  burnDamageFactor: 0.25
 --- !u!114 &-9078481875499614431
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -494,6 +504,7 @@ MonoBehaviour:
   projectileSpeed: 5
   projectileSize: 1
   baseProjectileSize: 1
+  weaponID: 8
   projectilePrefab: {fileID: 1274030252072796168, guid: 0ee50157a371ef749958f4b0a043d205, type: 3}
   slowEffect: 0.15
   bleedDuration: 5

@@ -14,9 +14,12 @@ public enum WeaponType
     FireBall,
     Boomerang,
     Shuriken,
+    KillerFog,
     Knife,
     ZeusLight,
     FireStrike,
+    Frezzy,
+    Peezzy,
     BleedStrike
 }
 

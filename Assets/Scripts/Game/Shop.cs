@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
 using System.Collections;
+using System.Drawing;
 
 public class Shop : MonoBehaviour
 {
@@ -33,7 +34,12 @@ public class Shop : MonoBehaviour
     private Weapon weapon;
     private CursorManager cursorManager;
     private WeaponSelectionManager weaponSelectionManager;
-
+    public Shuriken shuriken;
+    private LightningWeapon lightningWeapon;
+    private ZeusLight zeusLight;
+    private BleedStrike bleedStrike;
+    private FireStrike fireStrike;
+    private FireBallController fireBallController;
 
     public UpgradeOption[] upgradeOptions; // Массив доступных баффов
     private HashSet<UpgradeType> existingBuffs = new HashSet<UpgradeType>(); // HashSet для отслеживания существующих баффов
@@ -59,7 +65,7 @@ public class Shop : MonoBehaviour
 
     public enum UpgradeType
     {
-        ShieldPerWave,    // Барьер за волну
+        ShieldPerWave,    
         ShieldOnKill,
         BarrierOnLowHealth,
         HealthRegenPerWave,
@@ -91,18 +97,18 @@ public class Shop : MonoBehaviour
         CritDamageDamageArmor,
         AttackSpeedCritChancePickup,
         DamageMaxHpArmor,
-        Damage,          // Урон
-        CritDamage,      // Критический урон
-        AttackSpeed,     // Скорость атаки
-        CritChance,      // Шанс критического удара
-        AttackRange,     // Дальность атаки
-        MaxHealth,       // Здоровье
-        Armor,           // Броня
-        HealthRegen,     // Регенерация здоровья
-        Lifesteal,       // Вампиризм
-        Investment,      // Инвестиции
-        PickupRadius,    // Радиус сбора
-        MoveSpeed,       // Скорость бега
+        Damage,          
+        CritDamage,      
+        AttackSpeed,  
+        CritChance,      
+        AttackRange,     
+        MaxHealth,       
+        Armor,          
+        HealthRegen,    
+        Lifesteal,    
+        Investment,     
+        PickupRadius,    
+        MoveSpeed,      
         Luck,
         ProjectileSizeBuff_Lighting,
         ProjectileSizeBuff_FireBall,
@@ -110,7 +116,14 @@ public class Shop : MonoBehaviour
         ProjectileSizeBuff_Shuriken,
         ProjectileSizeBuff_Knife,
         ProjectileSizeBuff_FireStrike,
-        ProjectileSizeBuff_BleedStrike
+        ProjectileSizeBuff_BleedStrike,
+        ProjectileCountBuff_Shuriken,
+        ProjectileCountBuff_Lighting,
+        ProjectileCountBounceBuff_ZeusLight,
+        ProjectileSlowBuff_BleedStrike,
+        ProjectileBurnBuff_FireStrike,
+        ProjectileStunBuff_FireBall,
+        ProjectileSplit_ZeusLight,
     }
 
 
@@ -126,6 +139,12 @@ public class Shop : MonoBehaviour
 
     private void Start()
     {
+        fireBallController = FindObjectOfType<FireBallController>();
+        fireStrike = FindObjectOfType<FireStrike>();
+        bleedStrike = FindObjectOfType<BleedStrike>();
+        zeusLight = FindObjectOfType<ZeusLight>();
+        lightningWeapon = FindObjectOfType<LightningWeapon>();
+        shuriken = FindObjectOfType<Shuriken>();
         weaponSelectionManager = FindObjectOfType<WeaponSelectionManager>();
         cursorManager = FindObjectOfType<CursorManager>();
         refreshButton.onClick.AddListener(TryRefreshBuffs);
@@ -161,6 +180,7 @@ public class Shop : MonoBehaviour
 
     public void RestartScript()
     {
+
         // Очищаем текущие баффы и обновляем интерфейс
         upgrades.Clear();
         existingBuffs.Clear();
@@ -172,12 +192,18 @@ public class Shop : MonoBehaviour
         shopPanel.SetActive(false);
 
         // Обновляем список оружия, здоровья и другие зависимости
+        lightningWeapon = FindObjectOfType<LightningWeapon>();
         cursorManager = FindObjectOfType<CursorManager>();
         playerWeapons = new List<Weapon>(FindObjectsOfType<Weapon>());
         waveManager = FindObjectOfType<WaveManager>();
         playerHealth = FindObjectOfType<PlayerHealth>();
         playerMovement = FindObjectOfType<PlayerMovement>();
         playerGold = FindObjectOfType<PlayerGold>();
+        shuriken = FindObjectOfType<Shuriken>();
+        zeusLight = FindObjectOfType<ZeusLight>();
+        fireStrike = FindObjectOfType<FireStrike>();
+        bleedStrike = FindObjectOfType<BleedStrike>();
+        fireBallController = FindObjectOfType<FireBallController>();
 
         // Сбрасываем бонусы к характеристикам
         totalAttackSpeedBonus = 0f;
@@ -232,6 +258,11 @@ public class Shop : MonoBehaviour
 
         // Обновляем баффы при закрытии магазина
         GenerateUpgrades();
+
+        if (weaponSelectionManager.isShurikenActive)
+        {
+            shuriken.RecreateShurikens();
+        }
     }
 
     private void TryRefreshBuffs()
@@ -489,8 +520,8 @@ public class Shop : MonoBehaviour
         upgrades.Clear(); // Очистить список доступных баффов
         HashSet<UpgradeType> usedTypes = new HashSet<UpgradeType>(); // Для отслеживания использованных типов
 
-        // Создайте список всех доступных опций
-        List<UpgradeOption> availableOptions = new List<UpgradeOption>(upgradeOptions);
+        // Создаем и фильтруем список всех доступных опций
+        List<UpgradeOption> availableOptions = FilterAvailableOptions(new List<UpgradeOption>(upgradeOptions));
 
         while (upgrades.Count < buffButtons.Length)
         {
@@ -508,18 +539,82 @@ public class Shop : MonoBehaviour
         UpdateUpgradeUI();
     }
 
-
-
-
     private Upgrade GenerateRandomUpgrade(List<UpgradeOption> availableOptions)
     {
-        // Проверка на пустой список доступных опций
         if (availableOptions.Count == 0)
         {
-            return null; // Или обработайте случай, когда нет доступных опций
+            return null; // Нет доступных опций
         }
 
-        // Создаем новый список доступных опций, учитывая только активные оружия
+        int randomIndex = Random.Range(0, availableOptions.Count);
+        UpgradeOption selectedOption = availableOptions[randomIndex];
+
+        float currentCost = CalculateCurrentCost();
+        int randomAdjustment = Random.Range(-10, 21); // Случайное значение от -10 до +20
+        int finalCost = Mathf.Max(0, (int)(currentCost + randomAdjustment));
+
+        availableOptions.RemoveAt(randomIndex);
+
+        return new Upgrade(selectedOption.upgradeType, finalCost, selectedOption.upgradeSprite);
+    }
+
+    private void PurchaseUpgrade(int index)
+    {
+        Upgrade selectedUpgrade = upgrades[index];
+
+        if (playerGold.currentGold >= selectedUpgrade.cost)
+        {
+            if (oneTimeBuffs.Contains(selectedUpgrade.type) && existingBuffs.Contains(selectedUpgrade.type))
+            {
+                Debug.Log("Этот бафф уже куплен и его нельзя купить снова!");
+                return;
+            }
+
+            playerGold.currentGold -= selectedUpgrade.cost;
+            ApplyUpgrade(selectedUpgrade);
+
+            if (oneTimeBuffs.Contains(selectedUpgrade.type))
+            {
+                existingBuffs.Add(selectedUpgrade.type);
+            }
+
+            // Обновляем список доступных опций, исключая купленные и одноразовые баффы
+            List<UpgradeOption> availableOptions = FilterAvailableOptions(new List<UpgradeOption>(upgradeOptions));
+
+            foreach (var upgrade in upgrades)
+            {
+                availableOptions.RemoveAll(option => option.upgradeType == upgrade.type || existingBuffs.Contains(option.upgradeType));
+            }
+
+            Upgrade newUpgrade = GenerateRandomUpgrade(availableOptions);
+            upgrades[index] = newUpgrade; // Обновляем бафф на кнопке
+
+            UpdateUpgradeUI();
+            UpdatePlayerStats();
+            playerGold.UpdateGoldDisplay();
+        }
+    }
+
+    private void InitializeShop()
+    {
+        List<UpgradeOption> availableOptions = FilterAvailableOptions(new List<UpgradeOption>(upgradeOptions));
+
+        foreach (var upgrade in upgrades)
+        {
+            availableOptions.RemoveAll(option => option.upgradeType == upgrade.type || existingBuffs.Contains(option.upgradeType));
+        }
+
+        for (int i = 0; i < upgrades.Count; i++)
+        {
+            Upgrade newUpgrade = GenerateRandomUpgrade(availableOptions);
+            upgrades[i] = newUpgrade; // Обновляем доступные баффы на кнопках
+        }
+
+        UpdateUpgradeUI();
+    }
+
+    private List<UpgradeOption> FilterAvailableOptions(List<UpgradeOption> availableOptions)
+    {
         List<UpgradeOption> filteredOptions = new List<UpgradeOption>();
 
         foreach (var option in availableOptions)
@@ -554,36 +649,46 @@ public class Shop : MonoBehaviour
                     if (weaponSelectionManager.isBleedStrikeActive) filteredOptions.Add(option);
                     break;
 
+                case UpgradeType.ProjectileCountBuff_Shuriken:
+                    if (weaponSelectionManager.isShurikenActive) filteredOptions.Add(option);
+                    break;
+
+                case UpgradeType.ProjectileCountBuff_Lighting:
+                    if (weaponSelectionManager.isLightningActive) filteredOptions.Add(option);
+                    break;
+
+                case UpgradeType.ProjectileCountBounceBuff_ZeusLight:
+                    if (weaponSelectionManager.isZeusLightActive) filteredOptions.Add(option);
+                    break;
+
+                case UpgradeType.ProjectileSlowBuff_BleedStrike:
+                    if (weaponSelectionManager.isBleedStrikeActive) filteredOptions.Add(option);
+                    break;
+
+                case UpgradeType.ProjectileBurnBuff_FireStrike:
+                    if (weaponSelectionManager.isFireStrikeActive) filteredOptions.Add(option);
+                    break;
+
+                case UpgradeType.ProjectileStunBuff_FireBall:
+                    if (weaponSelectionManager.isFireBallActive) filteredOptions.Add(option);
+                    break;
+
+                case UpgradeType.ProjectileSplit_ZeusLight:
+                    if (weaponSelectionManager.isZeusLightActive) filteredOptions.Add(option);
+                    break;
+                    
                 default:
-                    filteredOptions.Add(option); // Все остальные баффы (если они применимы)
+                    filteredOptions.Add(option);
                     break;
             }
         }
-
-        // Если после фильтрации не осталось доступных опций, возвращаем null
-        if (filteredOptions.Count == 0)
-        {
-            return null;
-        }
-
-        // Генерация случайного индекса
-        int randomIndex = Random.Range(0, filteredOptions.Count);
-        UpgradeOption selectedOption = filteredOptions[randomIndex];
-
-        // Генерация стоимости апгрейда с учетом увеличения и случайного значения
-        float currentCost = CalculateCurrentCost();
-        int randomAdjustment = Random.Range(-10, 21); // Случайное значение от -10 до +20
-        int finalCost = Mathf.Max(0, (int)(currentCost + randomAdjustment)); // Убедитесь, что стоимость не отрицательная
-
-        return new Upgrade(selectedOption.upgradeType, finalCost, selectedOption.upgradeSprite);
+        return filteredOptions;
     }
 
     private float CalculateCurrentCost()
     {
-        // Вычисление стоимости улучшения с учетом базовой стоимости и процента увеличения цены на основе волны
         return baseCost * Mathf.Pow(1 + priceIncreasePercentage, waveManager.waveNumber);
     }
-
 
     private void UpdateUpgradeUI()
     {
@@ -609,70 +714,6 @@ public class Shop : MonoBehaviour
             }
         }
     }
-
-
-    private void PurchaseUpgrade(int index)
-    {
-        Upgrade selectedUpgrade = upgrades[index];
-
-        if (playerGold.currentGold >= selectedUpgrade.cost)
-        {
-            // Проверяем, был ли уже куплен этот бафф
-            if (oneTimeBuffs.Contains(selectedUpgrade.type) && existingBuffs.Contains(selectedUpgrade.type))
-            {
-                Debug.Log("Этот бафф уже куплен и его нельзя купить снова!");
-                return; // Не позволяем купить этот бафф снова
-            }
-
-            playerGold.currentGold -= selectedUpgrade.cost;
-            ApplyUpgrade(selectedUpgrade);
-
-            // Добавляем бафф в список купленных, если это бафф, который можно купить только один раз
-            if (oneTimeBuffs.Contains(selectedUpgrade.type))
-            {
-                existingBuffs.Add(selectedUpgrade.type);
-            }
-
-            // Обновляем список доступных опций, исключая уже купленные и разовые баффы
-            List<UpgradeOption> availableOptions = new List<UpgradeOption>(upgradeOptions);
-
-            // Убираем все купленные и одноразовые баффы из доступных опций
-            foreach (var upgrade in upgrades)
-            {
-                availableOptions.RemoveAll(option => option.upgradeType == upgrade.type || existingBuffs.Contains(option.upgradeType));
-            }
-
-            // Генерируем новый уникальный бафф, который отсутствует на других слотах
-            Upgrade newUpgrade = GenerateRandomUpgrade(availableOptions);
-            upgrades[index] = newUpgrade; // Обновляем бафф на кнопке
-
-            UpdateUpgradeUI();
-            UpdatePlayerStats(); // Обновляем характеристики героя
-            playerGold.UpdateGoldDisplay();
-        }
-    }
-
-    private void InitializeShop()
-    {
-        // Обнуляем список доступных опций
-        List<UpgradeOption> availableOptions = new List<UpgradeOption>(upgradeOptions);
-
-        // Убираем все купленные и одноразовые баффы из доступных опций
-        foreach (var upgrade in upgrades)
-        {
-            availableOptions.RemoveAll(option => option.upgradeType == upgrade.type || existingBuffs.Contains(option.upgradeType));
-        }
-
-        // Генерируем новые доступные баффы
-        for (int i = 0; i < upgrades.Count; i++) // Измените Length на Count
-        {
-            Upgrade newUpgrade = GenerateRandomUpgrade(availableOptions);
-            upgrades[i] = newUpgrade; // Обновляем доступные баффы на кнопках
-        }
-
-        UpdateUpgradeUI(); // Обновляем пользовательский интерфейс магазина
-    }
-
 
     public class Upgrade
     {
@@ -875,32 +916,62 @@ public class Shop : MonoBehaviour
                 break;
 
             case UpgradeType.ProjectileSizeBuff_Lighting:
-                description = "Размер снаряда +20% для Lighting";
+                description = "Размер Lighting +10%";
                 break;
 
             case UpgradeType.ProjectileSizeBuff_FireBall:
-                description = "Размер снаряда +20% для Lighting";
+                description = "Размер FireBall +10%";
                 break;
 
             case UpgradeType.ProjectileSizeBuff_Boomerang:
-                description = "Размер снаряда +20% для Lighting";
+                description = "Размер Boomerang +20%";
                 break;
 
             case UpgradeType.ProjectileSizeBuff_Shuriken:
-                description = "Размер снаряда +20% для Lighting";
+                description = "Размер Shuriken +10%";
                 break;
 
             case UpgradeType.ProjectileSizeBuff_Knife:
-                description = "Размер снаряда +20% для Lighting";
+                description = "Размер Knife +10%";
                 break;
 
             case UpgradeType.ProjectileSizeBuff_FireStrike:
-                description = "Размер снаряда +20% для Lighting";
+                description = "Размер Fire Strike +20%";
                 break;
 
             case UpgradeType.ProjectileSizeBuff_BleedStrike:
-                description = "Размер снаряда +20% для Lighting";
+                description = "Размер BleedStrike +20%";
                 break;
+
+            case UpgradeType.ProjectileCountBuff_Shuriken:
+                description = "Количество Shuriken +1";
+                break;
+
+            case UpgradeType.ProjectileCountBuff_Lighting:
+                description = "Количество Lighting +1";
+                break;
+
+            case UpgradeType.ProjectileCountBounceBuff_ZeusLight:
+                description = "Количество отскоков +2";
+                break;
+
+            case UpgradeType.ProjectileSlowBuff_BleedStrike:
+                description = "Замедление +10%";
+                break;
+
+            case UpgradeType.ProjectileBurnBuff_FireStrike:
+                description = "Урон от горения +25%";
+                break;
+
+            case UpgradeType.ProjectileStunBuff_FireBall:
+                description = "Оглушение <color=green>+0.2</color> сек";
+                break;
+
+            case UpgradeType.ProjectileSplit_ZeusLight:
+                description = "Раздвоение ZeusLight +5%";
+                break;
+
+                
 
             default:
                 description = "Неизвестный бафф";
@@ -1340,7 +1411,7 @@ public class Shop : MonoBehaviour
                 {
                     if (weapon.weaponID == "1") // ID - 1 для Lighting
                     {
-                        weapon.IncreaseProjectileSize(0.20f);
+                        weapon.IncreaseProjectileSize(0.10f);
                     }
                 }
                 break;
@@ -1350,7 +1421,7 @@ public class Shop : MonoBehaviour
                 {
                     if (weapon.weaponID == "2") // ID - 2 для FireBall
                     {
-                        weapon.IncreaseProjectileSize(0.20f);
+                        weapon.IncreaseProjectileSize(0.10f);
                     }
                 }
                 break;
@@ -1370,7 +1441,8 @@ public class Shop : MonoBehaviour
                 {
                     if (weapon.weaponID == "4") // ID - 4 для Shuriken
                     {
-                        weapon.IncreaseProjectileSize(0.20f);
+                        weapon.IncreaseProjectileSize(0.10f);
+                        
                     }
                 }
                 break;
@@ -1380,7 +1452,7 @@ public class Shop : MonoBehaviour
                 {
                     if (weapon.weaponID == "5") // ID - 5 для Knife
                     {
-                        weapon.IncreaseProjectileSize(0.20f);
+                        weapon.IncreaseProjectileSize(0.10f);
                     }
                 }
                 break;
@@ -1404,6 +1476,80 @@ public class Shop : MonoBehaviour
                     }
                 }
                 break;
+
+            case UpgradeType.ProjectileCountBuff_Shuriken:
+                foreach (var weapon in playerWeapons)
+                {
+                    if (weapon.weaponID == "4") // ID - 4 для Shuriken
+                    {
+                        shuriken.ShurikenCountBuff();
+
+                    }
+                }
+                break;
+
+            case UpgradeType.ProjectileCountBuff_Lighting:
+                foreach (var weapon in playerWeapons)
+                {
+                    if (weapon.weaponID == "1") 
+                    {
+                        lightningWeapon.LightingCountBuff();
+
+                    }
+                }
+                break;
+
+            case UpgradeType.ProjectileCountBounceBuff_ZeusLight:
+                foreach (var weapon in playerWeapons)
+                {
+                    if (weapon.weaponID == "6") 
+                    {
+                        zeusLight.zeusLightCountBounceBuff();
+
+                    }
+                }
+                break;
+
+            case UpgradeType.ProjectileSlowBuff_BleedStrike:
+                foreach (var weapon in playerWeapons)
+                {
+                    if (weapon.weaponID == "8") // ID - 8 для BleedStrike
+                    {
+                        bleedStrike.IncreaseProjectileSlowEffect(0.1f);
+                    }
+                }
+                break;
+
+            case UpgradeType.ProjectileBurnBuff_FireStrike:
+                foreach (var weapon in playerWeapons)
+                {
+                    if (weapon.weaponID == "7") // ID - 7 для FireStrike
+                    {
+                        fireStrike.IncreaseProjectileBurnEffect(0.25f);
+                    }
+                }
+                break;
+
+            case UpgradeType.ProjectileStunBuff_FireBall:
+                foreach (var weapon in playerWeapons)
+                {
+                    if (weapon.weaponID == "2") // ID - 2 для FireBall
+                    {
+                        fireBallController.IncreaseProjectileStunEffect(0.2f);
+                    }
+                }
+                break;
+
+            case UpgradeType.ProjectileSplit_ZeusLight:
+                foreach (var weapon in playerWeapons)
+                {
+                    if (weapon.weaponID == "6") 
+                    {
+                        zeusLight.IncreaseProjectileSplitEffect(0.05f);
+                    }
+                }
+                break;
+
         }
     } 
 }

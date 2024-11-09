@@ -75,6 +75,18 @@ public class BleedStrike : Weapon
 
         return nearestEnemy;
     }
+
+    public void IncreaseProjectileSlowEffect(float percentage)
+    {
+
+        slowEffect += percentage;
+
+        if (slowEffect > 0.8f)
+        {
+            slowEffect = 0.8f;
+        }
+
+    }
 }
 
 public class BleedProjectile : MonoBehaviour

@@ -8,6 +8,8 @@ public class ZeusLight : Weapon
     public int maxBounces = 5;
     public float bounceDamageReduction = 0.1f;
 
+    public float splitChance = 0f; // шанс на разделение снаряда
+
     public override void Update()
     {
         base.Update(); // Если нужно вызвать родительский метод
@@ -46,7 +48,7 @@ public class ZeusLight : Weapon
     {
         GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
         projectile.tag = "Weapon";
-        projectile.AddComponent<ZeusProjectile>().Initialize(this, maxBounces, bounceDamageReduction);
+        projectile.AddComponent<ZeusProjectile>().Initialize(this, maxBounces, bounceDamageReduction, splitChance, damage);
 
         // Получаем AudioSource из префаба снаряда
         AudioSource audioSource = projectile.GetComponent<AudioSource>();
@@ -76,6 +78,10 @@ public class ZeusLight : Weapon
         }
     }
 
+    public void zeusLightCountBounceBuff()
+    {
+        maxBounces += 2;
+    }    
 
     private bool IsEnemyInRange()
     {
@@ -88,6 +94,16 @@ public class ZeusLight : Weapon
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
+
+    public void IncreaseProjectileSplitEffect(float percentage)
+    {
+        splitChance += percentage;
+
+        if (splitChance > 0.5f)
+        {
+            splitChance = 0.5f;
+        }
+    }
 }
 
 
@@ -99,16 +115,19 @@ public class ZeusProjectile : MonoBehaviour
     private float currentDamage; // Текущий урон
     private float bounceDamageReduction; // Процент уменьшения урона
     private bool isMoving = false; // Флаг для отслеживания движения
-    private float maxLifetime = 5f; // Максимальное время жизни снаряда
+    private float maxLifetime = 10f; // Максимальное время жизни снаряда
     private float lifetimeTimer; // Таймер для отслеживания времени жизни
+    private float splitChance; // Шанс разделения снаряда
 
-    public void Initialize(ZeusLight weapon, int maxBounces, float bounceDamageReduction)
+    public void Initialize(ZeusLight weapon, int maxBounces, float bounceDamageReduction, float splitChance, float initialDamage)
     {
         this.weapon = weapon;
-        this.bouncesLeft = maxBounces;
-        this.currentDamage = weapon.damage;
+        this.bouncesLeft = maxBounces; // Оставшиеся отскоки
+        this.currentDamage = initialDamage;  // Урон снаряда
         this.bounceDamageReduction = bounceDamageReduction;
         this.lifetimeTimer = maxLifetime;
+        this.splitChance = splitChance;
+
 
         FindRandomTarget(); // Находим первую цель
         if (target != null)
@@ -224,6 +243,15 @@ public class ZeusProjectile : MonoBehaviour
                 Debug.Log("Projectile collided with enemy: " + enemy.name);
                 DealDamage(enemy);
 
+                // Проверка на разделение снаряда
+                if (Random.value < splitChance)
+                {
+                    Debug.Log("Projectile split triggered!");
+
+                    // Запускаем логику для создания двух новых снарядов
+                    LaunchSplitProjectiles(enemy);
+                }
+
                 if (bouncesLeft > 0)
                 {
                     FindNearestTarget(); // Ищем ближайшую цель
@@ -240,6 +268,52 @@ public class ZeusProjectile : MonoBehaviour
                 }
             }
         }
+    }
+    private void LaunchSplitProjectiles(Enemy initialTarget)
+    {
+       
+        
+            // Новый урон для разделенных снарядов — 75% от текущего
+            float splitDamage = currentDamage * 0.75f; // Урон будет на 25% меньше
+
+            // Первый новый снаряд
+            GameObject splitProjectile1 = Instantiate(weapon.projectilePrefab, transform.position, Quaternion.identity);
+            ZeusProjectile splitProjectile1Script = splitProjectile1.AddComponent<ZeusProjectile>();
+            splitProjectile1Script.Initialize(weapon, bouncesLeft, bounceDamageReduction, splitChance, splitDamage);
+
+            // Второй новый снаряд
+            GameObject splitProjectile2 = Instantiate(weapon.projectilePrefab, transform.position, Quaternion.identity);
+            ZeusProjectile splitProjectile2Script = splitProjectile2.AddComponent<ZeusProjectile>();
+            splitProjectile2Script.Initialize(weapon, bouncesLeft, bounceDamageReduction, splitChance, splitDamage);
+
+            // Устанавливаем цели:
+            splitProjectile1Script.target = initialTarget; // Первый новый снаряд сохраняет свою цель
+            splitProjectile2Script.target = FindFarthestTarget(initialTarget);
+        
+    }
+
+    private Enemy FindFarthestTarget(Enemy excludedEnemy)
+    {
+        // Находим врагов в радиусе 2
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 2f, LayerMask.GetMask("Mobs", "MobsFly"));
+        float farthestDistance = 0f;
+        Enemy farthestEnemy = null;
+
+        foreach (Collider2D enemyCollider in enemies)
+        {
+            Enemy enemy = enemyCollider.GetComponent<Enemy>();
+            if (enemy != null && enemy != excludedEnemy)
+            {
+                float distance = Vector3.Distance(transform.position, enemy.transform.position);
+                if (distance > farthestDistance)
+                {
+                    farthestDistance = distance;
+                    farthestEnemy = enemy;
+                }
+            }
+        }
+
+        return farthestEnemy;
     }
 
     private void OnBecameInvisible()

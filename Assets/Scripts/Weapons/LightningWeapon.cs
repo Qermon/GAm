@@ -45,6 +45,11 @@ public class LightningWeapon : Weapon
         }
     }
 
+    public void LightingCountBuff()
+    {
+        numberOfProjectiles += 1;
+    }
+
     private bool IsEnemyInRange()
     {
         Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));

@@ -11,7 +11,8 @@ public class Enemy : MonoBehaviour
     public float maxHealth;
     public float currentHealth;
     public float enemyMoveSpeed;
-    
+    private float originalMoveSpeed; // Переменная для хранения исходной скорости
+
     public float damage;
     public float attackRange = 0.1f;
     public float attackCooldown = 1f;
@@ -40,6 +41,8 @@ public class Enemy : MonoBehaviour
     public GameObject bloodEffectPrefab; // Добавьте это поле
     private WaveManager waveManager; 
     private float currentSlowEffect = 0f; // Текущее замедление
+
+    private bool isStunned = false;
 
     public event Action OnDeath; // Событие для оповещения о смерти врага
     public bool IsDead
@@ -120,6 +123,32 @@ public class Enemy : MonoBehaviour
 
         MoveTowardsPlayer();
     }
+
+    public void Stun(float duration)
+    {
+        if (!isStunned)
+        {
+            StartCoroutine(StunCoroutine(duration));
+        }
+    }
+
+    private IEnumerator StunCoroutine(float duration)
+    {
+        isStunned = true;
+
+        originalMoveSpeed = enemyMoveSpeed;
+        enemyMoveSpeed = 0;
+
+        // Здесь можно добавить код для отключения анимаций или других действий, связанных с движением
+
+        yield return new WaitForSeconds(duration);
+
+        enemyMoveSpeed = originalMoveSpeed;
+        isStunned = false;
+
+        // Здесь можно добавить код для включения анимаций или действий
+    }
+
 
     public float GetCurrentHP()
     {

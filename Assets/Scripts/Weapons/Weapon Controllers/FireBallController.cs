@@ -7,6 +7,7 @@ public class FireBallController : Weapon
     public GameObject fireBallPrefab; // Префаб огненного шара
     public float projectileLifetime = 5f; // Время жизни снаряда
     private new float attackTimer; // Таймер для атаки
+    public float stunDuration = 0f; // Длительность стана
 
     protected override void Start()
     {
@@ -46,7 +47,7 @@ public class FireBallController : Weapon
             AdjustProjectileSize(fireBall);
 
             FireBall fireBallScript = fireBall.AddComponent<FireBall>(); // Добавляем компонент для логики снаряда
-            fireBallScript.Initialize(nearestEnemy.transform.position, projectileSpeed, projectileLifetime, this); // Передаем параметры
+            fireBallScript.Initialize(nearestEnemy.transform.position, projectileSpeed, projectileLifetime, stunDuration, this); // Передаем параметры
 
             // Настраиваем звук огненного шара
             AudioSource audioSource = fireBall.GetComponent<AudioSource>();
@@ -107,6 +108,11 @@ public class FireBallController : Weapon
 
         return nearestEnemy;
     }
+
+    public void IncreaseProjectileStunEffect(float percentage)
+    {
+        stunDuration += percentage;
+    }
 }
     
 
@@ -115,17 +121,19 @@ public class FireBall : MonoBehaviour
     private Vector3 direction; // Направление полета снаряда
     private float speed; // Скорость
     private float lifetime; // Время жизни
+    private float stunDuration; // Длительность стана
     private Weapon weapon; // Ссылка на оружие
     private float initialDamage;
 
     // Словарь для отслеживания времени последней атаки по врагу
     private static Dictionary<GameObject, float> lastAttackTimes = new Dictionary<GameObject, float>();
 
-    public void Initialize(Vector3 targetPosition, float projectileSpeed, float projectileLifetime, Weapon weaponInstance)
+    public void Initialize(Vector3 targetPosition, float projectileSpeed, float projectileLifetime, float stunDuration, Weapon weaponInstance)
     {
         direction = (targetPosition - transform.position).normalized; // Вычисляем направление к врагу
         speed = projectileSpeed;
         lifetime = projectileLifetime;
+        this.stunDuration = stunDuration; // Присваиваем stunDuration
         weapon = weaponInstance; // Сохраняем ссылку на оружие
 
         // Устанавливаем значение урона
@@ -156,6 +164,8 @@ public class FireBall : MonoBehaviour
 
                 // Наносим урон врагу
                 enemy.TakeDamage((int)damageToDeal, isCriticalHit); // Учитываем критический удар
+
+                enemy.Stun(stunDuration);
             }
         }
     }

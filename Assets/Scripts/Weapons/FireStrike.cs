@@ -6,9 +6,11 @@ public class FireStrike : Weapon
 {
     public GameObject projectilePrefab; // Префаб снаряда
     public float projectileLifetime = 3f; // Время жизни снаряда
+    public float burnDamageFactor = 0.25f; // Начальный урон от горения
 
     protected override void Start()
     {
+        
         base.Start();
         StartCoroutine(LaunchFireStrike()); // Запуск корутины атаки
     }
@@ -39,7 +41,7 @@ public class FireStrike : Weapon
         // Устанавливаем размер снаряда
         AdjustProjectileSize(projectile);
 
-        projectile.AddComponent<FireProjectile>().Initialize(this, damage); // Передаем урон в снаряд
+        projectile.AddComponent<FireProjectile>().Initialize(this, damage, burnDamageFactor); // Передаем урон в снаряд
     }
 
     // Метод для изменения размера снаряда
@@ -56,6 +58,11 @@ public class FireStrike : Weapon
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
+
+    public void IncreaseProjectileBurnEffect(float percentage)
+    {
+        burnDamageFactor += percentage;
+    }    
 }
 
 public class FireProjectile : MonoBehaviour
@@ -63,7 +70,7 @@ public class FireProjectile : MonoBehaviour
     private float initialDamage;
     private float burnDuration = 5f; // Длительность горения
     private float burnTickInterval = 1f; // Интервал тиков горения
-    private float burnDamageFactor = 0.25f; // Начальный урон от горения (25% от урона)
+    private float burnDamageFactor;
     private float burnDecayFactor = 0.05f; // Уменьшение урона на 5% каждый тик
     private float projectileSpeed = 3.5f; // Скорость полета
     private List<Enemy> hitEnemies = new List<Enemy>(); // Список пораженных врагов
@@ -73,10 +80,11 @@ public class FireProjectile : MonoBehaviour
     private AudioSource audioSource; // Источник звука для снаряда
     private Vector3 direction; // Направление движения снаряда
 
-    public void Initialize(FireStrike weapon, float damage)
+    public void Initialize(FireStrike weapon, float damage, float burnDamageFactor)
     {
         this.weapon = weapon; // Сохраняем ссылку на оружие
         initialDamage = damage;
+        this.burnDamageFactor = burnDamageFactor; // Устанавливаем burnDamageFactor
 
         // Получаем компонент AudioSource и настраиваем его
         audioSource = GetComponent<AudioSource>();

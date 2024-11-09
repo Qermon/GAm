@@ -235,8 +235,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be02320f2ab232d4e8f8f4d258fe22b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  baseMaxHealth: 100
+  maxHealth: 10000
+  baseMaxHealth: 10000
   currentHealth: 0
   regen: 0.005
   baseRegen: 0.005
@@ -265,7 +265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5c65c7e411aa4a47ad042689de0c22e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentGold: 0
+  currentGold: 1000000
   goldText: {fileID: 0}
 --- !u!114 &4511895755911949268
 MonoBehaviour:
@@ -338,6 +338,7 @@ MonoBehaviour:
   weaponID: 2
   fireBallPrefab: {fileID: 1214236203580795921, guid: 3552c2bf2a5630c46be6b92f892d25bf, type: 3}
   projectileLifetime: 5
+  stunDuration: 0
 --- !u!114 &6819976154213249850
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -450,6 +451,7 @@ MonoBehaviour:
   projectilePrefab: {fileID: 578360187957718639, guid: 8a35528fa7e0d1340b027632e57154cb, type: 3}
   maxBounces: 10
   bounceDamageReduction: 0.1
+  splitChance: 0
 --- !u!114 &7761931963760183635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -477,6 +479,7 @@ MonoBehaviour:
   weaponID: 7
   projectilePrefab: {fileID: 1469391300657170324, guid: 20232e6c4c21e3a4f8b6111440bbc476, type: 3}
   projectileLifetime: 2
+  burnDamageFactor: 0.25
 --- !u!114 &5004405432405638982
 MonoBehaviour:
   m_ObjectHideFlags: 0

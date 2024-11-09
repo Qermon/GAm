@@ -56,6 +56,51 @@ public class Shuriken : Weapon
             shuriken.transform.localScale = new Vector3(projectileSize, projectileSize, 1);
         }
     }
+    public void RecreateShurikens()
+    {
+        // Уничтожаем все текущие сюрикены, если они существуют
+        if (shurikens != null)
+        {
+            for (int i = 0; i < shurikens.Length; i++) // Обрабатываем текущий массив, а не по старому количеству
+            {
+                if (shurikens[i] != null)
+                {
+                    Destroy(shurikens[i]);
+                }
+            }
+        }
+
+        // Обновляем массив сюрикенов с новым количеством
+        shurikens = new GameObject[shurikenCount]; // Пересоздаем массив с новым количеством
+
+        // Создаем новые сюрикены с актуальными параметрами
+        for (int i = 0; i < shurikenCount; i++)
+        {
+            shurikens[i] = Instantiate(shurikenPrefab, transform.position, Quaternion.identity);
+            if (shurikens[i] == null)
+            {
+                Debug.LogError($"Сюрикен {i} не был создан! Проверьте префаб.");
+                return; // Остановить выполнение, если создание не удалось
+            }
+            shurikens[i].transform.parent = transform; // Сделать игрока родителем
+            shurikens[i].transform.localPosition = new Vector3(Mathf.Cos((360f / shurikenCount) * i * Mathf.Deg2Rad) * attackRange,
+                                                                Mathf.Sin((360f / shurikenCount) * i * Mathf.Deg2Rad) * attackRange, 0);
+
+            // Изменение размера снаряда
+            AdjustProjectileSize(shurikens[i]);
+
+            Collider2D collider = shurikens[i].AddComponent<BoxCollider2D>();
+            collider.isTrigger = true; // Сделать коллайдер триггером
+            collider.tag = "Weapon"; // Установить тег для триггера
+
+            // Добавляем компонент для обработки столкновений
+            ShurikenCollision shurikenCollision = shurikens[i].AddComponent<ShurikenCollision>();
+            shurikenCollision.weapon = this; // Передаем ссылку на текущее оружие
+        }
+
+        Debug.Log("Все сюрикены успешно созданы.");
+    }
+
 
     public override void Update()
     {
@@ -81,6 +126,12 @@ public class Shuriken : Weapon
     {
         // Атака при выполнении метода
         Debug.Log("Атака сюрикена выполнена с уроном: " + CalculateDamage());
+    }
+
+    public void ShurikenCountBuff()
+    {
+        shurikenCount += 1;
+        RecreateShurikens();
     }
 }
 
@@ -109,6 +160,7 @@ public class ShurikenCollision : MonoBehaviour
             }
         }
     }
+
 
     // Метод для проверки, можем ли мы атаковать врага (на основе времени последней атаки)
     private bool CanAttackEnemy(GameObject enemy)
