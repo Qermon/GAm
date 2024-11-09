@@ -25,6 +25,7 @@ public class Shop : MonoBehaviour
     private float priceIncreasePercentage = 0.1f; // 10% увеличение
 
 
+
     private PlayerHealth playerHealth;
     private PlayerMovement playerMovement;
     private PlayerGold playerGold;
@@ -40,6 +41,8 @@ public class Shop : MonoBehaviour
     private BleedStrike bleedStrike;
     private FireStrike fireStrike;
     private FireBallController fireBallController;
+    private BoomerangController boomerangController;
+    private KnifeController knifeController;
 
     public UpgradeOption[] upgradeOptions; // Массив доступных баффов
     private HashSet<UpgradeType> existingBuffs = new HashSet<UpgradeType>(); // HashSet для отслеживания существующих баффов
@@ -124,6 +127,8 @@ public class Shop : MonoBehaviour
         ProjectileBurnBuff_FireStrike,
         ProjectileStunBuff_FireBall,
         ProjectileSplit_ZeusLight,
+        ProjectileDoubleDamage_Boomerang,
+        ProjectileDoubleDamage_Knife,
     }
 
 
@@ -139,6 +144,8 @@ public class Shop : MonoBehaviour
 
     private void Start()
     {
+        knifeController = FindObjectOfType<KnifeController>();
+        boomerangController = FindObjectOfType<BoomerangController>();
         fireBallController = FindObjectOfType<FireBallController>();
         fireStrike = FindObjectOfType<FireStrike>();
         bleedStrike = FindObjectOfType<BleedStrike>();
@@ -204,6 +211,8 @@ public class Shop : MonoBehaviour
         fireStrike = FindObjectOfType<FireStrike>();
         bleedStrike = FindObjectOfType<BleedStrike>();
         fireBallController = FindObjectOfType<FireBallController>();
+        boomerangController = FindObjectOfType<BoomerangController>();
+        knifeController = FindObjectOfType<KnifeController>();
 
         // Сбрасываем бонусы к характеристикам
         totalAttackSpeedBonus = 0f;
@@ -676,6 +685,14 @@ public class Shop : MonoBehaviour
                 case UpgradeType.ProjectileSplit_ZeusLight:
                     if (weaponSelectionManager.isZeusLightActive) filteredOptions.Add(option);
                     break;
+
+                case UpgradeType.ProjectileDoubleDamage_Boomerang:
+                    if (weaponSelectionManager.isBoomerangActive) filteredOptions.Add(option);
+                    break;
+
+                case UpgradeType.ProjectileDoubleDamage_Knife:
+                    if (weaponSelectionManager.isKnifeActive) filteredOptions.Add(option);
+                    break;
                     
                 default:
                     filteredOptions.Add(option);
@@ -968,10 +985,16 @@ public class Shop : MonoBehaviour
                 break;
 
             case UpgradeType.ProjectileSplit_ZeusLight:
-                description = "Раздвоение ZeusLight +5%";
+                description = "Шанс раздвоение +5%";
                 break;
 
-                
+            case UpgradeType.ProjectileDoubleDamage_Boomerang:
+                description = "Шанс двойного урона +10%";
+                break;
+
+            case UpgradeType.ProjectileDoubleDamage_Knife:
+                description = "Шанс моментального убийства +5%";
+                break;
 
             default:
                 description = "Неизвестный бафф";
@@ -1047,6 +1070,7 @@ public class Shop : MonoBehaviour
                 break;
 
             case UpgradeType.AttackSpeedDamageCritMove:
+
                 float attackSpeedIncrease1 = 0.15f;
                 float damageIncrease1 = 0.05f;
                 float critDamageIncrease1 = 5f;
@@ -1062,6 +1086,7 @@ public class Shop : MonoBehaviour
                 break;
 
             case UpgradeType.CritDamageCritChance:
+
                 float critDamageIncrease2 = 30f;
                 float critChanceIncrease2 = -0.1f;
 
@@ -1546,6 +1571,26 @@ public class Shop : MonoBehaviour
                     if (weapon.weaponID == "6") 
                     {
                         zeusLight.IncreaseProjectileSplitEffect(0.05f);
+                    }
+                }
+                break;
+
+            case UpgradeType.ProjectileDoubleDamage_Boomerang:
+                foreach (var weapon in playerWeapons)
+                {
+                    if (weapon.weaponID == "3")
+                    {
+                        boomerangController.IncreaseProjectileDoubleDomageEffect(0.1f);
+                    }
+                }
+                break;
+
+            case UpgradeType.ProjectileDoubleDamage_Knife:
+                foreach (var weapon in playerWeapons)
+                {
+                    if (weapon.weaponID == "5")
+                    {
+                        knifeController.MomentKill(0.05f);
                     }
                 }
                 break;

@@ -219,7 +219,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public virtual void TakeDamage(int damage, bool isCriticalHit)
+    public virtual void TakeDamage(int damage, bool isCriticalHit, bool isDoubleDamage = false)
     {
 
         currentHealth -= damage;

@@ -12,6 +12,7 @@ TagManager:
   - EXP
   - WaveManager
   - Camera
+  - Boss
   layers:
   - Default
   - TransparentFX

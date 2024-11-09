@@ -7,6 +7,7 @@ public class KnifeController : Weapon
     public GameObject knifePrefab; // Префаб кинжала
     public float speed = 10f; // Скорость кинжала
     public float maxDistance = 5f; // Максимальное расстояние полета
+    public float instantKillChance = 0.05f; // Шанс моментального убийства (5%
 
     private new void Start()
     {
@@ -38,7 +39,7 @@ public class KnifeController : Weapon
             AdjustProjectileSize(spawnedKnife);
 
             KnifeBehaviour knifeBehaviour = spawnedKnife.AddComponent<KnifeBehaviour>(); // Добавляем поведение кинжала
-            knifeBehaviour.Initialize(directionToEnemy, speed, (int)CalculateDamage(), transform, maxDistance, this); // Устанавливаем параметры
+            knifeBehaviour.Initialize(directionToEnemy, speed, (int)CalculateDamage(), transform, maxDistance, this, instantKillChance); // Устанавливаем параметры
 
             // Настройка звука для кинжала
             AudioSource audioSource = spawnedKnife.GetComponent<AudioSource>();
@@ -94,6 +95,11 @@ public class KnifeController : Weapon
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
+
+    public void MomentKill(float percentage)
+    {
+        instantKillChance += percentage;
+    }
 }
 
 
@@ -106,6 +112,8 @@ public class KnifeBehaviour : MonoBehaviour
     private float maxDistance; // Максимальное расстояние полета
     private float distanceTraveled; // Пройденное расстояние
     private Weapon weapon; // Ссылка на оружие
+    private float instantKillChance; // Шанс моментального убийства (5%)
+
 
     // Словарь для отслеживания времени последней атаки по каждому врагу
     private static Dictionary<GameObject, float> lastAttackTimes = new Dictionary<GameObject, float>();
@@ -136,12 +144,29 @@ public class KnifeBehaviour : MonoBehaviour
         {
             if (CanAttackEnemy(enemy.gameObject))
             {
-                // Рассчитываем урон и проверяем, был ли он критическим
-                float damageDealt = CalculateDamage(); // Рассчитываем урон
-                bool isCriticalHit = damageDealt > weapon.damage; // Проверяем, был ли урон критическим
-                enemy.GetComponent<Enemy>().TakeDamage((int)damageDealt, isCriticalHit); // Наносим урон
+                Enemy enemyScript = enemy.GetComponent<Enemy>();
+                if (enemyScript != null)
+                {
+                    // Проверка на моментальное убийство
+                    if (Random.value < instantKillChance)
+                    {
+                        // Моментальное убийство, враг погибает сразу
+                        enemyScript.TakeDamage((int)enemyScript.currentHealth + 1, true, true);
+
+                    }
+
+                    else
+                    {
+                        // Рассчитываем урон
+                        float damageDealt = CalculateDamage(); // Рассчитываем урон
+                        bool isCriticalHit = damageDealt > weapon.damage; // Проверяем, был ли урон критическим
+                        enemyScript.TakeDamage((int)damageDealt, isCriticalHit); // Наносим урон
+                    }
+                }
+
                 UpdateLastAttackTime(enemy.gameObject); // Обновляем время последней атаки
             }
+        
         }
 
         if (distanceTraveled >= maxDistance)
@@ -150,7 +175,7 @@ public class KnifeBehaviour : MonoBehaviour
         }
     }
 
-    public void Initialize(Vector3 newDirection, float knifeSpeed, int knifeDamage, Transform playerTransform, float maxDistance, Weapon weapon)
+    public void Initialize(Vector3 newDirection, float knifeSpeed, int knifeDamage, Transform playerTransform, float maxDistance, Weapon weapon, float instantKillChance)
     {
         direction = newDirection.normalized; // Нормализуем направление
         speed = knifeSpeed; // Устанавливаем скорость
@@ -158,6 +183,7 @@ public class KnifeBehaviour : MonoBehaviour
         player = playerTransform; // Сохраняем ссылку на игрока
         this.maxDistance = maxDistance; // Устанавливаем максимальное расстояние
         this.weapon = weapon; // Сохраняем ссылку на оружие
+        this.instantKillChance = instantKillChance; // Устанавливаем шанс моментального убийства
     }
 
     private float CalculateDamage()

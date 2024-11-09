@@ -8,6 +8,7 @@ public class BoomerangController : Weapon
     public float speed = 10f; // Скорость бумеранга
     public float returnSpeed = 5f; // Скорость возвращения бумеранга
     public float maxDistance = 5f; // Максимальное расстояние полета
+    public float doubleDamageChance = 1f; // Шанс на двойной урон (от 0 до 1)
 
     private new void Start()
     {
@@ -35,6 +36,15 @@ public class BoomerangController : Weapon
             float finalDamage = CalculateDamage();
             bool isCriticalHit = finalDamage > damage;
 
+            // Проверка на шанс двойного урона
+            bool isDoubleDamage = Random.value <= doubleDamageChance;
+
+            // Если сработал шанс двойного урона, удваиваем урон
+            if (isDoubleDamage)
+            {
+                finalDamage *= 2;
+            }
+
             GameObject spawnedBoomerang = Instantiate(boomerangPrefab, transform.position, Quaternion.identity);
             spawnedBoomerang.name = "Boomerang"; // Назначаем имя объекту
 
@@ -42,7 +52,7 @@ public class BoomerangController : Weapon
             AdjustProjectileSize(spawnedBoomerang);
 
             BoomerangBehaviour boomerangBehaviour = spawnedBoomerang.AddComponent<BoomerangBehaviour>(); // Добавляем поведение бумеранга
-            boomerangBehaviour.Initialize(directionToEnemy, speed, (int)finalDamage, isCriticalHit, transform, returnSpeed, maxDistance); // Передаем значения
+            boomerangBehaviour.Initialize(directionToEnemy, speed, (int)finalDamage, isCriticalHit, isDoubleDamage, transform, returnSpeed, maxDistance); // Передаем значения
         }
     }
 
@@ -73,6 +83,11 @@ public class BoomerangController : Weapon
         }
         return closestEnemy; // Возвращаем ближайшего врага
     }
+    public void IncreaseProjectileDoubleDomageEffect(float percentage)
+    {
+        doubleDamageChance += percentage;
+    }
+
 }
 
 
@@ -86,6 +101,7 @@ public class BoomerangBehaviour : MonoBehaviour
     private float maxDistance; // Максимальное расстояние полета
     private bool returning; // Флаг возвращения
     private bool isCriticalHit; // Флаг критического удара
+    private bool isDoubleDamage; // Флаг двойного урона
 
     private Vector3 startPosition; // Начальная позиция бумеранга
     private float distanceTraveled; // Пройденное расстояние
@@ -151,19 +167,21 @@ public class BoomerangBehaviour : MonoBehaviour
         {
             if (CanAttackEnemy(enemy.gameObject)) // Проверяем, можно ли атаковать врага
             {
-                enemy.GetComponent<Enemy>().TakeDamage(damage, isCriticalHit);
+                enemy.GetComponent<Enemy>().TakeDamage(damage, isCriticalHit, isDoubleDamage); // Передаем флаг двойного урона
+
 
                 UpdateLastAttackTime(enemy.gameObject); // Обновляем время последней атаки
             }
         }
     }
 
-    public void Initialize(Vector3 newDirection, float boomerangSpeed, int boomerangDamage, bool criticalHit, Transform playerTransform, float returnSpeed, float maxDistance)
+    public void Initialize(Vector3 newDirection, float boomerangSpeed, int boomerangDamage, bool criticalHit, bool doubleDamage, Transform playerTransform, float returnSpeed, float maxDistance)
     {
         direction = newDirection.normalized;
         speed = boomerangSpeed;
         damage = boomerangDamage;
         isCriticalHit = criticalHit; // Устанавливаем флаг критического удара
+        isDoubleDamage = doubleDamage; // Устанавливаем флаг двойного урона
         player = playerTransform;
         this.returnSpeed = returnSpeed;
         this.maxDistance = maxDistance;

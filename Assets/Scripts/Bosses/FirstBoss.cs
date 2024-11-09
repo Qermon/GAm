@@ -132,7 +132,7 @@ public class FirstBoss : Enemy
         }
     }
 
-    public override void TakeDamage(int damage, bool isCriticalHit) // Убедитесь, что параметр присутствует
+    public override void TakeDamage(int damage, bool isCriticalHit, bool isDoubleDamage = false) // Убедитесь, что параметр присутствует
     {
         if (isDead) return;
 

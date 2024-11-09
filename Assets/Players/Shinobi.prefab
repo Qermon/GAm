@@ -368,6 +368,7 @@ MonoBehaviour:
   speed: 3
   returnSpeed: 5
   maxDistance: 3
+  doubleDamageChance: 0
 --- !u!114 &-7339366680887852699
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -423,6 +424,7 @@ MonoBehaviour:
   knifePrefab: {fileID: 5092583050195389615, guid: 8c0e8a6b3ba889f4f9667886576a175a, type: 3}
   speed: 5
   maxDistance: 10
+  instantKillChance: 0
 --- !u!114 &-4544038301811308478
 MonoBehaviour:
   m_ObjectHideFlags: 0
