@@ -276,10 +276,10 @@ public class WaveManager : MonoBehaviour
 
         spawningWave = true;
 
-        bool isKillWave = (waveNumber == 10); // Для 10-й волны делаем её на убийство
+        bool isKillWave = (waveNumber == 10 || waveNumber == 30); // Для 10-й волны делаем её на убийство
 
         // В случае 10-й волны, только один босс
-        if (waveNumber == 10)
+        if (waveNumber == 10 || waveNumber == 30)
         {
             WaveConfig currentWave = waveConfigs[waveNumber];
             waveDuration = currentWave.waveDuration;
@@ -1014,13 +1014,7 @@ public class WaveManager : MonoBehaviour
         // Волна 30
         waveConfigs.Add(30, new WaveConfig(60f, new List<EnemySpawn>
     {
-       new EnemySpawn(deathMobPrefabs[0],  Mathf.FloorToInt(430 + 50 * 1.5f)),
-        new EnemySpawn(samuraiPrefabs[0], 15),
-        new EnemySpawn(boomPrefabs[0], 6),
-        new EnemySpawn(deathPrefabs[0], 15),
-        new EnemySpawn(wizardPrefabs[0], 5),
-        new EnemySpawn(archerPrefabs[0], 2),
-        new EnemySpawn(buffMobPrefabs[0], 2)
+      new EnemySpawn(bossPrefabs[0],  1),
     }));
 
         // Рассчитываем количество мобов для каждой волны

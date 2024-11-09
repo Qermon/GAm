@@ -123,7 +123,7 @@ public class GameManager : MonoBehaviour
     {
         if (waveManager.GetWaveNumber() > 0) // Убедитесь, что хотя бы одна волна прошла
         {
-            if (waveManager.GetWaveNumber() == 10)
+            if (waveManager.GetWaveNumber() == 10 || waveManager.GetWaveNumber() == 30)
             {
 
                 nextWaveTimerText.text = "Босс";
