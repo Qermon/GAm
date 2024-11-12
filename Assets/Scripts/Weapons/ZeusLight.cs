@@ -85,7 +85,7 @@ public class ZeusLight : Weapon
 
     private bool IsEnemyInRange()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly", "Boss"));
         return enemies.Length > 0;
     }
 
@@ -144,7 +144,7 @@ public class ZeusProjectile : MonoBehaviour
     private void FindRandomTarget()
     {
         // Находим врагов в радиусе 1.5
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 1.5f, LayerMask.GetMask("Mobs", "MobsFly"));
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 1.5f, LayerMask.GetMask("Mobs", "MobsFly", "Boss"));
         if (enemies.Length > 0)
         {
             target = enemies[Random.Range(0, enemies.Length)].GetComponent<Enemy>(); // Выбираем случайного врага
@@ -160,7 +160,7 @@ public class ZeusProjectile : MonoBehaviour
     private void FindNearestTarget()
     {
         // Находим врагов в радиусе 1.5
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 1.5f, LayerMask.GetMask("Mobs", "MobsFly"));
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 1.5f, LayerMask.GetMask("Mobs", "MobsFly", "Boss"));
         float closestDistance = float.MaxValue;
         Enemy closestEnemy = null;
 
@@ -235,7 +235,7 @@ public class ZeusProjectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy") || other.CompareTag("Boss"))
         {
             Enemy enemy = other.GetComponent<Enemy>();
             if (enemy != null)
@@ -295,7 +295,7 @@ public class ZeusProjectile : MonoBehaviour
     private Enemy FindFarthestTarget(Enemy excludedEnemy)
     {
         // Находим врагов в радиусе 2
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 2f, LayerMask.GetMask("Mobs", "MobsFly"));
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 2f, LayerMask.GetMask("Mobs", "MobsFly", "Boss"));
         float farthestDistance = 0f;
         Enemy farthestEnemy = null;
 

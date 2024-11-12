@@ -213,7 +213,7 @@ MonoBehaviour:
   currentHealth: 15
   player: {fileID: 0}
   moveSpeed: 3.5
-  attackRange: 0.1
+  attackRange: 0.2
   damage: 3
   attackSpeed: 1
   experienceItemPrefab: {fileID: 7339687537489862264, guid: d17a2951307f7a44e9068307e205694a, type: 3}
@@ -233,10 +233,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goldAmount: 1
-  maxHealth: 30
+  maxHealth: 15
   currentHealth: 0
   enemyMoveSpeed: 0.5
-  damage: 6
+  damage: 3
   attackRange: 0.1
   attackCooldown: 1
   experienceItemPrefab: {fileID: 7339687537489862264, guid: d17a2951307f7a44e9068307e205694a, type: 3}

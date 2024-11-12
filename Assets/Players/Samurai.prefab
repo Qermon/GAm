@@ -243,7 +243,7 @@ MonoBehaviour:
   healthBar: {fileID: 0}
   barrierImage: {fileID: 0}
   defense: 0
-  investment: 90
+  investment: 60
   lifesteal: 0.002
   baseLifesteal: 0.002
   basePickupRadius: 7
@@ -283,6 +283,7 @@ MonoBehaviour:
   currentExperience: 0
   experienceToNextLevel: 100
   levelText: {fileID: 0}
+  lvlUpSound: {fileID: 0}
 --- !u!114 &1312406036319613967
 MonoBehaviour:
   m_ObjectHideFlags: 0

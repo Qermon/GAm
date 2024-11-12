@@ -29,7 +29,7 @@ public class BleedStrike : Weapon
 
     private bool IsEnemyInRange()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly", "Boss"));
         return enemies.Length > 0;
     }
 
@@ -59,7 +59,7 @@ public class BleedStrike : Weapon
 
     private Collider2D FindNearestEnemy()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly", "Boss"));
         float minDistance = float.MaxValue;
         Collider2D nearestEnemy = null;
 
@@ -153,7 +153,7 @@ public class BleedProjectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy") || other.CompareTag("Boss"))
         {
             Enemy enemy = other.GetComponent<Enemy>();
             if (enemy != null && !hitEnemies.Contains(enemy))

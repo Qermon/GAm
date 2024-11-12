@@ -146,7 +146,7 @@ public class ShurikenCollision : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy")) // Если попали во врага
+        if (other.CompareTag("Enemy") || other.CompareTag("Boss")) // Если попали во врага
         {
             Enemy enemy = other.GetComponent<Enemy>();
             if (enemy != null && CanAttackEnemy(enemy.gameObject)) // Проверяем, можем ли атаковать врага

@@ -52,7 +52,7 @@ public class LightningWeapon : Weapon
 
     private bool IsEnemyInRange()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly", "Boss"));
         return enemies.Length > 0; // Проверяем, есть ли враги в радиусе attackRange
     }
 
@@ -60,7 +60,7 @@ public class LightningWeapon : Weapon
     {
         HashSet<Vector2> occupiedPositions = new HashSet<Vector2>(); // Хранение занятых позиций
 
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly", "Boss"));
         if (enemies.Length == 0) return; // Если нет врагов, выходим
 
         // Воспроизводим звук спавна один раз
@@ -140,7 +140,7 @@ public class LightningProjectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy") || other.CompareTag("Boss"))
         {
             Enemy enemy = other.GetComponent<Enemy>();
             if (enemy != null)

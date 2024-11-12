@@ -68,7 +68,7 @@ public class KnifeController : Weapon
 
     private GameObject FindEnemyWithMostHealth()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly", "Boss"));
         GameObject strongestEnemy = null;
         float highestHealth = -1;
 
@@ -86,7 +86,7 @@ public class KnifeController : Weapon
 
     private bool IsEnemyInRange()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly", "Boss"));
         return enemies.Length > 0;
     }
 
@@ -138,7 +138,7 @@ public class KnifeBehaviour : MonoBehaviour
         }
 
         // ѕровер€ем на столкновение с врагом
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 0.5f, LayerMask.GetMask("Mobs", "MobsFly"));
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 0.5f, LayerMask.GetMask("Mobs", "MobsFly", "Boss"));
 
         foreach (var enemy in enemies)
         {
@@ -147,12 +147,11 @@ public class KnifeBehaviour : MonoBehaviour
                 Enemy enemyScript = enemy.GetComponent<Enemy>();
                 if (enemyScript != null)
                 {
-                    // ѕроверка на моментальное убийство
-                    if (Random.value < instantKillChance)
+                    // ѕроверка на моментальное убийство, если это не босс
+                    if (Random.value < instantKillChance && !enemy.CompareTag("Boss"))
                     {
                         // ћоментальное убийство, враг погибает сразу
                         enemyScript.TakeDamage((int)enemyScript.currentHealth + 1, true, true);
-
                     }
 
                     else

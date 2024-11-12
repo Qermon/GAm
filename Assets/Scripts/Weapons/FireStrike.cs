@@ -29,7 +29,7 @@ public class FireStrike : Weapon
 
     private bool IsEnemyInRange()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly"));
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly", "Boss"));
         return enemies.Length > 0;
     }
 
@@ -99,7 +99,7 @@ public class FireProjectile : MonoBehaviour
 
     private void FindNearestEnemyDirection()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 1.5f, LayerMask.GetMask("Mobs", "MobsFly"));
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 1.5f, LayerMask.GetMask("Mobs", "MobsFly", "Boss"));
         if (enemies.Length > 0)
         {
             Transform nearestEnemy = enemies[0].transform;
@@ -138,7 +138,7 @@ public class FireProjectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy") || other.CompareTag("Boss"))
         {
             Enemy enemy = other.GetComponent<Enemy>();
             if (enemy != null && !hitEnemies.Contains(enemy))

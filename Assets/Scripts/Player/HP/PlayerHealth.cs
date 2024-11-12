@@ -186,17 +186,12 @@ public class PlayerHealth : MonoBehaviour
 
     public float CalculateInvestmentBonus(float currentGold)
     {
-        // Фиксированное количество золота за каждые 10 инвестиций
-        float fixedGoldBonus = Mathf.Floor(investment / 10); // Например, 1 золота за каждые 10 инвестиций
+ 
+        float fixedGoldBonus = investment; 
 
-        // Процент получения золота в зависимости от уровня инвестиций
-        float investmentPercentage = (Mathf.Floor(investment / 10) * 0.01f); // 1% за каждые 10 инвестиций
-        float percentageGoldBonus = currentGold * investmentPercentage; // Рассчитываем процентное бонусное золото
+        float totalGoldBonus = fixedGoldBonus;
 
-        // Итоговое бонусное золото
-        float totalBonusGold = fixedGoldBonus + percentageGoldBonus;
-
-        return totalBonusGold;
+        return totalGoldBonus;
     }
 
     // Метод для активации щита в начале каждой волны

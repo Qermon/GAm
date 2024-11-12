@@ -44,7 +44,6 @@ public class WaveManager : MonoBehaviour
     public float speedMultiplier ;
     public float projectile;
 
-   
 
     public Transform player; // Ссылка на объект игрока
     public Vector2 centerOfMap = new Vector2(18.5f, -12.5f); // Координаты центра карты
@@ -66,6 +65,7 @@ public class WaveManager : MonoBehaviour
 
     void Start()
     {
+
         gameManager = FindObjectOfType<GameManager>();
         if (waveConfigs != null && waveConfigs.TryGetValue(waveNumber, out currentWaveConfig))
         {
@@ -116,9 +116,9 @@ public class WaveManager : MonoBehaviour
         killThreshold = totalEnemies - 20;
     }   
 
-
     public void RestartScript()
     {
+
         isSpawningActive = false;
 
         PlayerHealth playerObject = FindObjectOfType<PlayerHealth>(); // Получаем объект игрока
@@ -264,6 +264,13 @@ public class WaveManager : MonoBehaviour
     private IEnumerator SpawnWave()
     {
         waveNumber++;
+        if (waveNumber > 30)
+        {
+           
+            GameManager.GetInstance().RestartGameWithDelay();
+
+        }
+
         if (waveConfigs != null && waveConfigs.TryGetValue(waveNumber, out currentWaveConfig))
         {
             UpdateKillThreshold(currentWaveConfig);  // Обновляем killThreshold для текущей волны
@@ -698,8 +705,8 @@ public class WaveManager : MonoBehaviour
         // Волна 1
         waveConfigs.Add(1, new WaveConfig(25f, new List<EnemySpawn>
     {
-           //new EnemySpawn (bossPrefabs[0], 1),
-         new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(55 + 21 * 1.5f)),
+           // new EnemySpawn(bossPrefabs[0], 1),
+        new EnemySpawn(deathMobPrefabs[0], Mathf.FloorToInt(55 + 21 * 1.5f)),
 
     }));
 

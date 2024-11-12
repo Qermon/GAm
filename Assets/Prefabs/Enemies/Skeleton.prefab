@@ -1880,9 +1880,9 @@ GameObject:
   - component: {fileID: -1399730515446429457}
   - component: {fileID: 3876341713135151565}
   - component: {fileID: 1358070967564667066}
-  m_Layer: 8
+  m_Layer: 16
   m_Name: Skeleton
-  m_TagString: Enemy
+  m_TagString: Boss
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1938,7 +1938,7 @@ SortingGroup:
   m_Enabled: 1
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 50
+  m_SortingOrder: 90
   m_SortAtRoot: 0
 --- !u!114 &-1399730515446429457
 MonoBehaviour:
@@ -1956,14 +1956,14 @@ MonoBehaviour:
   maxHealth: 40000
   currentHealth: 40000
   enemyMoveSpeed: 0.4
-  damage: 90
-  attackRange: 0.1
+  damage: 40
+  attackRange: 0.6
   attackCooldown: 1
   experienceItemPrefab: {fileID: 7339687537489862264, guid: b2d91ba4bc5b9e34f80edd1b63403488, type: 3}
   experienceAmount: 20
   baseMaxHealth: 80000
   baseEnemyMoveSpeed: 0.4
-  baseDamage: 90
+  baseDamage: 40
   damageTextPrefab: {fileID: 8397397958086147261, guid: 6a515f8e778592248b89293e3a62d51b, type: 3}
   canvas: {fileID: 0}
   bloodEffectPrefab: {fileID: 3705117576596526473, guid: 8f993145477af014da0c49436bdc8af0, type: 3}
@@ -1971,6 +1971,15 @@ MonoBehaviour:
   samuraiPrefab: {fileID: 5487655345144726384, guid: 66a3f3c328f0d03428bb78abaa23d4f8, type: 3}
   rigidbody2D: {fileID: 0}
   hpBarImage: {fileID: 0}
+  extendedAttackRange: 0.9
+  hit_1: {fileID: 0}
+  death: {fileID: 0}
+  idle_2: {fileID: 0}
+  run: {fileID: 0}
+  skill_1: {fileID: 0}
+  skill_2: {fileID: 0}
+  skill_2Roar: {fileID: 0}
+  walk: {fileID: 0}
 --- !u!50 &3876341713135151565
 Rigidbody2D:
   serializedVersion: 4

@@ -47,6 +47,8 @@ public class Shop : MonoBehaviour
     public UpgradeOption[] upgradeOptions; // Массив доступных баффов
     private HashSet<UpgradeType> existingBuffs = new HashSet<UpgradeType>(); // HashSet для отслеживания существующих баффов
 
+    public AudioSource shopSound;
+
     private float totalAttackSpeedBonus = 0f;
     private float totalAttackRangeBonus = 0f;
     private float totalPickupRadiusBonus = 0f;
@@ -144,6 +146,14 @@ public class Shop : MonoBehaviour
 
     private void Start()
     {
+
+        GameObject shopSoundObject = GameObject.Find("ShopSound");
+
+        if (shopSoundObject != null)
+        {
+            shopSound = shopSoundObject.GetComponent<AudioSource>();
+        }
+
         knifeController = FindObjectOfType<KnifeController>();
         boomerangController = FindObjectOfType<BoomerangController>();
         fireBallController = FindObjectOfType<FireBallController>();
@@ -214,6 +224,13 @@ public class Shop : MonoBehaviour
         boomerangController = FindObjectOfType<BoomerangController>();
         knifeController = FindObjectOfType<KnifeController>();
 
+        GameObject shopSoundObject = GameObject.Find("ShopSound");
+
+        if (shopSoundObject != null)
+        {
+            shopSound = shopSoundObject.GetComponent<AudioSource>();
+        }
+
         // Сбрасываем бонусы к характеристикам
         totalAttackSpeedBonus = 0f;
         totalAttackRangeBonus = 0f;
@@ -247,6 +264,10 @@ public class Shop : MonoBehaviour
 
     public void OpenShop()
     {
+        if (shopSound != null)
+        {
+            shopSound.Play();
+        }
         cursorManager.ShowCursor();
         InitializeShop(); // Инициализация доступных баффов
         shopPanel.SetActive(true);

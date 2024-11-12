@@ -378,6 +378,7 @@ public class WeaponSelectionManager : MonoBehaviour
             default:
                 Debug.LogWarning("Неизвестный тип оружия: " + weaponType);
                 break;
+
         }
     }
         public void CloseWeaponSelection()

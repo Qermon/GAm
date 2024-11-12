@@ -19,15 +19,77 @@ public class Boss : Enemy
     private Coroutine summonSamuraiCoroutine;
     public new Rigidbody2D rigidbody2D;
     public Image hpBarImage; // Ссылка на Image для отображения HP
+    public float extendedAttackRange = 1.1f;  // Увеличенная дальность атаки
 
     private Animator animator;
 
+    public AudioSource hit_1;  
+    public AudioSource death;  
+    public AudioSource idle_2;  
+    public AudioSource run; 
+    public AudioSource skill_1;  
+    public AudioSource skill_2;
+    public AudioSource skill_2Roar;  
+    public AudioSource walk;  
+
     protected override void Start()
     {
-       
+
         base.Start();
 
-        GameObject hpBarObject = GameObject.Find("foregroundBoss"); // Здесь "HPBarName" - это имя вашего объекта Image
+        GameObject hit_1SoundObject = GameObject.Find("hit_1");
+        GameObject deathSoundObject = GameObject.Find("death");
+        GameObject idle_2SoundObject = GameObject.Find("idle_2");
+        GameObject runSoundObject = GameObject.Find("run");
+        GameObject skill_1SoundObject = GameObject.Find("skill_1");
+        GameObject skill_2SoundObject = GameObject.Find("skill_2");
+        GameObject skill_2RoarSoundObject = GameObject.Find("skill_2Roar");
+        GameObject walkSoundObject = GameObject.Find("walk");
+
+        if (hit_1SoundObject != null || deathSoundObject != null || idle_2SoundObject != null || runSoundObject != null || skill_1SoundObject != null || skill_2SoundObject != null || skill_2RoarSoundObject != null || walkSoundObject != null)
+        {
+            if (hit_1SoundObject != null)
+                hit_1 = hit_1SoundObject.GetComponent<AudioSource>();
+            else
+                Debug.LogWarning("Объект 'hit_1' не найден на сцене!");
+
+            if (deathSoundObject != null)
+                death = deathSoundObject.GetComponent<AudioSource>();
+            else
+                Debug.LogWarning("Объект 'death' не найден на сцене!");
+
+            if (idle_2SoundObject != null)
+                idle_2 = idle_2SoundObject.GetComponent<AudioSource>();
+            else
+                Debug.LogWarning("Объект 'idle_2' не найден на сцене!");
+
+            if (runSoundObject != null)
+                run = runSoundObject.GetComponent<AudioSource>();
+            else
+                Debug.LogWarning("Объект 'run' не найден на сцене!");
+
+            if (skill_1SoundObject != null)
+                skill_1 = skill_1SoundObject.GetComponent<AudioSource>();
+            else
+                Debug.LogWarning("Объект 'skill_1' не найден на сцене!");
+
+            if (skill_2SoundObject != null)
+                skill_2 = skill_2SoundObject.GetComponent<AudioSource>();
+            else
+                Debug.LogWarning("Объект 'skill_2' не найден на сцене!");
+
+            if (skill_2RoarSoundObject != null)
+                skill_2Roar = skill_2RoarSoundObject.GetComponent<AudioSource>();
+            else
+                Debug.LogWarning("Объект 'skill_2Roar' не найден на сцене!");
+
+            if (walkSoundObject != null)
+                walk = walkSoundObject.GetComponent<AudioSource>();
+            else
+                Debug.LogWarning("Объект 'walk' не найден на сцене!");
+        }
+
+            GameObject hpBarObject = GameObject.Find("foregroundBoss"); // Здесь "HPBarName" - это имя вашего объекта Image
 
         if (hpBarObject != null)
         {
@@ -52,6 +114,7 @@ public class Boss : Enemy
         summonCooldown = 10f;
         samuraiSummonCooldown = 12f;
         
+
        
         // Начинаем с фазы 1
         EnterPhase(1);
@@ -64,6 +127,7 @@ public class Boss : Enemy
     protected override void Update()
     {
         base.Update();
+
 
         if (hpBarImage == null) 
         {
@@ -343,9 +407,11 @@ public class Boss : Enemy
         animator.SetBool("isDead", true);
     }
 
+    // Логика для того, чтобы босс наносил урон на увеличенную дистанцию
     public void ApplyAttackDamage()
     {
-        if (Vector2.Distance(transform.position, player.position) <= attackRange)
+        // Проверяем, на удлиненной ли дистанции, чтобы нанести урон
+        if (Vector2.Distance(transform.position, player.position) <= extendedAttackRange)
         {
             PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
             if (playerHealth != null)
@@ -355,4 +421,61 @@ public class Boss : Enemy
         }
     }
 
+
+    public void Hit_1()
+    {
+        if (hit_1 != null)
+        {
+            hit_1.Play();
+        }
+    }
+    public void Death()
+    {
+        if (death != null)
+        {
+            death.Play();
+        }
+    }
+    public void Idle_2()
+    {
+        if (idle_2 != null)
+        {
+            idle_2.Play();
+        }
+    }
+    public void Run()
+    {
+        if (run != null)
+        {
+            run.Play();
+        }
+    }
+    public void Skill_1()
+    {
+        if (skill_1 != null)
+        {
+            skill_1.Play();
+        }
+    }
+    public void Skill_2()
+    {
+        if (skill_2 != null)
+        {
+            skill_2.Play();
+        }
+    }
+    public void Skill_2Roar()
+    {
+        if (skill_2Roar != null)
+        {
+            skill_2Roar.Play();
+        }
+    }
+    public void Walk()
+    {
+        if (walk != null)
+        {
+            walk.Play();
+        }
+    }
 }

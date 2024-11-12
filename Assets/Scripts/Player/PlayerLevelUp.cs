@@ -9,8 +9,18 @@ public class PlayerLevelUp : MonoBehaviour
 
     public TMP_Text levelText; // Ссылка на UI Text элемент
 
+    public AudioSource lvlUpSound;
+
     void Start()
     {
+
+        GameObject lvlUpSoundObject = GameObject.Find("LvlUpSound");
+
+        if (lvlUpSoundObject != null)
+        {
+            lvlUpSound = lvlUpSoundObject.GetComponent<AudioSource>();
+        }
+
         // Поиск объекта с именем "levelText" и получение TMP_Text компонента
         GameObject levelTextObject = GameObject.Find("levelText");
         if (levelTextObject != null)
@@ -39,6 +49,11 @@ public class PlayerLevelUp : MonoBehaviour
     {
         currentLevel++; // Увеличиваем уровень
         currentExperience -= experienceToNextLevel; // Уменьшаем опыт на необходимое количество для следующего уровня
+
+        if (lvlUpSound != null)
+        {
+            lvlUpSound.Play();
+        }
 
         Debug.Log("Поздравляем! Вы достигли уровня: " + currentLevel);
         FindObjectOfType<LevelUpMenu>().OpenLevelUpMenu(); // Открываем меню улучшений

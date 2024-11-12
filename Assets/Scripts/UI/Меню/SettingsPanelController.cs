@@ -58,7 +58,7 @@ public class SettingsPanelController : MonoBehaviour
         waveManager.damageMultiplier = 20f;
         waveManager.healthMultiplier = 80f;
         waveManager.speedMultiplier = 0.5f;
-        waveManager.projectile = 1.35f;
+        waveManager.projectile = 20f;
 
         // Сохраняем значения в PlayerPrefs
         PlayerPrefs.SetFloat("DamageMultiplier", waveManager.damageMultiplier);
@@ -74,7 +74,7 @@ public class SettingsPanelController : MonoBehaviour
         waveManager.damageMultiplier = 15f;
         waveManager.healthMultiplier = 40f;
         waveManager.speedMultiplier = 0.5f;
-        waveManager.projectile = 1.25f;
+        waveManager.projectile = 15f;
 
         // Сохраняем значения в PlayerPrefs
         PlayerPrefs.SetFloat("DamageMultiplier", waveManager.damageMultiplier);
@@ -90,7 +90,7 @@ public class SettingsPanelController : MonoBehaviour
         waveManager.damageMultiplier = 10f;
         waveManager.healthMultiplier = 25f;
         waveManager.speedMultiplier = 0.5f;
-        waveManager.projectile = 1.2f;
+        waveManager.projectile = 10f;
 
         // Сохраняем значения в PlayerPrefs
         PlayerPrefs.SetFloat("DamageMultiplier", waveManager.damageMultiplier);

@@ -90,7 +90,7 @@ public class FireBallController : Weapon
 
     private GameObject FindNearestEnemy()
     {
-        int enemyLayerMask = LayerMask.GetMask("Mobs", "MobsFly");
+        int enemyLayerMask = LayerMask.GetMask("Mobs", "MobsFly", "Boss");
         Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, enemyLayerMask);
 
         GameObject nearestEnemy = null;
@@ -154,7 +154,7 @@ public class FireBall : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy")) // Если попали во врага
+        if (other.CompareTag("Enemy") || other.CompareTag("Boss")) // Если попали во врага
         {
             Enemy enemy = other.GetComponent<Enemy>();
             if (enemy != null && CanAttackEnemy(enemy.gameObject)) // Проверяем, можем ли атаковать врага

@@ -68,7 +68,7 @@ public class BoomerangController : Weapon
 
     private GameObject FindClosestEnemy()
     {
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly")); // Находим всех врагов в радиусе attackRange
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Mobs", "MobsFly", "Boss")); // Находим всех врагов в радиусе attackRange
         GameObject closestEnemy = null;
         float closestDistance = float.MaxValue;
 
@@ -162,7 +162,7 @@ public class BoomerangBehaviour : MonoBehaviour
         }
 
         // Проверяем на столкновение с врагом в радиусе бумеранга при движении в любом направлении
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 0.25f, LayerMask.GetMask("Mobs", "MobsFly"));
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, 0.25f, LayerMask.GetMask("Mobs", "MobsFly", "Boss"));
         foreach (var enemy in enemies)
         {
             if (CanAttackEnemy(enemy.gameObject)) // Проверяем, можно ли атаковать врага

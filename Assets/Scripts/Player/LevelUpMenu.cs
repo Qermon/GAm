@@ -60,7 +60,7 @@ public class LevelUpMenu : MonoBehaviour
     private int waveNumber; // Переменная для хранения текущей волны
 
     private void Start()
-    {
+    {       
         cursorManager = FindObjectOfType<CursorManager>();
         playerMovement = FindObjectOfType<PlayerMovement>();
         playerHealth = FindObjectOfType<PlayerHealth>();

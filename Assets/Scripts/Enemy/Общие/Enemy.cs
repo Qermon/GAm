@@ -44,6 +44,7 @@ public class Enemy : MonoBehaviour
 
     private bool isStunned = false;
 
+
     public event Action OnDeath; // Событие для оповещения о смерти врага
     public bool IsDead
     {
@@ -52,7 +53,6 @@ public class Enemy : MonoBehaviour
 
     protected virtual void Start()
     {
-        
         mainCamera = Camera.main;
         enemyMoveSpeed = baseEnemyMoveSpeed; // Инициализация текущей скорости
         rb = GetComponent<Rigidbody2D>();
@@ -221,7 +221,7 @@ public class Enemy : MonoBehaviour
 
     public virtual void TakeDamage(int damage, bool isCriticalHit, bool isDoubleDamage = false)
     {
-       
+
 
         currentHealth -= damage;
         currentHealth = Mathf.Max(currentHealth, 0);

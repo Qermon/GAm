@@ -36,16 +36,7 @@ public class Boom : Enemy
 
     public override void TakeDamage(int damage, bool isCriticalHit, bool isDoubleDamage = false) // Убедитесь, что параметр присутствует
     {
-        if (isDead) return;
-
-        // Обработка критического удара
-        if (isCriticalHit)
-        {
-            damage = (int)(damage + damage / 100 * weapon.criticalDamage); // Увеличиваем урон, если это критический удар
-        }
-
-        currentHealth -= damage;
-        currentHealth = Mathf.Max(currentHealth, 0);
+        base.TakeDamage(damage, isCriticalHit, isDoubleDamage = false);
 
         if (currentHealth <= 0 && !isPreparingToExplode)
         {

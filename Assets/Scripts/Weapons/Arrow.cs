@@ -35,7 +35,7 @@ public class Arrow : MonoBehaviour
 
     public void UpdateStats(float projectile)
     {
-        damage *= projectile;
+        damage += baseDamage / 100 * projectile;
     }
 
     public void RefreshStats()

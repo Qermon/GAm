@@ -6,8 +6,8 @@ public class WitchsProjectile : MonoBehaviour
     public float lifetime = 5f; // Время жизни снаряда
     private Rigidbody2D rb; // Ссылка на Rigidbody2D
     private Vector2 direction; // Направление движения снаряда
-    public float damage = 10f;
-    public float baseDamage = 10f;
+    public float damage = 3f;
+    public float baseDamage = 3f;
 
     private void Awake()
     {
@@ -35,7 +35,7 @@ public class WitchsProjectile : MonoBehaviour
 
     public void UpdateStats(float projectile)
     {
-        damage *= projectile;
+        damage += baseDamage / 100 * projectile;
     }
 
     public void RefreshStats()
