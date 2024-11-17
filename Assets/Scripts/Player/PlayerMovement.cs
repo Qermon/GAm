@@ -1,79 +1,91 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
-/// <summary>
-/// Controls all player movement
-/// </summary>
 public class PlayerMovement : MonoBehaviour
 {
-    public float moveSpeed;
-    public float baseMoveSpeed;
-    Rigidbody2D rb;
-
-    [HideInInspector]
+    public float moveSpeed;            // Текущая скорость движения
+    public float baseMoveSpeed;        // Базовая скорость, которую можно увеличивать
+    private Rigidbody2D rb;            // Rigidbody персонажа для применения скорости
     public Vector2 moveDir;
-
-    // Сохраняем состояния
     [HideInInspector]
     public float lastHorizontalVector;
-    [HideInInspector]
-    public float lastVerticalVector;
-    [HideInInspector]
-    public Vector2 lastMovedVector;
+
+
+    private Vector2 startTouchPosition;  // Начальная позиция касания
+    private Vector2 currentTouchPosition; // Текущая позиция пальца
+    private Vector2 direction;          // Направление движения
 
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        lastMovedVector = new Vector2(1, 0f); // Инициализация для корректной работы оружия
+        rb = GetComponent<Rigidbody2D>();  // Получаем компонент Rigidbody2D
+        moveSpeed = baseMoveSpeed;         // Устанавливаем начальную скорость
     }
 
     void Update()
     {
-        InputManagement();
+        HandleTouchInput();  // Обрабатываем ввод с экрана
     }
 
-    void FixedUpdate() // Физика в FixedUpdate
+    void FixedUpdate()
     {
-        Move();
+        Move();  // Двигаем персонажа
     }
 
-    void InputManagement()
+    // Метод для обработки касания
+    void HandleTouchInput()
     {
-        float moveX = Input.GetAxisRaw("Horizontal");
-        float moveY = Input.GetAxisRaw("Vertical");
-
-        moveDir = new Vector2(moveX, moveY).normalized; // Ограничиваем скорость на диагоналях
-
-        if (moveDir.x != 0)
+        if (Input.touchCount > 0)
         {
-            lastHorizontalVector = moveDir.x;
-            lastMovedVector = new Vector2(lastHorizontalVector, 0f);    // Последнее движение по X
-        }
+            // Получаем информацию о первом касании
+            Touch touch = Input.GetTouch(0);
 
-        if (moveDir.y != 0)
-        {
-            lastVerticalVector = moveDir.y;
-            lastMovedVector = new Vector2(0f, lastVerticalVector);  // Последнее движение по Y
-        }
+            if (touch.phase == TouchPhase.Began)
+            {
+                // Сохраняем начальную позицию касания
+                startTouchPosition = touch.position;
+            }
 
-        if (moveDir.x != 0 && moveDir.y != 0)
-        {
-            lastMovedVector = new Vector2(lastHorizontalVector, lastVerticalVector);    // При движении
+            if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
+            {
+                // Обновляем текущую позицию пальца
+                currentTouchPosition = touch.position;
+
+                // Вычисляем направление, в котором палец перемещается
+                direction = currentTouchPosition - startTouchPosition;
+                moveDir = direction.normalized;  // Нормализуем направление для равномерной скорости
+
+                // Сохраняем последнее горизонтальное движение
+                lastHorizontalVector = moveDir.x;
+            }
+
+            if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+            {
+                // Когда палец отпущен, сбрасываем направление
+                moveDir = Vector2.zero;
+            }
         }
     }
 
-    // Метод для увеличения скорости движения
-    public void IncreaseMoveSpeed(float percentage)
-    {
-        float increaseAmount = baseMoveSpeed * percentage;
-        moveSpeed += increaseAmount;// Увеличиваем скорость движения
-        Debug.Log($"Скорость движения увеличена на {increaseAmount}%. Новая скорость: {moveSpeed}");
-    }
-
+    // Метод для движения персонажа
     void Move()
     {
-        rb.velocity = new Vector2(moveDir.x * moveSpeed, moveDir.y * moveSpeed);    // Применяем скорость
+        rb.velocity = new Vector2(moveDir.x * moveSpeed, moveDir.y * moveSpeed);  // Применяем скорость
+    }
+
+    // Метод для увеличения скорости
+    public void IncreaseMoveSpeed(float percentage)
+    {
+        // Увеличиваем скорость на определенный процент от базовой скорости
+        float increaseAmount = baseMoveSpeed * percentage;
+        moveSpeed += increaseAmount;  // Увеличиваем скорость
+        Debug.Log($"Скорость движения увеличена на {increaseAmount}. Новая скорость: {moveSpeed}");
+    }
+
+    // Метод для уменьшения скорости (для сброса бафа)
+    public void ResetMoveSpeed()
+    {
+        moveSpeed = baseMoveSpeed;  // Сбрасываем скорость на базовую
+        Debug.Log($"Скорость сброшена на базовую: {moveSpeed}");
     }
 }

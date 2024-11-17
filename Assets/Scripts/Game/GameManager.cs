@@ -8,6 +8,7 @@ using UnityEngine.UI; // Для работы с Image
 public class GameManager : MonoBehaviour
 {
     public WaveManager waveManager; // Ссылка на WaveManager
+    public EndManager endManager;
     public TMP_Text nextWaveTimerText; // Ссылка на текст для таймера следующей волны
     public TMP_Text waveNumberText;
     public TMP_Text kill;
@@ -15,9 +16,11 @@ public class GameManager : MonoBehaviour
     private MainMenu mainMenu;
     private bool isPaused = false; // Переменная для отслеживания состояния паузы
     private CursorManager cursorManager;
+    
 
     public Image hpBarImage; // Главное изображение HP-бара
     public Image hpBarBackgroundImage; // Изображение фона HP-бара
+    public Image killImage;
 
 
 
@@ -63,12 +66,14 @@ public class GameManager : MonoBehaviour
 
         GameObject hpBarObject = GameObject.Find("foregroundBoss"); // Здесь "HPBarName" - это имя вашего объекта Image
         GameObject hpBarObject1 = GameObject.Find("backgroundBoss"); // Здесь "HPBarName" - это имя вашего объекта Image
+        GameObject killImageObject = GameObject.Find("killImage");
 
         if (hpBarObject != null && hpBarObject1 != null)
         {
             // Преобразуем его в компонент Image
             hpBarImage = hpBarObject.GetComponent<Image>();
             hpBarBackgroundImage = hpBarObject1.GetComponent<Image>();
+            killImage = killImageObject.GetComponent<Image>();
 
         }
 
@@ -76,6 +81,7 @@ public class GameManager : MonoBehaviour
         {
             hpBarImage.gameObject.SetActive(false); // Скрываем HP-бар до 10-й волны
             hpBarBackgroundImage.gameObject.SetActive(false); // Скрываем фон HP-бара
+            
         }
     }
 
@@ -123,7 +129,7 @@ public class GameManager : MonoBehaviour
     {
         if (waveManager.GetWaveNumber() > 0) // Убедитесь, что хотя бы одна волна прошла
         {
-            if (waveManager.GetWaveNumber() == 10 || waveManager.GetWaveNumber() == 30)
+            if (waveManager.GetWaveNumber() == 10 || waveManager.GetWaveNumber() == 20 || waveManager.GetWaveNumber() == 40 || waveManager.GetWaveNumber() == 60 || waveManager.GetWaveNumber() == 80 || waveManager.GetWaveNumber() == 100)
             {
 
                 nextWaveTimerText.text = "Босс";
@@ -133,11 +139,13 @@ public class GameManager : MonoBehaviour
                 // Обновление UI с количеством оставшихся убийств
                 int remainingKills = waveManager.killThreshold - waveManager.killCount;
                 nextWaveTimerText.text = remainingKills.ToString();
+                killImage.gameObject.SetActive(true);
             }
             else
             {
                 // Если волна не на убийства — показываем время до следующей волны
                 float timeUntilNext = waveManager.GetTimeUntilNextWave();
+                killImage.gameObject.SetActive(false);
 
                 // Проверка на отрицательное значение
                 if (timeUntilNext <= 0)
@@ -181,7 +189,6 @@ public class GameManager : MonoBehaviour
         // Ждем 2 секунды
         yield return new WaitForSeconds(2f);
 
-        // Перезагружаем текущую сцену
-        RestartGame();
+        endManager.EndMenuOpen();
     }
 }

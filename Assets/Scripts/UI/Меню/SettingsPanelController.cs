@@ -22,10 +22,23 @@ public class SettingsPanelController : MonoBehaviour
     public AudioSource menuMusicSource;
     public AudioSource gameMusicSource;
 
+    public bool endlessMode = false;
+    public Image checkMark;
+
     private void Start()
     {
+
+        GameObject checkMarkObject = GameObject.Find("Галочка");
+
+        if (checkMarkObject != null)
+        {   
+            checkMark = checkMarkObject.GetComponent<Image>();
+            checkMark.gameObject.SetActive(false);
+        }
+
         waveManager = FindObjectOfType<WaveManager>();
         LoadDifficulty();
+        LoadEndlessMode();
 
         hardButton.onClick.AddListener(() => SelectButton(hardButton, Hard, 1));
         normalButton.onClick.AddListener(() => SelectButton(normalButton, Normal, 2));
@@ -149,6 +162,19 @@ public class SettingsPanelController : MonoBehaviour
                 break;
         }
     }
+    private void LoadEndlessMode()
+    {
+        if (PlayerPrefs.HasKey("EndlessMode"))
+        {
+            endlessMode = PlayerPrefs.GetInt("EndlessMode") == 1;
+            checkMark.gameObject.SetActive(endlessMode);
+        }
+        else
+        {
+            endlessMode = false;
+            checkMark.gameObject.SetActive(false);
+        }
+    }
 
     private void InitializeVolumeSlider()
     {
@@ -169,4 +195,22 @@ public class SettingsPanelController : MonoBehaviour
         PlayerPrefs.SetFloat("MusicVolume", volume);
         PlayerPrefs.Save();
     }
+
+    public void EndlessMode()
+    {
+        if (endlessMode == false)
+        {
+            checkMark.gameObject.SetActive(true);
+            endlessMode = true;
+        }
+        else
+        {
+            checkMark.gameObject.SetActive(false);
+            endlessMode = false;
+        }
+
+        PlayerPrefs.SetInt("EndlessMode", endlessMode ? 1 : 0);
+        PlayerPrefs.Save();
+    }
+
 }

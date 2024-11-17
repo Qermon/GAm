@@ -1881,7 +1881,7 @@ GameObject:
   - component: {fileID: 3876341713135151565}
   - component: {fileID: 1358070967564667066}
   m_Layer: 16
-  m_Name: "Skeleton30\u0412\u043E\u043B\u043D\u0430"
+  m_Name: "Skeleton30\u0412\u043E\u043B\u043D\u0430 3"
   m_TagString: Boss
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1953,22 +1953,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   goldAmount: 350
-  maxHealth: 150000
-  currentHealth: 150000
+  maxHealth: 2000000
+  currentHealth: 2000000
   enemyMoveSpeed: 0.4
-  damage: 120
+  damage: 1000
   attackRange: 0.6
   attackCooldown: 1
   experienceItemPrefab: {fileID: 7339687537489862264, guid: b2d91ba4bc5b9e34f80edd1b63403488, type: 3}
   experienceAmount: 20
-  baseMaxHealth: 150000
+  baseMaxHealth: 2000000
   baseEnemyMoveSpeed: 0.4
-  baseDamage: 120
+  baseDamage: 1000
   damageTextPrefab: {fileID: 8397397958086147261, guid: 6a515f8e778592248b89293e3a62d51b, type: 3}
   canvas: {fileID: 0}
   bloodEffectPrefab: {fileID: 3705117576596526473, guid: 8f993145477af014da0c49436bdc8af0, type: 3}
-  mobPrefab: {fileID: 5487655345144726384, guid: 66a3f3c328f0d03428bb78abaa23d4f8, type: 3}
-  samuraiPrefab: {fileID: 7880852780070057105, guid: fb4e8f2154b7b6d489e23c0cef0f2e54, type: 3}
+  mobPrefab: {fileID: 7880852780070057105, guid: fb4e8f2154b7b6d489e23c0cef0f2e54, type: 3}
+  samuraiPrefab: {fileID: 5487655345144726384, guid: 66a3f3c328f0d03428bb78abaa23d4f8, type: 3}
   rigidbody2D: {fileID: 0}
   hpBarImage: {fileID: 0}
   extendedAttackRange: 0.9
