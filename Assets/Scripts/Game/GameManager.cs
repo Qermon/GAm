@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     public Image hpBarBackgroundImage; // Изображение фона HP-бара
     public Image killImage;
 
-
+    public AdManager adManager;
 
     void Awake()
     {
@@ -190,5 +190,13 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         endManager.EndMenuOpen();
+    }
+    public void OnGameOver()
+    {
+        // Логика поражения
+        Debug.Log("Game Over!");
+
+        // Показываем рекламу
+        adManager.ShowInterstitialAd();
     }
 }

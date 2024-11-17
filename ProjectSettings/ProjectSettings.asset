@@ -12,7 +12,7 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: Company
+  companyName: ZspnCompany
   productName: 'Endless Onslaught: Samurai'
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
@@ -162,6 +162,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 2
   androidMaxAspectRatio: 16.9
   applicationIdentifier:
+    Android: com.zspncompany.endlessOnslaughtSamurai
     Standalone: com.DefaultCompany.2DProject
   buildNumber:
     Standalone: 0

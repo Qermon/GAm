@@ -39,7 +39,8 @@ public class EndManager : MonoBehaviour
 
     public void OnExitButtonPressed()
     {
-        gameManager.RestartGame();
+        gameManager.OnGameOver();
+        
     }
 
     public void EndMenuOpen()
